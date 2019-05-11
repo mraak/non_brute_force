@@ -71,7 +71,8 @@ https://en.wikipedia.org/wiki/Place_cell
 
 Symbolic learning in humans difficult in faceless walls, but easier if marked with visual clues. Maybe dogs have better path remembering. 
 
-Humans problems: fear, panic, anger, emotions, agency bias, sense of justice, symbolic representation . 
+Humans problems: fear, panic, anger, agency bias, sense of justice, lack of symbolic representation
+
 Dogs: no such problems
 
 # Next live test
