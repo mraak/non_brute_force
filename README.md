@@ -13,7 +13,7 @@ How does dog see its task? There are three possible contradictory options.
 2) find the right path through the maze to get the jackpot (big final food rewared)
 3) no clue what to do with the maze
 
-Tests on 04.05.2019 have revealed that dogs could start with 1 or 3 (in case of untrained dogs) but then rather quickly realize that the real goal is 2. This happened with "pro" dogs and also completely untrained dogs. This was tested by first sending them into a maze with no indicators, then add all indicators, then remove them again, then add less indicators, and alternate in such way until they will go straight to through the maze along the correct path.
+Tests on 04.05.2019 have revealed that dogs could start with 1 or 3 (in case of untrained dogs) but then rather quickly realize that the real goal is 2. This happened with "pro" dogs and also completely untrained dogs. This was tested by first sending them into a maze with no indicators, then with all the indicators added (at every junction or turn), then remove them again, then add less indicators, and alternate in such way until they will go straight to through the maze along the correct path. After two iteration all the dogs started going straight through a simple maze, directly towards the jackpot. The maze was very simple, it would need to be repeated with more complex mazes to extract other behaviours.
 
 The simulated, algorithmic dogs (players) need to reflect this behaviour.
 
