@@ -64,8 +64,8 @@ Dog trains the trainer and trainer trains the dog. Trainer is watching the dog h
 Dog can learn the following things 
 
 1. That the goal of the game is to solve the maze, as opposed for example to check as many paths as possible.
-2. To solve the same non-changing maze correctly and memorize it as quickly as possible. Different teaching methods might have different success rates, that need to be evaluated.
-3. To become better maze solver in general, i.e. to better solve completelly new random mazes. This also needs to be evaluated by seeing how fast can a dog solve a maze before and after the training. The before and after mazes need to be different but of the same complexity. 
+2. To solve the same non-changing maze correctly and memorize it as quickly as possible. Different teaching methods might have different success rates that need to be evaluated.
+3. To become a better maze solver in general, i.e. to better solve completelly new random mazes. This also needs to be evaluated by seeing how fast can a dog solve a maze before and after the training. The before and after mazes need to be different but of the same complexity. 
 
 
 
