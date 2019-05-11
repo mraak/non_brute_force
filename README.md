@@ -33,7 +33,7 @@ The simulated, algorithmic dogs (players) need to reflect this behaviour.
 
 Memory of previous successeful attempts plays a role in path selection. 
 
-- Path selection factors: randomnes, memory
+- Path selection factors: randomnes, memory (the longer into the path is a selection, the smaller the memory factor)
 - can also change direction for no reason but with much lesser probability 
 
 ### 4. memorized, eating dog explorer
