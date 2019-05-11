@@ -1,4 +1,4 @@
-# !brute_force
+# !brute_force Sim
 
 ## modes
 - **p**lace - places boid on the floor using mouse (last placed is controllable by arrow keys, others are automated)
@@ -54,6 +54,22 @@ Smell of food across the walls starts playing a role in path selection. Maybe th
 
 - Path selection factors: randomnes, memory, food (sight), smell
 - can also change direction for no reason but with much lesser probability 
+
+
+
+# !brute_force ML
+
+Dog trains the trainer and trainer trains the dog. Trainer is watching the dog how it solves mazes and figures out the best way to train the dog how to become a better maze solver. Trainer trains the dog by gradually increasing the complexity of the mazes, and adding and removing different number of indicators. A success is when a dog solves the maze with no indicators, only having the final jackpot at the end of the maze.
+
+Dog can learn the following things 
+
+1. That the goal of the game is to solve the maze, as opposed for example to check as many paths as possible.
+2. To solve the same non-changing maze correctly and memorize it as quickly as possible. Different teaching methods might have different success rates, that need to be evaluated.
+3. To become better maze solver in general, i.e. to better solve completelly new random mazes. This also needs to be evaluated by seeing how fast can a dog solve a maze before and after the training. The before and after mazes need to be different but of the same complexity. 
+
+
+
+
 
 
 
