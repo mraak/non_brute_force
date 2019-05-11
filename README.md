@@ -3,3 +3,55 @@
 ## modes
 - **p**lace - places boid on the floor using mouse (last placed is controllable by arrow keys, others are automated)
 - **e**dit - edits floor (**1** floor, **2** reward, **5** penalty)
+
+
+## Dogs tasks
+
+How does dog see its task? There are three possible contradictory options.
+
+1) check as many corners as possible for possible indicators (food places)
+2) find the right path through the maze to get the jackpot (big final food rewared)
+3) no clue what to do with the maze
+
+Tests on 04.05.2019 have revealed that dogs could start with 1 or 3 (in case of untrained dogs) but then rather quickly realize that the real goal is 2. This happened with "pro" dogs and also completely untrained dogs. This was tested by first sending them into a maze with no indicators, then add all indicators, then remove them again, then add less indicators, and alternate in such way until they will go straight to through the maze along the correct path.
+
+The simulated, algorithmic dogs (players) need to reflect this behaviour.
+
+
+## Algorithmic player types
+
+### random explorer 
+
+- every path selection has equal probability 
+
+### random dog explorer
+
+- Path selection factors: completely random every time
+- can also change direction for no reason
+
+### memorized dog explorer
+
+Memory of previous successeful attempts plays a role in path selection. 
+
+- Path selection factors: randomnes, memory
+- can also change direction for no reason but with much lesser probability 
+
+### memorized, eating dog explorer
+
+Food indicators placed along the correct path start playing a role.
+
+- Path selection factors: randomnes, memory, food (sight)
+- can also change direction for no reason but with much lesser probability 
+
+### [optional] memorized, eating, smelling dog explorer
+
+Smell of food across the walls starts playing a role in path selection. Maybe the dog can get confused if there's an indicator just on the other side of the wall. Dog can't see it but can smell it.
+
+- Path selection factors: randomnes, memory, food (sight), smell
+- can also change direction for no reason but with much lesser probability 
+
+
+
+
+
+
