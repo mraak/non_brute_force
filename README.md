@@ -1,4 +1,4 @@
-# brute_force
+# !brute_force
 
 ## modes
 - **p**lace - places boid on the floor using mouse (last placed is controllable by arrow keys, others are automated)
