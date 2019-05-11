@@ -1,9 +1,4 @@
-# !brute_force Sim
-
-## modes
-- **p**lace - places boid on the floor using mouse (last placed is controllable by arrow keys, others are automated)
-- **e**dit - edits floor (**1** floor, **2** reward, **5** penalty)
-
+# !brute_force: sim
 
 ## Dogs tasks
 
@@ -56,8 +51,12 @@ Smell of food across the walls starts playing a role in path selection. Maybe th
 - can also change direction for no reason but with much lesser probability 
 
 
+## modes
+- **p**lace - places boid on the floor using mouse (last placed is controllable by arrow keys, others are automated)
+- **e**dit - edits floor (**1** floor, **2** reward, **5** penalty)
 
-# !brute_force ML
+
+# !brute_force: ML
 
 Dog trains the trainer and trainer trains the dog. Trainer is watching the dog how it solves mazes and figures out the best way to train the dog how to become a better maze solver. Trainer trains the dog by gradually increasing the complexity of the mazes, and adding and removing different number of indicators. A success is when a dog solves the maze with no indicators, only having the final jackpot at the end of the maze.
 
