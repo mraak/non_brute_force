@@ -20,9 +20,14 @@ The simulated, algorithmic dogs (players) need to reflect this behaviour.
 
 ## Algorithmic player types
 
+These are building up upon each other, every type adds complexity to previous type.
+
 ### 1. random explorer 
 
-- every path selection has equal probability 
+- playar always walks straight in one direction
+- player bumps into the wall and finds the path forward
+- if no path forward is available, only then the player turns back along the same path
+- if it comes to junction, every path selection has equal probability 
 
 ### 2. random dog explorer
 
