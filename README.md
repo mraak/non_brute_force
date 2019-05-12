@@ -78,7 +78,7 @@ Dogs: no such problems
 # Next live test
 
 - Effect of position of crossing on memory. Do they remember more crossings that are closer to start or closer to end? 
-- Effect of big failures on remembering already explored paths.
+- Effect of big failures on remembering already explored paths, but also if making a big and costly failure makes it remember it for next time more.
 
 
 
