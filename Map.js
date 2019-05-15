@@ -2,6 +2,11 @@ class Map {
   constructor(x, y, config) {
     Object.assign(this, config);
 
+    this.iterationSpeed = 1;
+    this.iterationCount = config.iterations.length;
+
+    this.paused = false;
+
     this.bounds = new MapBounds(
       x, y,
       config.columns * config.tileWidth,
@@ -13,11 +18,36 @@ class Map {
     );
 
     this.players = [];
+    this.playerIdGen = 0;
 
-    const startIndex = config.data.findIndex(
+    this.log = [];
+
+    const startIndex = this.startIndex = config.data.findIndex(
       (type) => type == START
     );
-    this.placePlayerAt(startIndex);
+    const endIndex = this.endIndex = config.data.findIndex(
+      (type) => type == END
+    );
+
+    this.paths = bfs(this, startIndex, endIndex);
+
+    console.log("paths", this.paths);
+  }
+
+  resetTiles() {
+    const { data, tiles } = this;
+
+    for(let i = 0, n = tiles.length; i < n; ++i)
+      tiles[i].setType(data[i]);
+  }
+  updateTiles(indices, type) {
+    if(!indices)
+      return;
+
+    const { tiles } = this;
+
+    for(let i of indices)
+      tiles[i].setType(type);
   }
 
   update() {
@@ -29,15 +59,21 @@ class Map {
     for(let tile of this.tiles)
       tile.update();
 
-    for(let player of this.players)
-      player.update();
+    for(let i = 0; i < this.iterationSpeed; ++i) {
+      for(let player of this.players)
+        player.update();
+    }
+
+    textAlign(LEFT, TOP);
+    textSize(20);
+    text(this.log.join("\n"), bounds.width + 10, 0);
 
     pop();
   }
 
   toIndex(x, y) {
     if(x < 0 || x >= this.columns || y < 0 || y >= this.rows)
-      return undefined;
+      return -1;
 
     return x + this.columns * y;
   }
@@ -62,27 +98,54 @@ class Map {
   }
 
   get(index) {
+    if(index < 0)
+      return undefined;
+
     return this.tiles[index];
   }
 
-  setCurrentPlayer(currentPlayer) {
-    if(this.currentPlayer)
-      this.currentPlayer.states.setCurrent(this.currentPlayer.states.idle);
+  getTargets(tileIndex, type) {
+    const { tiles } = this;
 
-    this.currentPlayer = currentPlayer;
+    const tile = tiles[tileIndex];
 
-    if(currentPlayer)
-      currentPlayer.states.setCurrent(currentPlayer.states.manual);
+    const items = [];
+
+    for(let i = 0, n = tile.neighbors.length; i < n; ++i) {
+      let item = this.getTargetDirection(tile.neighbors[i], i, type);
+
+      if(item > -1)
+        items.push(item);
+    }
+
+    return items;
+  }
+
+  getTargetDirection(tileIndex, i, type) {
+    const tile = this.tiles[tileIndex];
+
+    if(!isWalkable(tile.type))
+      return -1;
+
+    if(tile.type == type)
+      return tileIndex;
+
+    const neighborIndex = tile.neighbors[i];
+
+    if(neighborIndex < 0)
+      return -1;
+
+    return this.getTargetDirection(neighborIndex, i, type);
   }
 
   placePlayerAt(index) {
-    console.log("placed player at tile", index);
+    const player = new Player(this, ++this.playerIdGen);
 
-    const player = new Player(this, index);
+    this.log.unshift(`placed player ${player.id} at tile ${index}`);
 
     this.players.push(player);
 
-    this.setCurrentPlayer(player);
+    return player;
   }
 
   removePlayer(player) {
@@ -94,6 +157,23 @@ class Map {
       return;
 
     players.splice(index, 1);
+  }
+
+  toConfig() {
+    return {
+      columns: this.columns,
+      rows: this.rows,
+      tileWidth: this.tileWidth,
+      tileHeight: this.tileHeight,
+      data: this.tiles.map(
+        (tile) => tile.type
+      ),
+      iterations: this.iterations,
+    };
+  }
+
+  toJson() {
+    return JSON.stringify(this.toConfig());
   }
 }
 

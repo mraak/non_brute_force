@@ -13,7 +13,7 @@ class PlayerStates {
       return;
 
     if(this.state) {
-      console.log("exited", this.state.constructor.name);
+      // this.player.map.log.unshift(`player ${this.player.id} exited ${this.state.constructor.name}`);
 
       this.state.exit();
     }
@@ -21,7 +21,7 @@ class PlayerStates {
     this.state = state;
 
     if(state) {
-      console.log("entered", state.constructor.name);
+      // this.player.map.log.unshift(`player ${this.player.id} entered ${state.constructor.name}`);
 
       state.enter();
     }
@@ -29,7 +29,7 @@ class PlayerStates {
 
   update() {
     if(this.state)
-      this.state.update();
+      return this.state.update();
   }
 }
 
@@ -53,39 +53,20 @@ class PlayerState {
 class PlayerManualState extends PlayerState {
   constructor(states) {
     super(states);
-
-    this.angleRatioAcc = .1;
-    this.angleRatio = 0;
-
-    this.speedRatioAcc = .1;
-    this.speedRatio = 0;
   }
 
   update() {
     const { player } = this.states;
+    const { map } = player;
+    const { bounds } = map;
 
-    if(keyIsDown(LEFT_ARROW)) {
-      this.angleRatio = max(this.angleRatio - this.angleRatioAcc, -1);
-    } else if(keyIsDown(RIGHT_ARROW)) {
-      this.angleRatio = min(this.angleRatio + this.angleRatioAcc, 1);
-    } else if(abs(this.angleRatio) < .01) {
-      this.angleRatio *= .9;
-    } else {
-      this.angleRatio = 0;
-    }
+    const global = createVector(mouseX, mouseY);
+    const local = createVector(
+      bounds.toLocalX(global.x),
+      bounds.toLocalY(global.y)
+    );
 
-    if(keyIsDown(UP_ARROW)) {
-      this.speedRatio = min(this.speedRatio + this.speedRatioAcc, 1);
-    } else if(keyIsDown(DOWN_ARROW)) {
-      this.speedRatio = max(this.speedRatio - this.speedRatioAcc, -.25);
-    } else if(abs(this.speedRatio) < .01) {
-      this.speedRatio *= .9;
-    } else {
-      this.speedRatio = 0;
-    }
-
-    player.applyAngleRatio(this.angleRatio);
-    player.applySpeedRatio(this.speedRatio);
+    return player.arrive(local);
   }
 }
 class PlayerIdleState extends PlayerState {
@@ -94,7 +75,7 @@ class PlayerIdleState extends PlayerState {
   }
 
   enter() {
-    this.states.player.applySpeedRatio(0);
+
   }
 
   update() {
@@ -102,10 +83,17 @@ class PlayerIdleState extends PlayerState {
     const { player } = states;
     const { map } = player;
 
-    const tile = map.get(player.tileIndex);
+    player.setIterationIndex(player.iterationIndex + 1);
 
-    if(isEnd(tile.type)) {
+    if(player.iterationIndex < map.iterationCount) {
+      player.nextIteration();
+    } else {
+      map.log.unshift(`player ${player.id} reached the end`);
+
       map.removePlayer(player);
+
+      if(map.players.length == 0)
+        modes.place.setTraining(false);
 
       return;
     }
@@ -121,9 +109,9 @@ class PlayerExploreState extends PlayerState {
   update() {
     const { states } = this;
     const { player } = states;
-    const { map } = player;
+    const { tileIndex, map, visited, counted } = player;
 
-    const tile = map.get(player.tileIndex);
+    const tile = map.get(tileIndex);
 
     if(isEnd(tile.type)) {
       states.setCurrent(states.idle);
@@ -131,11 +119,31 @@ class PlayerExploreState extends PlayerState {
       return;
     }
 
-    const neighbor = tile.neighbors.find((neighbor) => isWalkable(neighbor));
+    let neighbors = tile.getWalkableNeighbors();
 
+    if(player.foodInSight.length) {
+      player.targetTileIndex = player.foodInSight[0];
 
-    // player.applyAngleRatio(this.angleRatio);
-    player.applySpeedRatio(1);
+      for(let n of neighbors) {
+        if(player.counted[n] == 0 || n != player.previousTileIndex)
+          player.counted[n] = Infinity;
+      }
+    } else {
+      neighbors = neighbors.filter(
+        (n) => n != Infinity
+      );
+
+      neighbors.sort(
+        (a, b) => counted[a] == 0 ? -1 : counted[b] == 0 ? 1 : counted[a] - counted[b]
+      );
+
+      player.targetTileIndex = player.targetTileIndex || neighbors[0];
+    }
+
+    const targetTile = map.get(player.targetTileIndex);
+
+    if(targetTile)
+      return player.arrive(targetTile.bounds.center);
   }
 }
 class PlayerRunState extends PlayerState {
