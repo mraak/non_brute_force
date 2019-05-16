@@ -138,8 +138,8 @@ class Map {
     return this.getTargetDirection(neighborIndex, i, type);
   }
 
-  placePlayerAt(index) {
-    const player = new Player(this, ++this.playerIdGen);
+  placePlayerAt(index, config) {
+    const player = new Player(this, ++this.playerIdGen, config);
 
     this.log.unshift(`placed player ${player.id} at tile ${index}`);
 

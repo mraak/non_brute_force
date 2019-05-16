@@ -12,7 +12,7 @@ function setup() {
   setupTypes();
 
   modes = new Modes;
-  modes.setCurrent(modes.place);
+  modes.setCurrent(modes.train);
 
   // let x = 10, y = 50, h = 0;
   // maps = configs.map(
@@ -56,7 +56,7 @@ function mouseDragged() {
 }
 
 function createMap(config) {
-  let x = 10, y = 70;
+  let x = 10, y = 90;
 
   currentMap = new Map(x, y, config);
 }

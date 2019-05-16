@@ -93,7 +93,7 @@ class PlayerIdleState extends PlayerState {
       map.removePlayer(player);
 
       if(map.players.length == 0)
-        modes.place.setTraining(false);
+        modes.train.setTraining(false);
 
       return;
     }
@@ -109,7 +109,7 @@ class PlayerExploreState extends PlayerState {
   update() {
     const { states } = this;
     const { player } = states;
-    const { tileIndex, map, visited, counted } = player;
+    const { tileIndex, map, valid, invalid, counted } = player;
 
     const tile = map.get(tileIndex);
 
@@ -125,19 +125,37 @@ class PlayerExploreState extends PlayerState {
       player.targetTileIndex = player.foodInSight[0];
 
       for(let n of neighbors) {
-        if(player.counted[n] == 0 || n != player.previousTileIndex)
-          player.counted[n] = Infinity;
+        if(counted[n] == 0 || valid.indexOf(n) < 0)
+          counted[n] = Infinity;
       }
-    } else {
-      neighbors = neighbors.filter(
-        (n) => n != Infinity
-      );
+    } else if(!("targetTileIndex" in player)) {
+      if(player.backtracking)
+        player.targetTileIndex = valid.pop();
+      else {
+        if(tile.isFork()) {
+          if(Math.random() > player.backtrackingThreshold) {
+            neighbors = neighbors.filter(
+              (n) => valid.indexOf(n) < 0 && invalid.indexOf(n) < 0
+            );
+          }
 
-      neighbors.sort(
-        (a, b) => counted[a] == 0 ? -1 : counted[b] == 0 ? 1 : counted[a] - counted[b]
-      );
+          neighbors.sort(
+            (a, b) => player.currentScores[a] == 0 ? -1 : player.currentScores[b] == 0 ? 1 : player.currentScores[b] - player.currentScores[a]
+          );
 
-      player.targetTileIndex = player.targetTileIndex || neighbors[0];
+          if(Math.random() < player.explorationThreshold) {
+            const n = neighbors.length, i = n > 1 ? floor(Math.random() * n) : 0;
+            player.targetTileIndex = neighbors[i];
+          } else
+            player.targetTileIndex = neighbors[0];
+        } else {
+          neighbors.sort(
+            (a, b) => counted[a] == 0 ? -1 : counted[b] == 0 ? 1 : counted[a] - counted[b]
+          );
+
+          player.targetTileIndex = neighbors[0];
+        }
+      }
     }
 
     const targetTile = map.get(player.targetTileIndex);

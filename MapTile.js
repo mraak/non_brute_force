@@ -60,6 +60,7 @@ class MapTile {
 
     if(isWalkable(type)) {
       // var value = this.map.players.length > 0 ? this.map.players[0].counted[this.index].toString() : this.index.toString();
+      // var value = this.map.players.length > 0 && this.map.players[0].currentScores ? this.map.players[0].currentScores[this.index].toString() : this.index.toString();
       var value = this.index.toString();
 
       if(isStart(type))

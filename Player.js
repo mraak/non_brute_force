@@ -18,9 +18,11 @@ function distancePointBounds(point, bounds) {
 }
 
 class Player {
-  constructor(map, id) {
+  constructor(map, id, config) {
     this.map = map;
     this.id = id;
+
+    Object.assign(this, config);
 
     this.radius = 4;
 
@@ -37,6 +39,13 @@ class Player {
     this.foodInSight = [];
 
     this.iterationIndex = 0;
+
+    this.valid = [];
+    this.invalid = [];
+    this.backtracking = false;
+
+    this.iterationScores = [];
+    this.currentScores = null;
   }
 
   setIterationIndex(iterationIndex) {
@@ -61,6 +70,20 @@ class Player {
 
     this.acceleration = createVector(0, 0);
     this.velocity = createVector(0, 0);
+
+    this.valid = [];
+    this.invalid = [];
+    this.backtracking = false;
+
+    this.currentScores = this.currentScores
+      ? [ ...this.currentScores ]
+      : map.tiles.map(
+      (tile) => isWalkable(tile.type) ? 0 : -1
+    );
+
+    this.iterationScores.push(this.currentScores);
+
+    this.explorationThreshold = max(0, this.explorationThreshold - this.explorationThresholdDelta);
   }
 
   applyForce(force) {
@@ -72,17 +95,30 @@ class Player {
 
     const tileIndex = map.localToIndex(x, y);
 
-    const tile = map.get(tileIndex);
-
     if(this.tileIndex != tileIndex) {
       delete this.targetTileIndex;
+
+      const tile = map.get(tileIndex);
+
+      if(!this.backtracking) {
+        this.currentScores[this.tileIndex] += .5;
+
+        this.valid.push(this.tileIndex);
+      } else {
+        this.currentScores[this.tileIndex] += -2;
+
+        this.invalid.push(this.tileIndex);
+      }
+
+      if(tile.isDeadEnd())
+        this.backtracking = true;
+      else if(tile.isFork())
+        this.backtracking = false;
 
       this.counted = this.counted.map(
         (count) => count == 0 ? 0 : count - 1
       );
       this.counted[this.tileIndex] = this.pathLength;
-
-      this.previousTileIndex = this.tileIndex;
 
       this.tileIndex = tileIndex;
 
