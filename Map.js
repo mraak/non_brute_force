@@ -141,7 +141,7 @@ class Map {
   placePlayerAt(index, config) {
     const player = new Player(this, ++this.playerIdGen, config);
 
-    this.log.unshift(`placed player ${player.id} at tile ${index}`);
+    // this.log.unshift(`placed ${player.name} at ${index}`);
 
     this.players.push(player);
 

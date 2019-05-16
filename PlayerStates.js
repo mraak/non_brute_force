@@ -88,7 +88,7 @@ class PlayerIdleState extends PlayerState {
     if(player.iterationIndex < map.iterationCount) {
       player.nextIteration();
     } else {
-      map.log.unshift(`player ${player.id} reached the end`);
+      map.log.unshift(`${player.name} has finished training`);
 
       map.removePlayer(player);
 

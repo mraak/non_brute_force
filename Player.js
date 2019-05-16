@@ -21,6 +21,7 @@ class Player {
   constructor(map, id, config) {
     this.map = map;
     this.id = id;
+    this.config = config;
 
     Object.assign(this, config);
 
@@ -60,7 +61,7 @@ class Player {
   nextIteration() {
     const { map } = this;
 
-    map.log.unshift(`player ${this.id} started ${this.iterationIndex}. iteration`);
+    map.log.unshift(`${this.name}: ${this.iterationIndex}. iteration, ${this.explorationThreshold.toFixed(2)}/${this.config.explorationThreshold.toFixed(2)}`);
 
     this.tileIndex = map.startIndex;
 
