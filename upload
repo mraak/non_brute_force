@@ -1,0 +1,1 @@
+rsync -avzPc --exclude ".*" --delete . root@174.138.68.174:/var/www/html/non-brute-force
