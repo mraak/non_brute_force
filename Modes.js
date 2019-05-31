@@ -205,6 +205,8 @@ class TrainMode extends Mode {
     if(!training)
       currentMap.players = [];
     else {
+      randomSeed(123);
+
       const player = currentMap.placePlayerAt(currentMap.startIndex, players[modes.pick.playerIndex]);
       player.states.setCurrent(player.states.idle);
     }

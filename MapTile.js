@@ -46,12 +46,12 @@ class MapTile {
   update() {
     const { bounds, type } = this;
 
-    const color = getColor(type);
+    const c = getColor(type);
 
-    if(!color)
+    if(!c)
       return;
 
-    fill(color);
+    fill(this.map.players.length && this.map.players[0].visited.indexOf(this.index) > -1 ? color(255, 204, 153) : c);
 
     rect(
       bounds.left, bounds.top,

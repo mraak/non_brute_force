@@ -44,9 +44,12 @@ class Player {
     this.valid = [];
     this.invalid = [];
     this.backtracking = false;
+    this.visited = [];
 
     this.iterationScores = [];
     this.currentScores = null;
+
+    this.visitedForks = [];
   }
 
   setIterationIndex(iterationIndex) {
@@ -61,7 +64,7 @@ class Player {
   nextIteration() {
     const { map } = this;
 
-    map.log.unshift(`${this.name}: ${this.iterationIndex}. iteration, ${this.explorationThreshold.toFixed(2)}/${this.config.explorationThreshold.toFixed(2)}`);
+    map.log.unshift(`${this.name}: ${this.iterationIndex}. it, ${this.explorationThreshold.toFixed(2)}/${this.config.explorationThreshold.toFixed(2)}`);
 
     this.tileIndex = map.startIndex;
 
@@ -75,6 +78,9 @@ class Player {
     this.valid = [];
     this.invalid = [];
     this.backtracking = false;
+    this.visited = [ this.tileIndex ];
+
+    this.visitedForks = [];
 
     this.currentScores = this.currentScores
       ? [ ...this.currentScores ]
@@ -113,8 +119,14 @@ class Player {
 
       if(tile.isDeadEnd())
         this.backtracking = true;
-      else if(tile.isFork())
+      else if(tile.isFork()) {
         this.backtracking = false;
+
+        if(this.visitedForks.indexOf(tileIndex) < 0)
+          this.visitedForks.push(tileIndex);
+      }
+
+      this.visited.push(tileIndex);
 
       this.counted = this.counted.map(
         (count) => count == 0 ? 0 : count - 1

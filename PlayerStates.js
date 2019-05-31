@@ -83,6 +83,9 @@ class PlayerIdleState extends PlayerState {
     const { player } = states;
     const { map } = player;
 
+    if(map.log.length)
+      map.log[0] = `${player.name}: ${player.iterationIndex}. it, ${player.explorationThreshold.toFixed(2)}/${player.config.explorationThreshold.toFixed(2)}, ${player.visited.length}/${map.paths[0].length} (${(map.paths[0].length / player.visited.length).toFixed(2)})`;
+
     player.setIterationIndex(player.iterationIndex + 1);
 
     if(player.iterationIndex < map.iterationCount) {
@@ -130,10 +133,10 @@ class PlayerExploreState extends PlayerState {
       }
     } else if(!("targetTileIndex" in player)) {
       if(player.backtracking)
-        player.targetTileIndex = valid.pop();
+        player.targetTileIndex = bfs(map, player.tileIndex, player.visitedForks[player.visitedForks.length - 1])[0][1] || player.visitedForks[player.visitedForks.length - 1]; // valid.pop();
       else {
         if(tile.isFork()) {
-          if(Math.random() > player.backtrackingThreshold) {
+          if(random() > player.backtrackingThreshold) {
             neighbors = neighbors.filter(
               (n) => valid.indexOf(n) < 0 && invalid.indexOf(n) < 0
             );
@@ -143,7 +146,7 @@ class PlayerExploreState extends PlayerState {
             (a, b) => player.currentScores[a] == 0 ? -1 : player.currentScores[b] == 0 ? 1 : player.currentScores[b] - player.currentScores[a]
           );
 
-          if(Math.random() < player.explorationThreshold) {
+          if(random() < player.explorationThreshold) {
             const n = neighbors.length, i = n > 1 ? floor(Math.random() * n) : 0;
             player.targetTileIndex = neighbors[i];
           } else

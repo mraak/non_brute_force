@@ -4,13 +4,13 @@ const byron = {
   name: "Byron",
   explorationThreshold: .5,
   explorationThresholdDelta: .05,
-  backtrackingThreshold: .1,
+  backtrackingThreshold: .05,
 };
 const ada = {
   name: "Ada",
   explorationThreshold: .5,
   explorationThresholdDelta: .05,
-  backtrackingThreshold: .1,
+  backtrackingThreshold: .05,
 };
 const kiki = {
   name: "Kiki",
