@@ -83,7 +83,7 @@ class PlayerIdleState extends PlayerState {
     const { player } = states;
     const { map } = player;
 
-    if(map.log.length)
+    if(map.log.length && player.iterationIndex > 0)
       map.log[0] = `${player.name}: ${player.iterationIndex}. it, ${player.explorationThreshold.toFixed(2)}/${player.config.explorationThreshold.toFixed(2)}, ${player.visited.length}/${map.paths[0].length} (${(map.paths[0].length / player.visited.length).toFixed(2)})`;
 
     player.setIterationIndex(player.iterationIndex + 1);
