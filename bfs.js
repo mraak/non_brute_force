@@ -1,4 +1,4 @@
-function bfs(map, start, end) {
+function bfs(board, start, end) {
   const queue = [[ start ]];
 
   const paths = [];
@@ -9,14 +9,12 @@ function bfs(map, start, end) {
 
     if(last == end)
       paths.push(path);
-    
-    const tile = map.get(last);
 
-    for(let i = 0, n = tile.neighbors.length; i < n; ++i) {
-      const neighbor = map.get(tile.neighbors[i]);
-      
-      if(neighbor && isWalkable(neighbor.type) && path.indexOf(neighbor.index) < 0)
-        queue.push([ ...path, neighbor.index ]);
+    const tile = board.get(last);
+
+    for(let index of tile.edges) {
+      if(path.indexOf(index) < 0)
+        queue.push([ ...path, index ]);
     }
   }
 

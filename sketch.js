@@ -1,12 +1,22 @@
 let modes;
-// let maps;
-let currentMap;
+// let boards;
+let currentBoard;
+
+let red;
+let green;
+let blue;
+
+function setupTypes() {
+  red = color(255, 153, 51);
+  green = color(153, 255, 51);
+  blue = color(51, 153, 255);
+}
 
 function setup() {
   // const configs = [
-  //   // map1,
-  //   // map2,
-  //   map3,
+  //   // board1,
+  //   // board2,
+  //   board3,
   // ];
 
   setupTypes();
@@ -15,52 +25,50 @@ function setup() {
   modes.setCurrent(modes.train);
 
   // let x = 10, y = 50, h = 0;
-  // maps = configs.map(
+  // boards = configs.map(
   //   (config) => {
-  //     const map = new Map(x, y, config);
-  //     x += map.bounds.width + 10 + 400;
-  //     h = max(map.bounds.bottom + 10, h);
+  //     const board = new Board(x, y, config);
+  //     x += board.bounds.width + 10 + 400;
+  //     h = max(board.bounds.bottom + 10, h);
 
-  //     return map;
+  //     return board;
   //   }
   // );
 
-  createMap(maps[2]);
-
-  const map = currentMap;
+  createBoard(boards[0]);
 
   frameRate(30);
-  createCanvas(map.bounds.right + 10 + 400, map.bounds.bottom + 10);
 }
 
 function draw() {
   background(255);
+  noStroke();
 
   modes.update();
 
-  // for(let map of maps)
-  //   map.update();
+  // for(let board of boards)
+  //   board.update();
 
-  currentMap.update();
+  currentBoard.update();
 }
 
 function keyTyped() {
-  modes.keyboard();
+  modes.keymap();
 }
 
 function mousePressed() {
-  handleMouse();
+  handleMouse(true);
 }
 function mouseDragged() {
   handleMouse();
 }
 
-function createMap(config) {
+function createBoard(config) {
   let x = 10, y = 90;
 
-  currentMap = new Map(x, y, config);
+  currentBoard = new Board(x, y, config);
 }
 
-function handleMouse() {
-  modes.mouse();
+function handleMouse(initial) {
+  modes.mouse(initial);
 }

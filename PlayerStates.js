@@ -13,7 +13,7 @@ class PlayerStates {
       return;
 
     if(this.state) {
-      // this.player.map.log.unshift(`player ${this.player.id} exited ${this.state.constructor.name}`);
+      // this.player.board.log.unshift(`player ${this.player.id} exited ${this.state.constructor.name}`);
 
       this.state.exit();
     }
@@ -21,7 +21,7 @@ class PlayerStates {
     this.state = state;
 
     if(state) {
-      // this.player.map.log.unshift(`player ${this.player.id} entered ${state.constructor.name}`);
+      // this.player.board.log.unshift(`player ${this.player.id} entered ${state.constructor.name}`);
 
       state.enter();
     }
@@ -57,8 +57,8 @@ class PlayerManualState extends PlayerState {
 
   update() {
     const { player } = this.states;
-    const { map } = player;
-    const { bounds } = map;
+    const { board } = player;
+    const { bounds } = board;
 
     const global = createVector(mouseX, mouseY);
     const local = createVector(
@@ -81,21 +81,21 @@ class PlayerIdleState extends PlayerState {
   update() {
     const { states } = this;
     const { player } = states;
-    const { map } = player;
+    const { board } = player;
 
-    if(map.log.length && player.iterationIndex > 0)
-      map.log[0] = `${player.name}: ${player.iterationIndex}. it, ${player.explorationThreshold.toFixed(2)}/${player.config.explorationThreshold.toFixed(2)}, ${player.visited.length}/${map.paths[0].length} (${(map.paths[0].length / player.visited.length).toFixed(2)})`;
+    if(board.log.length && player.iterationIndex > 0)
+      board.log[0] = `${player.name}: ${player.iterationIndex}. it, ${player.explorationThreshold.toFixed(2)}/${player.config.explorationThreshold.toFixed(2)}, ${player.visited.length}/${board.paths[0].length} (${(board.paths[0].length / player.visited.length).toFixed(2)})`;
 
     player.setIterationIndex(player.iterationIndex + 1);
 
-    if(player.iterationIndex < map.iterationCount) {
+    if(player.iterationIndex <= board.iterationCount) {
       player.nextIteration();
     } else {
-      map.log.unshift(`${player.name} has finished training`);
+      board.log.unshift(`${player.name} has finished training`);
 
-      map.removePlayer(player);
+      board.removePlayer(player);
 
-      if(map.players.length == 0)
+      if(board.players.length == 0)
         modes.train.setTraining(false);
 
       return;
@@ -112,11 +112,11 @@ class PlayerExploreState extends PlayerState {
   update() {
     const { states } = this;
     const { player } = states;
-    const { tileIndex, map, valid, invalid, counted } = player;
+    const { tileIndex, board, valid, invalid, counted } = player;
 
-    const tile = map.get(tileIndex);
+    const tile = board.get(tileIndex);
 
-    if(isEnd(tile.type)) {
+    if(board.isEnd(tile)) {
       states.setCurrent(states.idle);
 
       return;
@@ -133,7 +133,7 @@ class PlayerExploreState extends PlayerState {
       }
     } else if(!("targetTileIndex" in player)) {
       if(player.backtracking)
-        player.targetTileIndex = bfs(map, player.tileIndex, player.visitedForks[player.visitedForks.length - 1])[0][1] || player.visitedForks[player.visitedForks.length - 1]; // valid.pop();
+        player.targetTileIndex = bfs(board, player.tileIndex, player.visitedForks[player.visitedForks.length - 1])[0][1] || player.visitedForks[player.visitedForks.length - 1]; // valid.pop();
       else {
         if(tile.isFork()) {
           if(random() > player.backtrackingThreshold) {
@@ -161,7 +161,7 @@ class PlayerExploreState extends PlayerState {
       }
     }
 
-    const targetTile = map.get(player.targetTileIndex);
+    const targetTile = board.get(player.targetTileIndex);
 
     if(targetTile)
       return player.arrive(targetTile.bounds.center);
