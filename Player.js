@@ -18,8 +18,8 @@ function distancePointBounds(point, bounds) {
 }
 
 class Player {
-  constructor(map, id, config) {
-    this.map = map;
+  constructor(board, id, config) {
+    this.board = board;
     this.id = id;
     this.config = config;
 
@@ -32,8 +32,8 @@ class Player {
 
     this.states = new PlayerStates(this);
 
-    this.pathLength = map.paths.length ? map.paths[0].length : 0;
-    this.counted = map.tiles.map(
+    this.pathLength = board.paths.length ? board.paths[0].length : 0;
+    this.counted = board.tiles.map(
       () => 0
     );
 
@@ -55,20 +55,20 @@ class Player {
   setIterationIndex(iterationIndex) {
     this.iterationIndex = iterationIndex;
 
-    const { map } = this;
+    const { board } = this;
 
-    map.resetTiles();
-    map.updateTiles(map.iterations[iterationIndex - 1], REWARD);
+    board.resetTiles();
+    board.setFood(board.iterations[iterationIndex - 1]);
   }
 
   nextIteration() {
-    const { map } = this;
+    const { board } = this;
 
-    map.log.unshift(`${this.name}: ${this.iterationIndex}. it, ${this.explorationThreshold.toFixed(2)}/${this.config.explorationThreshold.toFixed(2)}`);
+    board.log.unshift(`${this.name}: ${this.iterationIndex}. it, ${this.explorationThreshold.toFixed(2)}/${this.config.explorationThreshold.toFixed(2)}`);
 
-    this.tileIndex = map.startIndex;
+    this.tileIndex = board.startIndex;
 
-    const tile = map.get(this.tileIndex);
+    const tile = board.get(this.tileIndex);
 
     this.position = createVector(tile.bounds.centerX, tile.bounds.centerY);
 
@@ -84,8 +84,8 @@ class Player {
 
     this.currentScores = this.currentScores
       ? [ ...this.currentScores ]
-      : map.tiles.map(
-      (tile) => isWalkable(tile.type) ? 0 : -1
+      : board.tiles.map(
+      (tile) => board.isWalkable(tile) ? 0 : -1
     );
 
     this.iterationScores.push(this.currentScores);
@@ -98,14 +98,14 @@ class Player {
   }
 
   setPosition(x, y) {
-    const { map } = this;
+    const { board } = this;
 
-    const tileIndex = map.localToIndex(x, y);
+    const tileIndex = board.localToIndex(x, y);
 
     if(this.tileIndex != tileIndex) {
       delete this.targetTileIndex;
 
-      const tile = map.get(tileIndex);
+      const tile = board.get(tileIndex);
 
       if(!this.backtracking) {
         this.currentScores[this.tileIndex] += .5;
@@ -135,19 +135,17 @@ class Player {
 
       this.tileIndex = tileIndex;
 
-      const currentTile = map.get(tileIndex);
-
-      if(currentTile.type == REWARD)
-        currentTile.setType(FLOOR);
+      if(board.food.has(tileIndex))
+        board.food.delete(tileIndex);
     }
   }
 
   update() {
-    const { map, radius } = this;
+    const { board, radius } = this;
 
     const state = this.states.update();
 
-    if(!map.paused) {
+    if(!board.paused) {
       if(state)
         this.applyForce(state);
 
@@ -166,8 +164,8 @@ class Player {
     }
 
     this.foodInSight = [
-      ...map.getTargets(this.tileIndex, END),
-      ...map.getTargets(this.tileIndex, REWARD),
+      ...board.getTargets(this.tileIndex, [ board.endIndex ]),
+      ...board.getTargets(this.tileIndex, Array.from(board.food)),
     ];
 
     this.drawArrows();
@@ -177,7 +175,7 @@ class Player {
     push();
     translate(this.position.x, this.position.y);
     rotate(this.velocity.heading() + HALF_PI);
-    stroke(0);
+    // stroke(0);
     triangle(
       0, -radius * 2,
       -radius, radius * 2,
@@ -187,12 +185,14 @@ class Player {
   }
 
   avoidWalls() {
+    const { board } = this;
+
     let count = 0;
 
     let steer = createVector(0, 0);
 
-    for(let tile of this.map.tiles) {
-      if(isWalkable(tile.type))
+    for(let tile of board.tiles) {
+      if(board.isWalkable(tile))
         continue;
 
       const d = distancePointBounds(this.position, tile.bounds);
@@ -248,10 +248,10 @@ class Player {
   }
 
   drawArrows() {
-    const { map, tileIndex } = this;
-    const { paths } = map;
+    const { board, tileIndex } = this;
+    const { paths } = board;
 
-    const tile = map.get(tileIndex);
+    const tile = board.get(tileIndex);
 
     var set = new Set;
 
@@ -268,7 +268,7 @@ class Player {
     }
 
     for(let targetIndex of set) {
-      const target = map.get(targetIndex);
+      const target = board.get(targetIndex);
 
       if(!target)
         continue;
