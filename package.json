@@ -16,6 +16,7 @@
     "@emotion/core": "^10.0.15",
     "@emotion/is-prop-valid": "^0.8.2",
     "@emotion/styled": "^10.0.15",
+    "d3": "^5.11.0",
     "emotion-theming": "^10.0.14",
     "immer": "^3.2.0",
     "mineral-ui": "^0.58.0",
