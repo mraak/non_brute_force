@@ -1,0 +1,31 @@
+{
+  "name": "p5mazeai",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:mraak/non_brute_force.git",
+  "author": "miran248 <miran248+github@cflow.io>",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html --public-url ./"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.3"
+  },
+  "dependencies": {
+    "@emotion/core": "^10.0.15",
+    "@emotion/is-prop-valid": "^0.8.2",
+    "@emotion/styled": "^10.0.15",
+    "emotion-theming": "^10.0.14",
+    "immer": "^3.2.0",
+    "mineral-ui": "^0.58.0",
+    "mineral-ui-icons": "^0.5.0",
+    "p5": "^0.9.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-intl": "^2.9.0",
+    "react-redux": "^7.1.0",
+    "redux": "^4.0.4",
+    "redux-logic": "^2.1.1"
+  }
+}
