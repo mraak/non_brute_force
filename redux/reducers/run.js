@@ -45,6 +45,9 @@ export default (state, action) => produce(state || initialState, (draft) => {
     case "run/paused":
       draft.paused = action.payload;
       break;
+    case "run/clear":
+      draft.log = [];
+      break;
     case "run/intelligence":
       draft.intelligence = action.payload;
       break;

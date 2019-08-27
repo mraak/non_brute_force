@@ -24,6 +24,7 @@ export default () => {
   const paused = useSelector((state) => state.run.paused);
   const training = useSelector((state) => state.run.training);
   const endless = useSelector((state) => state.run.endless);
+  const hasLogs = useSelector((state) => state.run.log.length > 0);
 
   return (
     <Box padding={10}>
@@ -60,6 +61,11 @@ export default () => {
         <FlexItem>
           <FormField label="Toggle Pause">
             <Button disabled={!training} onClick={() => dispatch({ type: "run/paused", payload: !paused })}>{paused ? "Paused" : "Running"}</Button>
+          </FormField>
+        </FlexItem>
+        <FlexItem>
+          <FormField label="Clear Logs">
+            <Button disabled={!hasLogs} onClick={() => dispatch({ type: "run/clear" })}>Clear</Button>
           </FormField>
         </FlexItem>
       </Flex>
