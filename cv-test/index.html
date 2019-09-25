@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>cv-test</title>
+	</head>
+	<body>
+		<p id="status">OpenCV.js is loading...</p>
+		<div>
+			<div class="inputoutput">
+				<video id="videoInput" src="D_VIP_1.mp4" width="854" height="480" controls loop muted />
+				<div class="caption">videoInput</div>
+			</div>
+			<div class="inputoutput">
+				<canvas id="canvasOutput" width="854" height="480"></canvas>
+				<div class="caption">canvasOutput</div>
+			</div>
+		</div>
+
+		<script src="./index.js"></script>
+		<script async src="https://docs.opencv.org/3.4/opencv.js" type="text/javascript" onload="onOpenCvReady();"></script>
+		<!-- <script async src="https://docs.opencv.org/3.4/utils.js" type="text/javascript" onload="onOpenCvReady();"></script> -->
+	</body>
+</html>
