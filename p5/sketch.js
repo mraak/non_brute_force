@@ -4,6 +4,7 @@ import abc from "p5";
 import store from "../redux/store";
 
 import {
+  getEdges,
   getEdgeIndex,
   getTopNeighborIndex,
   getLeftNeighborIndex,
@@ -39,6 +40,8 @@ function draw() {
   drawDog(reduxState.run.iterationSpeed);
 }
 function drawMap() {
+  ellipseMode(CORNER);
+
   for(let tileIndex = 0, n = reduxState.maps.tileCount; tileIndex < n; ++tileIndex) {
     const bounds = getBounds(tileIndex);
 
@@ -52,9 +55,9 @@ function drawMap() {
 
       fill(getColor(tileIndex));
 
-      rect(
-        bounds.left + 10, bounds.top + 10,
-        bounds.width - 20, bounds.height - 20
+      ellipse(
+        bounds.left + 14, bounds.top + 14,
+        bounds.width - 28, bounds.height - 28
       );
     } else {
       fill(getColor(tileIndex));
@@ -69,6 +72,9 @@ function drawMap() {
   fill(0);
 
   for(let tileIndex = 0, n = reduxState.maps.tileCount; tileIndex < n; ++tileIndex) {
+    if(getEdges(tileIndex).length === 0)
+      continue;
+
     const bounds = getBounds(tileIndex);
 
     if(getEdgeIndex(tileIndex, getTopNeighborIndex(tileIndex)) < 0) {
@@ -90,9 +96,12 @@ function drawMap() {
 
   reduxState.maps.steps.forEach(
     (count, tileIndex) => {
+      if(getEdges(tileIndex).length === 0)
+        return;
+
       const bounds = getBounds(tileIndex);
 
-      text(count, bounds.center.x - 10, bounds.center.y - 10);
+      text(`${tileIndex} | ${count}`, bounds.center.x - 0, bounds.center.y - 10);
     }
   );
 

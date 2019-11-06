@@ -1,3 +1,4 @@
+
 const FPS = 30;
 
 var video;
@@ -71,11 +72,13 @@ function processVideo() {
     cv.line(output, pts[3], pts[0], [255, 0, 0, 255], 3);
     cv.imshow("canvasOutput", output);
 
+    // console.log(pts);
+
     // schedule the next one.
     let delay = 1000 / FPS - (Date.now() - begin);
     state.timeoutId = setTimeout(processVideo, delay);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 }
 

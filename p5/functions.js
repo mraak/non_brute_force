@@ -132,13 +132,13 @@ export const getBounds = (tileIndex) => {
 // colors
 export function getColor(tileIndex) {
   if(isFood(tileIndex))
-    return colors.white();
+    return colors.food();
 
   if(tileIndex === reduxState.maps.current.startIndex)
-    return colors.red();
+    return colors.start();
 
   if(tileIndex === reduxState.maps.current.endIndex)
-    return colors.blue();
+    return colors.end();
 
-  return colors.gray();
+  return colors.path();
 }
