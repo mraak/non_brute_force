@@ -1,0 +1,16 @@
+{
+  "name": "camera-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html --public-url ./"
+  },
+  "dependencies": {
+    "chroma-js": "^2.0.6",
+    "p5": "^0.10.2",
+    "parcel-bundler": "^1.12.3",
+    "tracking": "^1.1.3"
+  }
+}
