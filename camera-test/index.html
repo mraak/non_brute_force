@@ -3,10 +3,15 @@
 		<meta charset="utf-8">
 		<title>cv-test</title>
 		<style>
-			.inputoutput {
+			.inputs {
+				display: flex;
+				flex-direction: row;
+			}
+
+			.outputs {
 				position: relative;
 			}
-			.inputoutput canvas {
+			.outputs canvas {
 				position: absolute;
 				left: 0;
 				top: 0;
@@ -16,17 +21,9 @@
 	<body>
 		<p id="status">OpenCV.js is loading...</p>
 		<div id="container">
-			<div class="controls">
-				<button id="button">Get camera</button>
-				<select id="select">
-					<option></option>
-				</select>
+			<div class="inputs">
 			</div>
-			<div class="inputoutput">
-				<video id="videoInput" width="854" height="480" controls loop muted />
-				<div class="caption">videoInput</div>
-			</div>
-			<div id="out" class="inputoutput">
+			<div id="out" class="outputs">
 				<canvas id="canvasOutput" width="854" height="480"></canvas>
 				<!-- <canvas id="pixiCanvas" width="854" height="480"></canvas> -->
 				<!-- <div class="caption">canvasOutput</div> -->
