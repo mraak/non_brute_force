@@ -113,23 +113,11 @@ window.onOpenCvReady = () => {
 
   document.getElementById("status").innerHTML = "OpenCV.js is ready.";
 
-  cv.onRuntimeInitialized = () => {
-    tryInit();
-
-    try {
-      video = document.getElementById("videoInput");
-      video.addEventListener("playing", tryInit);
-      video.addEventListener("pause", stop);
-    } catch(err) {
-      console.error("onRuntimeInitialized", err);
-    }
-  };
+  cv.onRuntimeInitialized = tryInit;
 };
 
 
-const button = document.getElementById('button');
-const select = document.getElementById('select');
-let currentStream;
+const [ inputs ] = document.getElementsByClassName('inputs');
 
 function stopMediaTracks(stream) {
   stream.getTracks().forEach(track => {
@@ -138,47 +126,40 @@ function stopMediaTracks(stream) {
 }
 
 function gotDevices(mediaDevices) {
-  select.innerHTML = '';
-  select.appendChild(document.createElement('option'));
-  let count = 1;
-  mediaDevices.forEach(mediaDevice => {
+  console.log("gotDevices", mediaDevices);
+
+  mediaDevices.forEach((mediaDevice) => {
     if (mediaDevice.kind === 'videoinput') {
-      const option = document.createElement('option');
-      option.value = mediaDevice.deviceId;
-      const label = mediaDevice.label || `Camera ${count++}`;
-      const textNode = document.createTextNode(label);
-      option.appendChild(textNode);
-      select.appendChild(option);
+      const element = document.createElement('video');
+      element.alt = mediaDevice.deviceId;
+      element.autoplay = true;
+      element.controls = true;
+      element.loop = true;
+      element.muted = true;
+      element.height = 480;
+      element.width = 854;
+      inputs.appendChild(element);
+
+      if(video === undefined) {
+        video = element;
+        element.addEventListener("playing", tryInit);
+        element.addEventListener("pause", stop);
+      }
+
+      const constraints = {
+        video: {
+          deviceId: mediaDevice.deviceId,
+        },
+        audio: false,
+      };
+      navigator.mediaDevices.getUserMedia(constraints)
+      .then((stream) => {
+        element.srcObject = stream;
+        // tryInit();
+      })
+      .catch(console.error);
     }
   });
 }
-
-button.addEventListener('click', event => {
-  if (typeof currentStream !== 'undefined') {
-    stopMediaTracks(currentStream);
-  }
-  const videoConstraints = {};
-  if (select.value === '') {
-    videoConstraints.facingMode = 'environment';
-  } else {
-    videoConstraints.deviceId = { exact: select.value };
-  }
-  const constraints = {
-    video: videoConstraints,
-    audio: false
-  };
-  navigator.mediaDevices
-    .getUserMedia(constraints)
-    .then(stream => {
-      currentStream = stream;
-      video.srcObject = stream;
-      // tryInit
-      return navigator.mediaDevices.enumerateDevices();
-    })
-    .then(gotDevices)
-    .catch(error => {
-      console.error(error);
-    });
-});
 
 navigator.mediaDevices.enumerateDevices().then(gotDevices);

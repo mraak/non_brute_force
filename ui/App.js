@@ -11,6 +11,7 @@ import {
 import styled from "@emotion/styled";
 import * as d3 from "d3";
 
+// import Camera from "./Camera";
 import Navigation from "./Navigation";
 
 import DogsPane from "./DogsPane";
@@ -196,6 +197,8 @@ export default () => {
             title="Logs"
             striped />
         </Box>
+
+        {/* <Camera /> */}
       </Fragment>
     </ThemeProvider>
   );
