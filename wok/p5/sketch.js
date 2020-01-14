@@ -10,8 +10,7 @@ let xInput,
   yText,
   zText,
   grid,
-  tiles = [],
-  food = [];
+  tiles = [];
 
 const tileSize = 80;
 const gap = 0;
@@ -61,10 +60,6 @@ function onSetCubeSize() {
     for (let key of tiles) {
       const c = key.split("|").map(i => +i);
       grid.get(grid.toIndex(...c)).type = map.tiles[key];
-    }
-    for (let key in food) {
-      const c = key.split("|").map(i => +i);
-      grid.get(grid.toIndex(...c)).food = map.food[key];
     }
   }
 }
