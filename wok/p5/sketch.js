@@ -5,6 +5,7 @@ let xInput,
   yInput,
   zInput,
   setSizebutton,
+  placeRandomTilesButton,
   titleText,
   xText,
   yText,
@@ -49,8 +50,46 @@ function createCubeConfigForm(posX, posY) {
   setSizebutton = createButton("Set Size");
   setSizebutton.position(posX + 75, posY + 150);
   setSizebutton.mousePressed(onSetCubeSize);
+  placeRandomTilesButton = createButton("Place RandomTiles");
+  placeRandomTilesButton.position(posX + 75, posY + 100);
+  placeRandomTilesButton.hide();
+  placeRandomTilesButton.mousePressed(onPlaceRandomTiles);
 }
+
+function onPlaceRandomTiles() {
+  //clear previous tiles
+  /*tiles.splice(0, tiles.length);
+  for (let tile of grid.tiles) {
+    tile.type = 0;
+  }*/
+  //end clear previous tiles
+  let x = Math.round(Math.random() * (xInput.value() - 1));
+  let y = Math.round(Math.random() * (yInput.value() - 1));
+  let z = Math.round(Math.random() * (zInput.value() - 1));
+  tiles.push(x + "|" + y + "|" + z);
+  for (let key of tiles) {
+    const c = key.split("|").map(i => +i);
+    grid.get(grid.toIndex(...c)).type = tiles[key];
+  }
+}
+
+function hideCubeForm() {
+  titleText.hide();
+
+  xText.hide();
+  yText.hide();
+  zText.hide();
+
+  xInput.hide();
+  yInput.hide();
+  zInput.hide();
+
+  setSizebutton.hide();
+  placeRandomTilesButton.show();
+}
+
 function onSetCubeSize() {
+  hideCubeForm();
   if (xInput.value() != "" && yInput.value() != "" && zInput.value() != "") {
     grid = new Grid(
       parseInt(xInput.value()),
