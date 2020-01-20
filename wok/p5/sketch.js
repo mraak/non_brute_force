@@ -63,16 +63,27 @@ function onPlaceRandomTiles() {
     tile.type = 0;
   }*/
   //end clear previous tiles
-  let x = Math.round(Math.random() * (xInput.value() - 1));
-  let y = Math.round(Math.random() * (yInput.value() - 1));
-  let z = Math.round(Math.random() * (zInput.value() - 1));
-  tiles.push(x + "|" + y + "|" + z);
+  placeRandomTile(yInput.value() - 1);
+
   for (let key of tiles) {
     const c = key.split("|").map(i => +i);
     grid.get(grid.toIndex(...c)).type = tiles[key];
   }
 }
 
+function placeRandomTile(_y) {
+  var n = 2 + Math.round(Math.random() * 4);
+  for (let i = 0; i < n; i++) {
+    let x = Math.round(Math.random() * (xInput.value() - 1));
+    let y = _y; //Math.round(Math.random() * (yInput.value() - 1));
+    let z = Math.round(Math.random() * (zInput.value() - 1));
+    tiles.push(x + "|" + y + "|" + z);
+  }
+  --_y;
+  if (_y >= 0) {
+    placeRandomTile(_y);
+  }
+}
 function hideCubeForm() {
   titleText.hide();
 
