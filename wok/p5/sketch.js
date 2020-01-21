@@ -5,6 +5,7 @@ let xInput,
   yInput,
   zInput,
   setSizebutton,
+  placeRandomTilesButton,
   titleText,
   xText,
   yText,
@@ -49,8 +50,57 @@ function createCubeConfigForm(posX, posY) {
   setSizebutton = createButton("Set Size");
   setSizebutton.position(posX + 75, posY + 150);
   setSizebutton.mousePressed(onSetCubeSize);
+  placeRandomTilesButton = createButton("Place RandomTiles");
+  placeRandomTilesButton.position(posX + 75, posY + 100);
+  placeRandomTilesButton.hide();
+  placeRandomTilesButton.mousePressed(onPlaceRandomTiles);
 }
+
+function onPlaceRandomTiles() {
+  //clear previous tiles
+  /*tiles.splice(0, tiles.length);
+  for (let tile of grid.tiles) {
+    tile.type = 0;
+  }*/
+  //end clear previous tiles
+  placeRandomTile(yInput.value() - 1);
+
+  for (let key of tiles) {
+    const c = key.split("|").map(i => +i);
+    grid.get(grid.toIndex(...c)).type = tiles[key];
+  }
+}
+
+function placeRandomTile(_y) {
+  var n = 2 + Math.round(Math.random() * 4);
+  for (let i = 0; i < n; i++) {
+    let x = Math.round(Math.random() * (xInput.value() - 1));
+    let y = _y; //Math.round(Math.random() * (yInput.value() - 1));
+    let z = Math.round(Math.random() * (zInput.value() - 1));
+    tiles.push(x + "|" + y + "|" + z);
+  }
+  --_y;
+  if (_y >= 0) {
+    placeRandomTile(_y);
+  }
+}
+function hideCubeForm() {
+  titleText.hide();
+
+  xText.hide();
+  yText.hide();
+  zText.hide();
+
+  xInput.hide();
+  yInput.hide();
+  zInput.hide();
+
+  setSizebutton.hide();
+  placeRandomTilesButton.show();
+}
+
 function onSetCubeSize() {
+  hideCubeForm();
   if (xInput.value() != "" && yInput.value() != "" && zInput.value() != "") {
     grid = new Grid(
       parseInt(xInput.value()),
