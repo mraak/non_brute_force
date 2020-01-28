@@ -10,11 +10,15 @@ let xInput,
   xText,
   yText,
   zText,
+  _JsonText,
+  loadBtn,
   grid,
   tiles = [];
 
 const tileSize = 80;
 const gap = 0;
+
+let planes = [];
 
 function setup() {
   frameRate(30);
@@ -23,8 +27,29 @@ function setup() {
   canvas.parent("canvas-container");
 
   createCubeConfigForm(10, 0);
+
+  createCopyCubeConfig(10, 0);
 }
 
+function createCopyCubeConfig(posX, posY) {
+  _JsonText = createElement("textarea").size(200, 200);
+  var myJSON = JSON.stringify(planes);
+
+  _JsonText.value(myJSON);
+  _JsonText.input(onChanged);
+
+  _JsonText.position(posX + 1000, posY + 45);
+}
+
+function onChanged() {
+  var error = false;
+  try {
+    planes = JSON.parse(_JsonText.elt.value);
+  } catch (error) {
+    error = true;
+  }
+  if (error == false) TilesChangeFromJson();
+}
 function createCubeConfigForm(posX, posY) {
   titleText = createElement("h2", "Cube Config");
   titleText.position(posX + 20, posY + 5);
@@ -50,19 +75,14 @@ function createCubeConfigForm(posX, posY) {
   setSizebutton = createButton("Set Size");
   setSizebutton.position(posX + 75, posY + 150);
   setSizebutton.mousePressed(onSetCubeSize);
-  placeRandomTilesButton = createButton("Place RandomTiles");
-  placeRandomTilesButton.position(posX + 75, posY + 100);
-  placeRandomTilesButton.hide();
+
+  placeRandomTilesButton = createButton("randomTiles");
+  placeRandomTilesButton.position(posX + 75, posY + 10);
   placeRandomTilesButton.mousePressed(onPlaceRandomTiles);
+  placeRandomTilesButton.hide();
 }
 
 function onPlaceRandomTiles() {
-  //clear previous tiles
-  /*tiles.splice(0, tiles.length);
-  for (let tile of grid.tiles) {
-    tile.type = 0;
-  }*/
-  //end clear previous tiles
   placeRandomTile(yInput.value() - 1);
 
   for (let key of tiles) {
@@ -75,9 +95,8 @@ function placeRandomTile(_y) {
   var n = 2 + Math.round(Math.random() * 4);
   for (let i = 0; i < n; i++) {
     let x = Math.round(Math.random() * (xInput.value() - 1));
-    let y = _y; //Math.round(Math.random() * (yInput.value() - 1));
+    let y = _y;
     let z = Math.round(Math.random() * (zInput.value() - 1));
-    tiles.push(x + "|" + y + "|" + z);
   }
   --_y;
   if (_y >= 0) {
@@ -96,7 +115,6 @@ function hideCubeForm() {
   zInput.hide();
 
   setSizebutton.hide();
-  placeRandomTilesButton.show();
 }
 
 function onSetCubeSize() {
@@ -112,16 +130,26 @@ function onSetCubeSize() {
       grid.get(grid.toIndex(...c)).type = map.tiles[key];
     }
   }
+
+  planes = [];
+  for (let i = 0; i < yInput.value(); i++) {
+    let plane = [];
+    for (let k = 0; k < zInput.value(); k++) {
+      let rows = [];
+      for (let j = 0; j < xInput.value(); j++) {
+        rows.push(0);
+      }
+      plane.push(rows);
+    }
+    planes.push(plane);
+  }
 }
 
-function draw() {
-  background(255);
-
+function draw1() {
   normalMaterial();
-  // rotateX(-mouseY * .01);
+  //rotateX(-mouseY * 0.01);
   rotateX(-0.5);
   rotateY(mouseX * 0.01);
-
   if (grid != null) {
     translate(
       -0.5 * (tileSize + gap) * grid.size.x,
@@ -138,6 +166,7 @@ function draw() {
             (tileSize + gap) * z
           );
           sphere(10 * 0.5);
+
           pop();
         }
       }
@@ -157,6 +186,7 @@ function draw() {
           );
           rotateX(PI * -0.5);
           plane(tileSize + gap);
+
           pop();
         }
       }
@@ -164,9 +194,121 @@ function draw() {
   }
 }
 
-function mousePressed() {}
+function TilesChangeFromJson() {
+  for (let y = 0; y < planes.length; y++) {
+    for (let z = 0; z < planes[y].length; z++) {
+      for (let x = 0; x < planes[y][z].length; x++) {
+        var name = x + "|" + y + "|" + z;
+        if (planes[y][z][x] == 0) {
+          removeTile(name);
+          const c = name.split("|").map(i => +i);
+          grid.get(grid.toIndex(...c)).type = 0;
+        } else {
+          tiles.push(name);
+        }
+        for (let key of tiles) {
+          if (planes[y][z][x] == 1) {
+            const c = key.split("|").map(i => +i);
+            grid.get(grid.toIndex(...c)).type = 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+function mousePressed() {
+  let bx;
+  let by;
+  let boxSize = 20;
+  var update = false;
+  for (let index = 0; index < planes.length; index++) {
+    for (let y = 0; y < planes[index].length; y++) {
+      by = (index + 1) * 150 + y * 20;
+      for (let x = 0; x < planes[index][y].length; x++) {
+        bx = x * boxSize;
+        if (
+          mouseX > bx &&
+          mouseX < bx + boxSize &&
+          mouseY > by &&
+          mouseY < by + boxSize
+        ) {
+          update = true;
+          var name = x + "|" + index + "|" + y;
+
+          if (planes[index][y][x] == 1) {
+            planes[index][y][x] = 0;
+            removeTile(name);
+            const c = name.split("|").map(i => +i);
+            grid.get(grid.toIndex(...c)).type = 0;
+          } else {
+            planes[index][y][x] = 1;
+            tiles.push(name);
+          }
+          for (let key of tiles) {
+            if (planes[index][y][x] == 1) {
+              const c = key.split("|").map(i => +i);
+              grid.get(grid.toIndex(...c)).type = 1;
+            }
+          }
+        }
+      }
+    }
+  }
+  if (update) {
+    var myJSON = JSON.stringify(planes);
+
+    _JsonText.value(myJSON);
+  }
+}
+function removeTile(name) {
+  for (let index = 0; index < tiles.length; index++) {
+    if (tiles[index] == name) {
+      tiles.splice(index, 1);
+    }
+  }
+}
 function mouseDragged() {}
 
+function draw() {
+  background(220);
+  textAlign(CENTER, CENTER);
+  let size = 20;
+
+  translate(-1280 / 2, -960 / 2, 0);
+  for (let index = 0; index < planes.length; index++) {
+    translate(0, 150, 0);
+
+    for (let y = 0; y < planes[index].length; y++) {
+      for (let x = 0; x < planes[index][y].length; x++) {
+        let xpos = x * size;
+        let ypos = y * size;
+
+        if (planes[index][y][x] == 1) {
+          fill(0, 255, 0);
+        } else {
+          fill(255);
+        }
+
+        stroke(0);
+
+        rect(xpos, ypos, size, size);
+      }
+    }
+  }
+
+  translate(700, -300, -100);
+
+  draw1();
+}
+
+function inside(x, y, w, h) {
+  if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h) {
+    return true;
+  } else {
+    return false;
+  }
+}
 // TODO: Use new p5 instance instead of global one
 // Exposes functions to p5
 Object.assign(window, {
