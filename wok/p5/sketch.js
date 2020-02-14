@@ -19,6 +19,43 @@ const tileSize = 80;
 const gap = 0;
 
 let planes = [];
+let clickablePlanes = [
+  [
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0],
+    [0, 1, 1, 0, 0, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0]
+  ],
+  [
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 1, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 0, 0, 1, 1, 1],
+    [0, 0, 0, 0, 0, 1, 0]
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 0],
+    [0, 0, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0]
+  ],
+  [
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 1, 1, 1, 1, 1, 0],
+    [0, 1, 1, 1, 1, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0]
+  ],
+  [
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 1, 0, 0],
+    [0, 0, 1, 1, 1, 0, 0],
+    [0, 0, 1, 1, 0, 0, 0],
+    [0, 0, 1, 1, 0, 0, 0]
+  ]
+];
 
 function setup() {
   frameRate(30);
@@ -32,13 +69,13 @@ function setup() {
 }
 
 function createCopyCubeConfig(posX, posY) {
-  _JsonText = createElement("textarea").size(200, 200);
+  _JsonText = createElement("textarea").size(200, 100);
   var myJSON = JSON.stringify(planes);
 
   _JsonText.value(myJSON);
   _JsonText.input(onChanged);
 
-  _JsonText.position(posX + 1000, posY + 45);
+  _JsonText.position(posX + 1000, posY + 10);
 }
 
 function onChanged() {
@@ -137,16 +174,23 @@ function onSetCubeSize() {
     for (let k = 0; k < zInput.value(); k++) {
       let rows = [];
       for (let j = 0; j < xInput.value(); j++) {
-        rows.push(0);
+        // console.log(clickablePlanes[i][k][j]);
+        rows.push(clickablePlanes[i][k][j]);
       }
       plane.push(rows);
     }
     planes.push(plane);
   }
+
+  var myJSON = JSON.stringify(planes);
+
+  _JsonText.value(myJSON);
 }
 
 function draw1() {
-  normalMaterial();
+  //normalMaterial();
+  ambientLight(130, 130, 130);
+
   //rotateX(-mouseY * 0.01);
   rotateX(-0.5);
   rotateY(mouseX * 0.01);
@@ -165,7 +209,7 @@ function draw1() {
             (tileSize + gap) * y,
             (tileSize + gap) * z
           );
-          sphere(10 * 0.5);
+          // sphere(10 * 1);
 
           pop();
         }
@@ -185,7 +229,10 @@ function draw1() {
             (tileSize + gap) * (z + 0.5)
           );
           rotateX(PI * -0.5);
-          plane(tileSize + gap);
+          // plane(tileSize + gap);
+          // fill(0, 0, 250);
+
+          box(tileSize - 1, tileSize - 1, tileSize - 1);
 
           pop();
         }
@@ -240,21 +287,25 @@ function mousePressed() {
             planes[index][y][x] = 0;
             removeTile(name);
             const c = name.split("|").map(i => +i);
-            grid.get(grid.toIndex(...c)).type = 0;
+            //grid.get(grid.toIndex(...c)).type = 0;
           } else {
+            // if (clickablePlanes[index][y][x] == 1)
+            // {
             planes[index][y][x] = 1;
             tiles.push(name);
+            //}
           }
           for (let key of tiles) {
             if (planes[index][y][x] == 1) {
               const c = key.split("|").map(i => +i);
-              grid.get(grid.toIndex(...c)).type = 1;
+              //grid.get(grid.toIndex(...c)).type = 1;
             }
           }
         }
       }
     }
   }
+  TilesChangeFromJson();
   if (update) {
     var myJSON = JSON.stringify(planes);
 
@@ -269,7 +320,33 @@ function removeTile(name) {
   }
 }
 function mouseDragged() {}
+///////////
 
+function draw2() {
+  let size = 20;
+
+  translate(1080, -720, 0);
+  for (let index = 0; index < planes.length; index++) {
+    translate(0, 150, 0);
+
+    for (let y = 0; y < planes[index].length; y++) {
+      for (let x = 0; x < planes[index][y].length; x++) {
+        let xpos = x * size;
+        let ypos = y * size;
+
+        if (planes[index][y][x] == 1) {
+          fill(158, 158, 158);
+        } else {
+          fill(255);
+        }
+        stroke(255);
+
+        rect(xpos, ypos, size, size);
+      }
+    }
+  }
+}
+////////////
 function draw() {
   background(220);
   textAlign(CENTER, CENTER);
@@ -285,9 +362,9 @@ function draw() {
         let ypos = y * size;
 
         if (planes[index][y][x] == 1) {
-          fill(0, 255, 0);
-        } else {
           fill(255);
+        } else {
+          fill(185, 185, 185);
         }
 
         stroke(0);
@@ -296,8 +373,9 @@ function draw() {
       }
     }
   }
+  draw2();
 
-  translate(700, -300, -100);
+  translate(-450, -300, -100);
 
   draw1();
 }
