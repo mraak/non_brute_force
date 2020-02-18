@@ -174,7 +174,6 @@ function onSetCubeSize() {
     for (let k = 0; k < zInput.value(); k++) {
       let rows = [];
       for (let j = 0; j < xInput.value(); j++) {
-        // console.log(clickablePlanes[i][k][j]);
         rows.push(clickablePlanes[i][k][j]);
       }
       plane.push(rows);
@@ -189,7 +188,7 @@ function onSetCubeSize() {
 
 function draw1() {
   //normalMaterial();
-  ambientLight(130, 130, 130);
+  ambientLight(158, 158, 158);
 
   //rotateX(-mouseY * 0.01);
   rotateX(-0.5);
@@ -209,19 +208,16 @@ function draw1() {
             (tileSize + gap) * y,
             (tileSize + gap) * z
           );
-          // sphere(10 * 1);
+          //sphere(10 * 1);
 
           pop();
         }
       }
     }
-
-    for (let x = 0; x < grid.size.x; ++x) {
-      for (let y = 0; y < grid.size.y; ++y) {
-        for (let z = 0; z < grid.size.z; ++z) {
-          const tile = grid.get(grid.toIndex(x, y, z));
-          if (tile.isEmpty()) continue;
-
+    for (let y = 0; y < planes.length; y++) {
+      for (let z = 0; z < planes[y].length; z++) {
+        for (let x = 0; x < planes[y][z].length; x++) {
+          if (planes[y][z][x] == 0) continue;
           push();
           translate(
             (tileSize + gap) * (x + 0.5),
@@ -229,10 +225,15 @@ function draw1() {
             (tileSize + gap) * (z + 0.5)
           );
           rotateX(PI * -0.5);
-          // plane(tileSize + gap);
-          // fill(0, 0, 250);
+          if (planes[y][z][x] == 1) {
+            fill(158, 158, 158);
+          } else if (planes[y][z][x] == 2) {
+            fill(0, 0, 158);
+          }
 
-          box(tileSize - 1, tileSize - 1, tileSize - 1);
+          plane(tileSize + gap);
+
+          //box(tileSize - 1, tileSize - 1, tileSize - 1);
 
           pop();
         }
@@ -254,10 +255,8 @@ function TilesChangeFromJson() {
           tiles.push(name);
         }
         for (let key of tiles) {
-          if (planes[y][z][x] == 1) {
-            const c = key.split("|").map(i => +i);
-            grid.get(grid.toIndex(...c)).type = 1;
-          }
+          const c = key.split("|").map(i => +i);
+          grid.get(grid.toIndex(...c)).type = planes[y][z][x];
         }
       }
     }
@@ -267,13 +266,21 @@ function TilesChangeFromJson() {
 function mousePressed() {
   let bx;
   let by;
+
+  let bx1;
+  let by1;
+
   let boxSize = 20;
   var update = false;
   for (let index = 0; index < planes.length; index++) {
     for (let y = 0; y < planes[index].length; y++) {
       by = (index + 1) * 150 + y * 20;
+      by1 = (index + 1) * 150 + y * 20;
+
       for (let x = 0; x < planes[index][y].length; x++) {
         bx = x * boxSize;
+        bx1 = x * boxSize + 1080;
+
         if (
           mouseX > bx &&
           mouseX < bx + boxSize &&
@@ -283,12 +290,12 @@ function mousePressed() {
           update = true;
           var name = x + "|" + index + "|" + y;
 
-          if (planes[index][y][x] == 1) {
+          if (planes[index][y][x] == 1 || planes[index][y][x] == 2) {
             planes[index][y][x] = 0;
             removeTile(name);
             const c = name.split("|").map(i => +i);
             //grid.get(grid.toIndex(...c)).type = 0;
-          } else {
+          } else if (planes[index][y][x] == 0) {
             // if (clickablePlanes[index][y][x] == 1)
             // {
             planes[index][y][x] = 1;
@@ -302,12 +309,39 @@ function mousePressed() {
             }
           }
         }
+        if (
+          mouseX > bx1 &&
+          mouseX < bx1 + boxSize &&
+          mouseY > by1 &&
+          mouseY < by1 + boxSize
+        ) {
+          update = true;
+          var name = x + "|" + index + "|" + y;
+
+          if (planes[index][y][x] == 1) {
+            planes[index][y][x] = 2;
+          } else if (planes[index][y][x] == 2) {
+            planes[index][y][x] = 1;
+            // if (clickablePlanes[index][y][x] == 1) {
+            //   // planes[index][y][x] = 1;
+            //   //tiles.push(name);
+            // }
+          }
+
+          for (let key of tiles) {
+            if (planes[index][y][x] == 1) {
+              //const c = key.split("|").map(i => +i);
+              //grid.get(grid.toIndex(...c)).type = 1;
+            }
+          }
+        }
       }
     }
   }
   TilesChangeFromJson();
   if (update) {
     var myJSON = JSON.stringify(planes);
+    //console.log(myJSON);
 
     _JsonText.value(myJSON);
   }
@@ -320,12 +354,11 @@ function removeTile(name) {
   }
 }
 function mouseDragged() {}
-///////////
 
 function draw2() {
   let size = 20;
 
-  translate(1080, -720, 0);
+  translate(1080, -750, 0);
   for (let index = 0; index < planes.length; index++) {
     translate(0, 150, 0);
 
@@ -336,6 +369,8 @@ function draw2() {
 
         if (planes[index][y][x] == 1) {
           fill(158, 158, 158);
+        } else if (planes[index][y][x] == 2) {
+          fill(58, 18, 15);
         } else {
           fill(255);
         }
@@ -346,7 +381,7 @@ function draw2() {
     }
   }
 }
-////////////
+
 function draw() {
   background(220);
   textAlign(CENTER, CENTER);
@@ -362,6 +397,8 @@ function draw() {
         let ypos = y * size;
 
         if (planes[index][y][x] == 1) {
+          fill(255);
+        } else if (planes[index][y][x] == 2) {
           fill(255);
         } else {
           fill(185, 185, 185);
