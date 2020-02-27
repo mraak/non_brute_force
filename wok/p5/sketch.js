@@ -29,7 +29,7 @@ let clickablePlanes = [
   ],
   [
     [0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 1, 1, 0, 0],
+    [0, 0, 1, 1, 1, 1, 0],
     [1, 1, 1, 1, 1, 1, 1],
     [0, 1, 0, 0, 1, 1, 1],
     [0, 0, 0, 0, 0, 1, 0]
@@ -38,21 +38,21 @@ let clickablePlanes = [
     [0, 0, 0, 0, 0, 0, 0],
     [0, 1, 1, 1, 1, 1, 0],
     [1, 1, 1, 1, 1, 1, 0],
-    [0, 0, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0]
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0],
     [0, 1, 1, 1, 1, 1, 0],
-    [0, 1, 1, 1, 1, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0]
+    [0, 0, 0, 0, 0, 0, 0]
   ],
   [
     [0, 0, 0, 0, 1, 0, 0],
     [0, 0, 0, 1, 1, 0, 0],
+    [0, 1, 1, 1, 1, 1, 0],
+    [0, 1, 1, 1, 1, 0, 0],
+    [0, 0, 1, 1, 0, 0, 0]
+  ],
+  [
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 1, 0, 0],
+    [0, 0, 1, 1, 1, 1, 0],
     [0, 0, 1, 1, 1, 0, 0],
-    [0, 0, 1, 1, 0, 0, 0],
     [0, 0, 1, 1, 0, 0, 0]
   ]
 ];
@@ -63,7 +63,8 @@ function setup() {
   const canvas = createCanvas(1280, 960, WEBGL);
   canvas.parent("canvas-container");
 
-  createCubeConfigForm(10, 0);
+  //createCubeConfigForm(10, 0);
+  onSetCubeSize();
 
   createCopyCubeConfig(10, 0);
 }
@@ -155,25 +156,21 @@ function hideCubeForm() {
 }
 
 function onSetCubeSize() {
-  hideCubeForm();
-  if (xInput.value() != "" && yInput.value() != "" && zInput.value() != "") {
-    grid = new Grid(
-      parseInt(xInput.value()),
-      parseInt(yInput.value()),
-      parseInt(zInput.value())
-    );
-    for (let key of tiles) {
-      const c = key.split("|").map(i => +i);
-      grid.get(grid.toIndex(...c)).type = map.tiles[key];
-    }
+  // hideCubeForm();
+  // if (xInput.value() != "" && yInput.value() != "" && zInput.value() != "") {
+  grid = new Grid(7, 5, 5);
+  for (let key of tiles) {
+    const c = key.split("|").map(i => +i);
+    grid.get(grid.toIndex(...c)).type = map.tiles[key];
   }
+  // }
 
   planes = [];
-  for (let i = 0; i < yInput.value(); i++) {
+  for (let i = 0; i < 5; i++) {
     let plane = [];
-    for (let k = 0; k < zInput.value(); k++) {
+    for (let k = 0; k < 5; k++) {
       let rows = [];
-      for (let j = 0; j < xInput.value(); j++) {
+      for (let j = 0; j < 7; j++) {
         rows.push(clickablePlanes[i][k][j]);
       }
       plane.push(rows);
@@ -183,11 +180,11 @@ function onSetCubeSize() {
 
   var myJSON = JSON.stringify(planes);
 
-  _JsonText.value(myJSON);
+  //_JsonText.value(myJSON);
 }
 
 function draw1() {
-  //normalMaterial();
+  // normalMaterial();
   ambientLight(158, 158, 158);
 
   //rotateX(-mouseY * 0.01);
