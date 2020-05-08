@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="15705" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="5MB-tl-VGk">
+    <device id="watch44"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="15501"/>
+    </dependencies>
+    <scenes>
+        <!--Event-->
+        <scene sceneID="ZMP-Nt-e3L">
+            <objects>
+                <controller identifier="Event" id="5MB-tl-VGk" customClass="InterfaceController" customModule="HelloWatch_WatchKit_Extension">
+                    <items>
+                        <imageView width="100" height="81" alignment="center" image="suit.heart.fill" catalog="system" id="oao-iK-oeJ">
+                            <color key="tintColor" red="0.95921616659999998" green="0.188386361" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        </imageView>
+                        <label alignment="center" text="!brute_force.heartRate" textAlignment="center" id="hd2-gS-Vu1"/>
+                        <label alignment="center" text="113" id="4by-Z9-D2j">
+                            <color key="textColor" red="0.22859077310000001" green="1" blue="0.06666925856" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            <fontDescription key="font" type="system" pointSize="40"/>
+                        </label>
+                    </items>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="115" y="347"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="suit.heart.fill" catalog="system" width="64" height="52"/>
+    </resources>
+</document>
