@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="14490.70" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
+    <device id="watch38" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="watchOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="14490.21"/>
+    </dependencies>
+    <scenes>
+        <!--Interface Controller-->
+        <scene sceneID="aou-V4-d1y">
+            <objects>
+                <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="Heart_Rate_Monitor_WatchKit_App" customModuleProvider="target">
+                    <items>
+                        <label alignment="center" text="Heart Rate" id="cLc-4E-1bw">
+                            <fontDescription key="font" style="UICTFontTextStyleTitle2"/>
+                        </label>
+                        <group width="1" alignment="left" id="0HJ-0a-8j3">
+                            <items>
+                                <spriteKitScene width="68" alignment="left" verticalAlignment="bottom" scene="HeartPulseScene.sks" id="1nk-9V-7YC"/>
+                                <label alignment="center" text="000 BPM" textAlignment="center" numberOfLines="2" id="tsf-uC-a99">
+                                    <fontDescription key="font" style="UICTFontTextStyleTitle1"/>
+                                </label>
+                            </items>
+                        </group>
+                        <label alignment="center" text="Low" id="16j-KL-Me5">
+                            <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <fontDescription key="font" style="UICTFontTextStyleTitle2"/>
+                        </label>
+                    </items>
+                    <connections>
+                        <outlet property="bpmLabel" destination="tsf-uC-a99" id="HaJ-S4-58Y"/>
+                        <outlet property="heartRateSpeedLabel" destination="16j-KL-Me5" id="dts-N0-1mr"/>
+                        <outlet property="heartScene" destination="1nk-9V-7YC" id="MXH-uc-Eae"/>
+                    </connections>
+                </controller>
+            </objects>
+        </scene>
+    </scenes>
+</document>
