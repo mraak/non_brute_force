@@ -6,15 +6,17 @@ export default class Grid {
   }
 
   fromIndex(i) {
-    const yz = this.size.y * this.size.z;
-    const x = floor(i / yz);
-    const y = floor((i - x * yz) / this.size.z);
-    const z = i - x * yz - y * this.size.z;
+    const xy = this.size.x * this.size.y;
+    const z = floor(i / xy);
+
+    i -= z * xy;
+    const y = floor(i / this.size.x);
+    const x = i - y * this.size.x;
 
     return { x, y, z };
   }
   toIndex(x, y, z) {
-    return x * this.size.y * this.size.z + y * this.size.z + z;
+    return z * this.size.x * this.size.y + y * this.size.x + x;
   }
   get(i) {
     return this.tiles[i];

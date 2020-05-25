@@ -1,104 +1,101 @@
 import "p5";
-import Grid from "../models/Grid";
+
+import tf from "../tf";
+import { grid, map, setSize, setMap, size } from "../store";
 
 let xInput,
   yInput,
   zInput,
-  setSizebutton,
-  placeRandomTilesButton,
-  titleText,
-  xText,
-  yText,
-  zText,
-  _JsonText,
-  loadBtn,
-  grid,
-  tiles = [];
+  mapJsonTextArea;
 
 const tileSize = 80;
-const gap = 0;
+const mapTileSize = 20;
 
-let planes = [];
-let clickablePlanes = [
-  [
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0],
-    [0, 1, 1, 0, 0, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0]
-  ],
-  [
-    [0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 1, 1, 1, 0],
-    [1, 1, 1, 1, 1, 1, 1],
-    [0, 1, 0, 0, 1, 1, 1],
-    [0, 0, 0, 0, 0, 1, 0]
-  ],
-  [
-    [0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 1, 1, 0],
-    [1, 1, 1, 1, 1, 1, 0],
-    [0, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0]
-  ],
-  [
-    [0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 1, 1, 0, 0],
-    [0, 1, 1, 1, 1, 1, 0],
-    [0, 1, 1, 1, 1, 0, 0],
-    [0, 0, 1, 1, 0, 0, 0]
-  ],
-  [
-    [0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 1, 1, 0, 0],
-    [0, 0, 1, 1, 1, 1, 0],
-    [0, 0, 1, 1, 1, 0, 0],
-    [0, 0, 1, 1, 0, 0, 0]
-  ]
-];
+var leftMapBounds;
+var rightMapBounds;
+
+function init() {
+  setSize({ x: 7, y: 5, z: 5 });
+  // setMap([
+  //   0, 0, 0, 0, 0, 0, 0,
+  //   0, 0, 0, 0, 0, 1, 0,
+  //   0, 1, 1, 0, 0, 1, 1,
+  //   0, 0, 0, 0, 0, 0, 0,
+  //   0, 0, 0, 0, 0, 0, 0,
+
+  //   0, 0, 0, 0, 1, 0, 0,
+  //   0, 0, 1, 1, 1, 1, 0,
+  //   1, 1, 1, 1, 1, 1, 1,
+  //   0, 1, 0, 0, 1, 1, 1,
+  //   0, 0, 0, 0, 0, 1, 0,
+
+  //   0, 0, 0, 0, 0, 0, 0,
+  //   0, 1, 1, 1, 1, 1, 0,
+  //   1, 1, 1, 1, 1, 1, 0,
+  //   0, 1, 1, 1, 1, 1, 0,
+  //   0, 0, 0, 0, 0, 0, 0,
+
+  //   0, 0, 0, 0, 1, 0, 0,
+  //   0, 0, 0, 1, 1, 0, 0,
+  //   0, 1, 1, 1, 1, 1, 0,
+  //   0, 1, 1, 1, 1, 0, 0,
+  //   0, 0, 1, 1, 0, 0, 0,
+
+  //   0, 0, 0, 0, 1, 0, 0,
+  //   0, 0, 0, 1, 1, 0, 0,
+  //   0, 0, 1, 1, 1, 1, 0,
+  //   0, 0, 1, 1, 1, 0, 0,
+  //   0, 0, 1, 1, 0, 0, 0,
+  // ]);
+
+  setSize({ x: 4, y: 3, z: 2 });
+  setMap([
+    1, 0, 1, 1,
+    0, 1, 0, 1,
+    0, 1, 0, 1,
+
+    0, 1, 1, 1,
+    0, 0, 0, 1,
+    0, 0, 0, 1,
+
+    // 0, 1, 1, 0,
+    // 0, 0, 0, 1,
+    // 0, 0, 0, 1,
+  ]);
+}
+
+const W = 1280, H = 960;
 
 function setup() {
   frameRate(30);
 
-  const canvas = createCanvas(1280, 960, WEBGL);
+  const canvas = createCanvas(W, H, WEBGL);
   canvas.parent("canvas-container");
 
-  //createCubeConfigForm(10, 0);
-  onSetCubeSize();
+  init();
 
-  createCopyCubeConfig(10, 0);
+  ui(10, 0);
+
+  const generateButton = createButton("generate");
+  generateButton.position(20, 20);
+  generateButton.mousePressed(generateButtonClickHandler);
 }
 
-function createCopyCubeConfig(posX, posY) {
-  _JsonText = createElement("textarea").size(200, 100);
-  var myJSON = JSON.stringify(planes);
+function generateButtonClickHandler() {
 
-  _JsonText.value(myJSON);
-  _JsonText.input(onChanged);
-
-  _JsonText.position(posX + 1000, posY + 10);
 }
 
-function onChanged() {
-  var error = false;
-  try {
-    planes = JSON.parse(_JsonText.elt.value);
-  } catch (error) {
-    error = true;
-  }
-  if (error == false) TilesChangeFromJson();
-}
-function createCubeConfigForm(posX, posY) {
-  titleText = createElement("h2", "Cube Config");
+function ui(posX, posY) {
+  const titleText = createElement("h2", "Cube Config");
   titleText.position(posX + 20, posY + 5);
 
-  xText = createElement("p", "X:");
+  const xText = createElement("p", "X:");
   xText.position(posX + 5, posY + 45);
 
-  yText = createElement("p", "Y:");
+  const yText = createElement("p", "Y:");
   yText.position(posX + 5, posY + 75);
 
-  zText = createElement("p", "Z:");
+  const zText = createElement("p", "Z:");
   zText.position(posX + 5, posY + 105);
 
   xInput = createInput();
@@ -110,322 +107,221 @@ function createCubeConfigForm(posX, posY) {
   zInput = createInput();
   zInput.position(posX + 25, posY + 120);
 
-  setSizebutton = createButton("Set Size");
-  setSizebutton.position(posX + 75, posY + 150);
-  setSizebutton.mousePressed(onSetCubeSize);
+  const setSizeButton = createButton("Set Size");
+  setSizeButton.position(posX + 75, posY + 150);
+  setSizeButton.mousePressed(setSizeButtonClickHandler);
 
-  placeRandomTilesButton = createButton("randomTiles");
-  placeRandomTilesButton.position(posX + 75, posY + 10);
-  placeRandomTilesButton.mousePressed(onPlaceRandomTiles);
-  placeRandomTilesButton.hide();
+  mapJsonTextArea = createElement("textarea").size(200, 100);
+  mapJsonTextArea.input(mapJsonTextAreaChangeHandler);
+  mapJsonTextArea.position(posX + 1000, posY + 10);
+
+  map.watch((map) => mapJsonTextArea.value(JSON.stringify(map)));
+
+  size.watch(({ x, y, z }) => {
+    xInput.value(`${x}`);
+    yInput.value(`${y}`);
+    zInput.value(`${z}`);
+  });
 }
 
-function onPlaceRandomTiles() {
-  placeRandomTile(yInput.value() - 1);
+function mapJsonTextAreaChangeHandler() {
+  try {
+    const map = JSON.parse(mapJsonTextArea.elt.value);
 
-  for (let key of tiles) {
-    const c = key.split("|").map(i => +i);
-    grid.get(grid.toIndex(...c)).type = tiles[key];
+    setMap(map);
+  } catch(error) {
+    console.error(error);
   }
 }
+function setSizeButtonClickHandler() {
+  const x = +xInput.value();
+  const y = +yInput.value();
+  const z = +zInput.value();
 
-function placeRandomTile(_y) {
-  var n = 2 + Math.round(Math.random() * 4);
-  for (let i = 0; i < n; i++) {
-    let x = Math.round(Math.random() * (xInput.value() - 1));
-    let y = _y;
-    let z = Math.round(Math.random() * (zInput.value() - 1));
-  }
-  --_y;
-  if (_y >= 0) {
-    placeRandomTile(_y);
-  }
-}
-function hideCubeForm() {
-  titleText.hide();
-
-  xText.hide();
-  yText.hide();
-  zText.hide();
-
-  xInput.hide();
-  yInput.hide();
-  zInput.hide();
-
-  setSizebutton.hide();
-}
-
-function onSetCubeSize() {
-  // hideCubeForm();
-  // if (xInput.value() != "" && yInput.value() != "" && zInput.value() != "") {
-  grid = new Grid(7, 5, 5);
-  for (let key of tiles) {
-    const c = key.split("|").map(i => +i);
-    grid.get(grid.toIndex(...c)).type = map.tiles[key];
-  }
-  // }
-
-  planes = [];
-  for (let i = 0; i < 5; i++) {
-    let plane = [];
-    for (let k = 0; k < 5; k++) {
-      let rows = [];
-      for (let j = 0; j < 7; j++) {
-        rows.push(clickablePlanes[i][k][j]);
-      }
-      plane.push(rows);
-    }
-    planes.push(plane);
-  }
-
-  var myJSON = JSON.stringify(planes);
-
-  //_JsonText.value(myJSON);
-}
-
-function draw1() {
-  // normalMaterial();
-  ambientLight(158, 158, 158);
-
-  //rotateX(-mouseY * 0.01);
-  rotateX(-0.5);
-  rotateY(mouseX * 0.01);
-  if (grid != null) {
-    translate(
-      -0.5 * (tileSize + gap) * grid.size.x,
-      -0.5 * (tileSize + gap) * grid.size.y,
-      -0.5 * (tileSize + gap) * grid.size.z
-    );
-    for (let x = 0; x < grid.size.x + 1; ++x) {
-      for (let y = 0; y < grid.size.y + 1; ++y) {
-        for (let z = 0; z < grid.size.z + 1; ++z) {
-          push();
-          translate(
-            (tileSize + gap) * x,
-            (tileSize + gap) * y,
-            (tileSize + gap) * z
-          );
-          //sphere(10 * 1);
-
-          pop();
-        }
-      }
-    }
-    for (let y = 0; y < planes.length; y++) {
-      for (let z = 0; z < planes[y].length; z++) {
-        for (let x = 0; x < planes[y][z].length; x++) {
-          if (planes[y][z][x] == 0) continue;
-          push();
-          translate(
-            (tileSize + gap) * (x + 0.5),
-            (tileSize + gap) * (y + 1),
-            (tileSize + gap) * (z + 0.5)
-          );
-          rotateX(PI * -0.5);
-          if (planes[y][z][x] == 1) {
-            fill(158, 158, 158);
-          } else if (planes[y][z][x] == 2) {
-            fill(0, 0, 158);
-          }
-
-          plane(tileSize + gap);
-
-          //box(tileSize - 1, tileSize - 1, tileSize - 1);
-
-          pop();
-        }
-      }
-    }
-  }
-}
-
-function TilesChangeFromJson() {
-  for (let y = 0; y < planes.length; y++) {
-    for (let z = 0; z < planes[y].length; z++) {
-      for (let x = 0; x < planes[y][z].length; x++) {
-        var name = x + "|" + y + "|" + z;
-        if (planes[y][z][x] == 0) {
-          removeTile(name);
-          const c = name.split("|").map(i => +i);
-          grid.get(grid.toIndex(...c)).type = 0;
-        } else {
-          tiles.push(name);
-        }
-        for (let key of tiles) {
-          const c = key.split("|").map(i => +i);
-          grid.get(grid.toIndex(...c)).type = planes[y][z][x];
-        }
-      }
-    }
-  }
+  setSize({ x, y, z });
 }
 
 function mousePressed() {
-  let bx;
-  let by;
+  const g = grid.getState();
+  const { size } = g;
+  const m = map.getState();
 
-  let bx1;
-  let by1;
+  if(inside(leftMapBounds)) {
+    const l = [ mouseX - leftMapBounds[0], mouseY - leftMapBounds[1] ];
+    const x = floor(l[0] / mapTileSize);
+    const z = floor(l[1] / (mapTileSize * (size.y + 1)));
+    const y = floor(l[1] / mapTileSize) - (size.y + 1) * z;
 
-  let boxSize = 20;
-  var update = false;
-  for (let index = 0; index < planes.length; index++) {
-    for (let y = 0; y < planes[index].length; y++) {
-      by = (index + 1) * 150 + y * 20;
-      by1 = (index + 1) * 150 + y * 20;
+    if(x < size.x && y < size.y && z < size.z) {
+      const i = g.toIndex(x, y, z);
 
-      for (let x = 0; x < planes[index][y].length; x++) {
-        bx = x * boxSize;
-        bx1 = x * boxSize + 1080;
+      if(m[i] > 0)
+        m[i] = 0;
+      else
+        m[i] = 1;
 
-        if (
-          mouseX > bx &&
-          mouseX < bx + boxSize &&
-          mouseY > by &&
-          mouseY < by + boxSize
-        ) {
-          update = true;
-          var name = x + "|" + index + "|" + y;
-
-          if (planes[index][y][x] == 1 || planes[index][y][x] == 2) {
-            planes[index][y][x] = 0;
-            removeTile(name);
-            const c = name.split("|").map(i => +i);
-            //grid.get(grid.toIndex(...c)).type = 0;
-          } else if (planes[index][y][x] == 0) {
-            // if (clickablePlanes[index][y][x] == 1)
-            // {
-            planes[index][y][x] = 1;
-            tiles.push(name);
-            //}
-          }
-          for (let key of tiles) {
-            if (planes[index][y][x] == 1) {
-              const c = key.split("|").map(i => +i);
-              //grid.get(grid.toIndex(...c)).type = 1;
-            }
-          }
-        }
-        if (
-          mouseX > bx1 &&
-          mouseX < bx1 + boxSize &&
-          mouseY > by1 &&
-          mouseY < by1 + boxSize
-        ) {
-          update = true;
-          var name = x + "|" + index + "|" + y;
-
-          if (planes[index][y][x] == 1) {
-            planes[index][y][x] = 2;
-          } else if (planes[index][y][x] == 2) {
-            planes[index][y][x] = 1;
-            // if (clickablePlanes[index][y][x] == 1) {
-            //   // planes[index][y][x] = 1;
-            //   //tiles.push(name);
-            // }
-          }
-
-          for (let key of tiles) {
-            if (planes[index][y][x] == 1) {
-              //const c = key.split("|").map(i => +i);
-              //grid.get(grid.toIndex(...c)).type = 1;
-            }
-          }
-        }
-      }
+      setMap([ ...m ]);
     }
-  }
-  TilesChangeFromJson();
-  if (update) {
-    var myJSON = JSON.stringify(planes);
-    //console.log(myJSON);
+  } else if(inside(rightMapBounds)) {
+    const l = [ mouseX - rightMapBounds[0], mouseY - rightMapBounds[1] ];
+    const x = floor(l[0] / mapTileSize);
+    const z = floor(l[1] / (mapTileSize * (size.y + 1)));
+    const y = floor(l[1] / mapTileSize) - (size.y + 1) * z;
 
-    _JsonText.value(myJSON);
-  }
-}
-function removeTile(name) {
-  for (let index = 0; index < tiles.length; index++) {
-    if (tiles[index] == name) {
-      tiles.splice(index, 1);
+    if(x < size.x && y < size.y && z < size.z) {
+      const i = g.toIndex(x, y, z);
+
+      if(m[i] === 1)
+        m[i] = 2;
+      else if(m[i] === 2)
+        m[i] = 1;
+
+      setMap([ ...m ]);
     }
   }
 }
-function mouseDragged() {}
-
-function draw2() {
-  let size = 20;
-
-  translate(1080, -750, 0);
-  for (let index = 0; index < planes.length; index++) {
-    translate(0, 150, 0);
-
-    for (let y = 0; y < planes[index].length; y++) {
-      for (let x = 0; x < planes[index][y].length; x++) {
-        let xpos = x * size;
-        let ypos = y * size;
-
-        if (planes[index][y][x] == 1) {
-          fill(158, 158, 158);
-        } else if (planes[index][y][x] == 2) {
-          fill(58, 18, 15);
-        } else {
-          fill(255);
-        }
-        stroke(255);
-
-        rect(xpos, ypos, size, size);
-      }
-    }
-  }
-}
+// function mouseDragged() {}
 
 function draw() {
   background(220);
+
+  const g = grid.getState();
+
+  if(!g)
+    return;
+
   textAlign(CENTER, CENTER);
-  let size = 20;
 
-  translate(-1280 / 2, -960 / 2, 0);
-  for (let index = 0; index < planes.length; index++) {
-    translate(0, 150, 0);
+  drawPreview(g);
 
-    for (let y = 0; y < planes[index].length; y++) {
-      for (let x = 0; x < planes[index][y].length; x++) {
-        let xpos = x * size;
-        let ypos = y * size;
+  // aligns to top left
+  translate(-W / 2, -H / 2, 0);
+  drawLeftMap(g);
+  drawRightMap(g);
+}
+function drawLeftMap(grid) {
+  leftMapBounds = [
+    mapTileSize,
+    240,
+    grid.size.x * mapTileSize,
+    ((grid.size.y + 1) * grid.size.z - 1) * mapTileSize,
+  ];
 
-        if (planes[index][y][x] == 1) {
-          fill(255);
-        } else if (planes[index][y][x] == 2) {
-          fill(255);
-        } else {
-          fill(185, 185, 185);
-        }
+  push();
 
-        stroke(0);
+  translate(mapTileSize, 240, 0);
 
-        rect(xpos, ypos, size, size);
-      }
-    }
+  for(let i = 0, n = grid.tiles.length; i < n; ++i) {
+    const { x, y, z } = grid.fromIndex(i);
+
+    let xpos = x * mapTileSize;
+    let ypos = y * mapTileSize;
+    let zpos = z * (grid.size.y + 1) * mapTileSize;
+
+    if(grid.get(i).type == 1)
+      fill(158, 158, 158);
+    else if(grid.get(i).type == 2)
+      fill(58, 18, 15);
+    else
+      fill(255);
+
+    stroke(0);
+
+    rect(xpos, ypos + zpos, mapTileSize, mapTileSize);
   }
-  draw2();
 
-  translate(-450, -300, -100);
+  pop();
+}
+function drawRightMap(grid) {
+  rightMapBounds = [
+    W - (grid.size.x + 1) * mapTileSize,
+    240,
+    grid.size.x * mapTileSize,
+    ((grid.size.y + 1) * grid.size.z - 1) * mapTileSize,
+  ];
 
-  draw1();
+  push();
+
+  translate(W - (grid.size.x + 1) * mapTileSize, 240, 0);
+
+  for(let i = 0, n = grid.tiles.length; i < n; ++i) {
+    const { x, y, z } = grid.fromIndex(i);
+
+    let xpos = x * mapTileSize;
+    let ypos = y * mapTileSize;
+    let zpos = z * (grid.size.y + 1) * mapTileSize;
+
+    if(grid.get(i).type == 1)
+      fill(158, 158, 158);
+    else if(grid.get(i).type == 2)
+      fill(58, 18, 15);
+    else
+      fill(255);
+
+    stroke(0);
+
+    rect(xpos, ypos + zpos, mapTileSize, mapTileSize);
+  }
+
+  pop();
+}
+function drawPreview(grid) {
+  push();
+
+  // normalMaterial();
+  ambientLight(158, 158, 158);
+
+  //rotateX(-mouseY * .01);
+  rotateX(-.5);
+  rotateY(mouseX * .01);
+
+  translate(
+    -.5 * tileSize * grid.size.x,
+    -.5 * tileSize * grid.size.y,
+    -.5 * tileSize * grid.size.z
+  );
+
+  for(let i = 0, n = grid.tiles.length; i < n; ++i) {
+    const tile = grid.get(i);
+
+    if(tile.type === 0)
+      continue;
+
+    const { x, y, z } = grid.fromIndex(i);
+
+    push();
+
+    translate(
+      tileSize * (x + .5),
+      tileSize * (z + 1),
+      tileSize * (y + .5)
+    );
+    rotateX(PI * -.5);
+
+    if(tile.type === 1)
+      fill(158, 158, 158);
+    else if(tile.type === 2)
+      fill(0, 0, 158);
+
+    plane(tileSize);
+
+    // box(tileSize - 1, tileSize - 1, tileSize - 1);
+
+    pop();
+  }
+
+  pop();
 }
 
-function inside(x, y, w, h) {
-  if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h) {
-    return true;
-  } else {
-    return false;
-  }
+function inside([ x, y, w, h ]) {
+  return mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h;
 }
+
 // TODO: Use new p5 instance instead of global one
 // Exposes functions to p5
 Object.assign(window, {
   setup,
   draw,
   mousePressed,
-  mouseDragged
+  // mouseDragged,
 });
