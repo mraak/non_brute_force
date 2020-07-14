@@ -19,6 +19,7 @@ class InterfaceController: WKInterfaceController {
 
     // MARK: - Properties
     var healthStore: HKHealthStore?
+    var session: HKWorkoutSession?
     var lastHeartRate = 0.0
     let beatCountPerMinute = HKUnit(from: "count/min")
 
@@ -29,11 +30,34 @@ class InterfaceController: WKInterfaceController {
 
         healthStore = HKHealthStore()
 
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = .running
+        configuration.locationType = .outdoor
+
+        do {
+            session = try HKWorkoutSession(healthStore: healthStore!, configuration: self.workoutConfiguration())!
+            builder = session.associatedWorkoutBuilder()
+            builder.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore,
+                                             workoutConfiguration: workoutConfiguration())
+        } catch {
+            // Handle any exceptions.
+            return
+        }
+
+        // Setup session and builder.
+        session.delegate = self
+        builder.delegate = self
+
         healthStore?.requestAuthorization(toShare: sampleType, read: sampleType, completion: { (success, error) in
             if success {
                 self.startHeartRateQuery(quantityTypeIdentifier: .heartRate)
             }
         })
+
+        session.startActivity(with: Date())
+        builder.beginCollection(withStart: Date()) { (success, error) in
+            // The workout has started.
+        }
     }
 
     override func willActivate() {
