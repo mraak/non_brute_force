@@ -29,6 +29,7 @@ class Tile {
   constructor(owner, index) {
     this.owner = owner;
     this.index = index;
+    this.id = 0;
 
     this.type = EMPTY;
     this.food = 0;
