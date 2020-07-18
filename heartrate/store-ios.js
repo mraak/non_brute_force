@@ -60,6 +60,26 @@ export const sync = async(items) => {
   })));
 };
 
+export const payloads = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("payloads");
+
+  return collection.find({}).sort({ date: -1 }).toArray();
+};
+export const payload = async(item) => {
+  const db = await dbPromise;
+  const collection = db.collection("payload");
+
+  return collection.bulkWrite([{
+    updateOne: {
+      filter: { _id: item._id },
+      // update: { $setOnInsert: item },
+      update: { $set: item },
+      upsert: true,
+    },
+  }]);
+};
+
 const cleanUpServer = (eventType) => {
   if(disconnect) {
     disconnect();

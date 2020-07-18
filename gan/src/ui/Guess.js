@@ -8,11 +8,42 @@ import * as tf from "@tensorflow/tfjs";
 import * as tfvis from "@tensorflow/tfjs-vis";
 
 import { ids$ } from "../store/ids";
+import { rawIterations$, setRawIterations } from "../store/iterations";
+import { entries$ } from "../store/entries";
 import { layout$ } from "../store/layout";
 import { model$ } from "../store/model";
 import { size$ } from "../store/size";
 import { setTraining } from "../store/training";
 import { inside, fromIndex, toIndex, generateIteration, iterationToLayout, join } from "../utils";
+
+const saveIteration = async(iteration, rank) => {
+  const now = new Date;
+  const timestamp = +now;
+  
+  const payload = {
+    _id: `${timestamp}`,
+    title: now.toISOString(),
+    data: iteration,
+    expectedRank: rank,
+    iterationKey: entries$.getState().current,
+    timestamp,
+  };
+
+  console.log("saveIteration", payload);
+
+  await fetch("https://heartrate.miran248.now.sh/api/iteration", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  setRawIterations([
+    payload,
+    ...rawIterations$.getState(),
+  ]);
+};
 
 const classNames = [
   "Zero",
@@ -83,6 +114,83 @@ guess.fail.watch((error) => {
   console.error("guess error", error);
 })
 guess.finally.watch(() => setTraining(false));
+
+const find = createEffect();
+find.use(async({ rank }) => {
+  const size = size$.getState();
+  const l = layout$.getState();
+
+  let argMax1;
+  let response;
+  let iteration;
+
+  let tries = 0;
+
+  do {
+    ++tries;
+
+    // randomizeClickHandler();
+    
+    iteration = generateIteration(p);
+    const iterationLayout = join(l, iterationToLayout(l, iteration));
+
+    layout = iterationLayout;
+
+    p.redraw();
+
+    const number = layout.map((item) => Math.max(0, item - 1));
+
+    const xs = tf.tensor([ number ], [ 1, size.x, size.y, size.z ], "int32");
+    // const xs = tf.tensor([ number ], [ 1, size.x, size.y, size.z ]);
+    response = model$.getState().predict(xs);
+    const preds = response.argMax(1);
+    argMax1 = await preds.data();
+    const data = await response.data();
+
+    const ys = tf.tensor([ ranks[rank] ], [ 1, 5 ]);
+    const labels = await ys.argMax(1);
+
+    console.log(`${tries}. found`, argMax1[0]); // , Array.from(data));
+
+    // accuracy
+    const classAccuracy = await tfvis.metrics.perClassAccuracy(labels, preds);
+    const container = { name: "Accuracy", tab: "Evaluation" };
+    tfvis.show.perClassAccuracy(container, classAccuracy, classNames);
+
+    // confusion
+    const confusionMatrix = await tfvis.metrics.confusionMatrix(labels, preds);
+    // console.log("tfvis.show", tfvis.show)
+    // console.log("tfvis.render", tfvis.render)
+    // console.log("tfvis.metrics", tfvis.metrics)
+
+    tfvis.render.confusionMatrix({ name: "Confusion Matrix", tab: "Evaluation" }, {
+      values: confusionMatrix,
+      tickLabels: classNames,
+    });
+    // tfvis.render.heatmap({ name: "Heatmap", tab: "Evaluation" }, {
+    //   values: confusionMatrix,
+    // });
+    // tfvis.render.histogram({ name: "Histogram", tab: "Evaluation" }, {
+    //   values: confusionMatrix,
+    // });
+
+    xs.dispose();
+    ys.dispose();
+  } while(argMax1[0] !== rank);
+
+  // "https://heartrate.miran248.now.sh/api/iteration"
+
+  console.log("found rank", rank, "in", tries, "tries");
+
+  await saveIteration(iteration, rank);
+
+  return response;
+});
+find.pending.watch((pending) => pending && setTraining(true));
+find.fail.watch((error) => {
+  console.error("find error", error);
+})
+find.finally.watch(() => setTraining(false));
 
 // const test = async() => {
 //   for(let i of trainData) {
@@ -203,6 +311,10 @@ const guessClickHandler = (form) => {
   const rank = +form.rank;
   guess({ number: layout.map((item) => Math.max(0, item - 1)), rank });
 };
+const findClickHandler = (form) => {
+  const rank = +form.rank;
+  find({ rank });
+};
 
 let p, layout;
 
@@ -226,11 +338,10 @@ export default () => {
 
   return (
     <div>
-      <p>
+      {/* <p>
         <button onClick={randomizeClickHandler}>randomize</button>
-      </p>
-      <p id={id} />
-      <form onSubmit={handleSubmit(guessClickHandler)}>
+      </p> */}
+      {/* <form onSubmit={handleSubmit(guessClickHandler)}>
         <fieldset>
           <legend>options</legend>
           <label>
@@ -247,7 +358,26 @@ export default () => {
           <hr />
           <input type="submit" value="guess" disabled={!formState.isValid || formState.isSubmitting} />
         </fieldset>
+      </form> */}
+      <form onSubmit={handleSubmit(findClickHandler)}>
+        <fieldset>
+          <legend>options</legend>
+          <label>
+            <h6>class</h6>
+            <select name="rank" ref={register}>
+              <option value={0}>0</option>
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={4}>4</option>
+            </select>
+            {errors.rank && "class is required"}
+          </label>
+          <hr />
+          <input type="submit" value="find" disabled={!formState.isValid || formState.isSubmitting} />
+        </fieldset>
       </form>
+      <p id={id} />
     </div>
   );
 };

@@ -1,4 +1,8 @@
-import { createEffect } from "effector";
+import { format } from "date-fns";
+import { createEffect, createEvent, restore } from "effector";
+
+const setEntries = createEvent();
+export const entries$ = restore(setEntries, null);
 
 export const fetchEntries = createEffect();
 fetchEntries.use(() => fetch("https://heartrate.miran248.now.sh/api/entries"));
@@ -11,7 +15,9 @@ fetchEntries.done.watch(async({ params, result }) => {
 
   const iterations = {};
 
-  for(let entry of entries) {
+  for(let entry of sorted) {
+    entry.date = format(entry.timestamp * 1000, "yyyy-MM-dd HH:mm:ss");
+
     if(entry.type === "start")
       iterationTimestamp = entry.timestamp;
     // else if(entry.type === "end")
@@ -33,8 +39,15 @@ fetchEntries.done.watch(async({ params, result }) => {
     }
   }
 
-  console.log("entries", entries);
-  console.log("iterations", iterations);
+  // console.log("entries", entries);
+  console.log("entries", iterations);
+
+  const iterationKeys = Object.keys(iterations).sort((a, b) => b - a);
+  iterations.current = iterationKeys[0];
+
+  setEntries(iterations);
+
+  setTimeout(() => fetchEntries(), 60000);
 });
 
 fetchEntries();

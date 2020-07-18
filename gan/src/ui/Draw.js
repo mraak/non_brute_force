@@ -114,7 +114,7 @@ export default () => {
   const id = `draw-container`;
 
   useEffect(() => {
-    p = new p5(sketch(iteration.data, size), id);
+    p = new p5(sketch(iteration.combined, size), id);
 
     return p.remove;
   }, []);

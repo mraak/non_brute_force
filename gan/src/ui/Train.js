@@ -3,7 +3,7 @@ import { useStore } from "effector-react";
 import React from "react";
 import * as tf from "@tensorflow/tfjs";
 
-import { rawIterations$ } from "../store/iterations";
+import { iterations$ } from "../store/iterations";
 import { model$ } from "../store/model";
 import { setProgress, progress$ } from "../store/progress";
 import { size$ } from "../store/size";
@@ -17,11 +17,11 @@ import {
 } from "../tf/vis";
 import { join } from "../utils";
 
-const EPOCH_COUNT = 50;
+const EPOCH_COUNT = 250;
 
 let xs;
 let ys;
-combine(rawIterations$, size$, (iterations, size) => {
+combine(iterations$, size$, (iterations, size) => {
   if(iterations === null || size === null)
     return;
 
@@ -31,10 +31,12 @@ combine(rawIterations$, size$, (iterations, size) => {
   if(ys)
     ys.dispose();
 
-  const data = iterations.map((iteration) => iteration.data);
+  const validIterations = iterations.filter((iteration) => iteration.trainable);
+
+  const data = validIterations.map((iteration) => iteration.layout);
   xs = tf.tensor(data, [ data.length, size.x, size.y, size.z ], "int32");
 
-  const output = iterations.map((iteration) => iteration.output);
+  const output = validIterations.map((iteration) => iteration.output);
   ys = tf.tensor(output, [ data.length, 5 ], "int32");
 });
 

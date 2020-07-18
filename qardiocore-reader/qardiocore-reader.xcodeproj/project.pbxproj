@@ -14,6 +14,7 @@
 		9955896124AE1B3200637399 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9955896024AE1B3200637399 /* Preview Assets.xcassets */; };
 		9955896424AE1B3200637399 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9955896224AE1B3200637399 /* LaunchScreen.storyboard */; };
 		9955897524AE28A600637399 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9955897424AE28A600637399 /* HealthKit.framework */; };
+		9993FDFB24C303A500B46D0B /* Syncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9993FDFA24C303A400B46D0B /* Syncer.swift */; };
 		99AE79CC24B7454500A9C2B4 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99AE79CB24B7454500A9C2B4 /* Data.swift */; };
 		99F4C53324B4EF1500DA3E8E /* HeartRate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99F4C53224B4EF1500DA3E8E /* HeartRate.swift */; };
 		99F4C53524B4F5B400DA3E8E /* HKUnit+BeatsPerMinute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99F4C53424B4F5B400DA3E8E /* HKUnit+BeatsPerMinute.swift */; };
@@ -30,6 +31,7 @@
 		9955896524AE1B3200637399 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9955897224AE28A600637399 /* qardiocore-reader.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "qardiocore-reader.entitlements"; sourceTree = "<group>"; };
 		9955897424AE28A600637399 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		9993FDFA24C303A400B46D0B /* Syncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Syncer.swift; sourceTree = "<group>"; };
 		99AE79CB24B7454500A9C2B4 /* Data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		99F4C53224B4EF1500DA3E8E /* HeartRate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRate.swift; sourceTree = "<group>"; };
 		99F4C53424B4F5B400DA3E8E /* HKUnit+BeatsPerMinute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HKUnit+BeatsPerMinute.swift"; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				99F4C53224B4EF1500DA3E8E /* HeartRate.swift */,
 				99F4C53424B4F5B400DA3E8E /* HKUnit+BeatsPerMinute.swift */,
 				99AE79CB24B7454500A9C2B4 /* Data.swift */,
+				9993FDFA24C303A400B46D0B /* Syncer.swift */,
 			);
 			path = "qardiocore-reader";
 			sourceTree = "<group>";
@@ -175,6 +178,7 @@
 			files = (
 				9955895824AE1B3000637399 /* AppDelegate.swift in Sources */,
 				99AE79CC24B7454500A9C2B4 /* Data.swift in Sources */,
+				9993FDFB24C303A500B46D0B /* Syncer.swift in Sources */,
 				9955895A24AE1B3000637399 /* SceneDelegate.swift in Sources */,
 				99F4C53524B4F5B400DA3E8E /* HKUnit+BeatsPerMinute.swift in Sources */,
 				99F4C53324B4EF1500DA3E8E /* HeartRate.swift in Sources */,
@@ -324,6 +328,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "ch.wunderapps.qardiocore-reader";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -345,6 +350,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "ch.wunderapps.qardiocore-reader";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

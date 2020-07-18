@@ -31,10 +31,10 @@ export const generateIteration = (p) => {
   const id2index = Object.fromEntries(Object.keys(idClusters).map((index) => [ ids[index], index ]));
   // const edges = Array.from(linksGraph.edgeEntries());
 
-  console.log("clusterIds", clusterIds);
-  console.log("idClusters", idClusters);
-  // console.log("linksGraph", edges.filter(([ k, ka, s ]) => s == 19)); // ids[+s] === 1));
-  console.log("ids", ids);
+  // console.log("clusterIds", clusterIds);
+  // console.log("idClusters", idClusters);
+  // // console.log("linksGraph", edges.filter(([ k, ka, s ]) => s == 19)); // ids[+s] === 1));
+  // console.log("ids", ids);
 
   const horizontalSteps = (s, e) => {
     let steps = [ s ];
@@ -179,7 +179,7 @@ export const generateIteration = (p) => {
       addPending(i, { x: a.x, y: a.y - 1, z: a.z }, floorTiles, pending);
     }
 
-    console.log("pending", pending);
+    // console.log("pending", pending);
 
     iteration = [ ...iteration, ...floorTiles ];
   }

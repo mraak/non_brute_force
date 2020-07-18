@@ -22,6 +22,9 @@ export default async({ body }, res) => {
   // res.statusCode = 200;
   // res.json({ beats: response.Items });
 
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Methods", "POST");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.statusCode = 200;
   res.end();
 };

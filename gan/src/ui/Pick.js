@@ -65,7 +65,7 @@ const Card = ({ id, index, iteration }) => {
   const size = useStore(size$);
 
   useEffect(() => {
-    const p = new p5(sketch(iteration.data, size), id);
+    const p = new p5(sketch(iteration.combined, size), id);
 
     return p.remove;
   }, []);
@@ -73,8 +73,11 @@ const Card = ({ id, index, iteration }) => {
   return (
     <button id={id}
             onClick={() => setIterationIndex(index)}
-            disabled={selectedIndex === index}>
+            disabled={true || selectedIndex === index}>
       <div>{iteration.title}</div>
+      <div>dog {iteration.dog}bpm, maja {iteration.maja}bpm, delta {Math.abs(iteration.maja - iteration.dog)}bpm</div>
+      <div>{"_id" in iteration ? `expected ${iteration.expectedRank}, ` : ""}actual {iteration.actualRank}</div>
+      <div>trainable {iteration.trainable.toString()} ({iteration.output})</div>
     </button>
   );
 };
@@ -83,17 +86,21 @@ export default () => {
   const iterations = useStore(iterations$);
 
   return (
-    <Cards>
-    {iterations.map((iteration, i) => {
-      const id = `pick-container-${i}`;
+    <div>
+      <h6>total iterations</h6>
+      <p>{iterations.length}</p>
+      <Cards>
+      {iterations.map((iteration, i) => {
+        const id = `pick-container-${iteration.title}`;
 
-      return (
-        <Card key={id}
-              id={id}
-              index={i}
-              iteration={iteration} />
-      );
-    })}
-    </Cards>
+        return (
+          <Card key={id}
+                id={id}
+                index={i}
+                iteration={iteration} />
+        );
+      })}
+      </Cards>
+    </div>
   );
 };

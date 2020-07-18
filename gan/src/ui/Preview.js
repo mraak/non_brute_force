@@ -98,7 +98,7 @@ export default () => {
     if(iteration === null)
       return;
 
-    const p = new p5(sketch(iteration.data, size), id);
+    const p = new p5(sketch(iteration.combined, size), id);
 
     return p.remove;
   }, [ iteration ]);
@@ -109,7 +109,7 @@ export default () => {
     );
   }
 
-  const text = JSON.stringify(iteration.data);
+  const text = JSON.stringify(iteration.combined);
 
   return (
     <Card>

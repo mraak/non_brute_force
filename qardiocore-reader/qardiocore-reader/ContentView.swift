@@ -15,13 +15,19 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            Text("\(self.data.sampleCount) samples")
+            Text("synced \(self.data.sampleCount) samples")
             Button(action: {
                 self.data.running = !self.data.running
                 
                 self.data.sampleCount = 0
                 
-                self.appDelegate.sync([ HeartRate(type: self.data.running ? .start : .end, device: "", name: UIDevice.current.name, timestamp: Int(NSDate().timeIntervalSince1970), bpm: 0) ])
+                if self.data.running {
+                    self.appDelegate.syncer.start()
+                } else {
+                    self.appDelegate.syncer.stop()
+                }
+                
+//                self.appDelegate.sync([ HeartRate(type: self.data.running ? .start : .end, device: "", name: UIDevice.current.name, timestamp: Int(NSDate().timeIntervalSince1970), bpm: 0) ])
             }) {
                 Text(self.data.running ? "Stop" : "Start")
                 .frame(width: 100, height: 100)
