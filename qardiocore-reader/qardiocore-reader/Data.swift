@@ -11,5 +11,7 @@ import Foundation
 class Data : ObservableObject {
     @Published var ready = false
     @Published var running = false
+    @Published var tickCount = 0
     @Published var sampleCount = 0
+    @Published var totalSampleCount = 0
 }

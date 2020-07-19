@@ -1,0 +1,118 @@
+2020-07-18 12:34:39 +0000  Initial pipeline context: <IDEDistributionProcessingPipelineContext: 0x7fd916f83a40; archive(resolved)='<IDEArchive: 0x7fd913a8c120>', distributionTask(resolved)='2', distributionDestination(resolved)='1', distributionMethod(resolved)='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team(resolved)='<IDEProvisioningDisambiguatableBasicTeam: 0x7fd934bf1760; teamID='K532S7LL5T', teamName='Wunderapps GmbH', teamType='Company', username='miran@currentlabel.co.uk', isFreeProvisioningTeam='0'>'>
+	Chain (13, self inclusive):
+	<IDEDistributionProcessingPipelineContext: 0x7fd916f83a40; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='<IDEProvisioningDisambiguatableBasicTeam: 0x7fd934bf1760; teamID='K532S7LL5T', teamName='Wunderapps GmbH', teamType='Company', username='miran@currentlabel.co.uk', isFreeProvisioningTeam='0'>'>
+	<IDEDistributionProcessingPipelineContext: 0x7fd916f817b0; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='<IDEProvisioningDisambiguatableBasicTeam: 0x7fd934bf1760; teamID='K532S7LL5T', teamName='Wunderapps GmbH', teamType='Company', username='miran@currentlabel.co.uk', isFreeProvisioningTeam='0'>'>
+	<IDEDistributionContext: 0x7fd917e2c7b0; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='<IDEProvisioningDisambiguatableBasicTeam: 0x7fd934bf1760; teamID='K532S7LL5T', teamName='Wunderapps GmbH', teamType='Company', username='miran@currentlabel.co.uk', isFreeProvisioningTeam='0'>'>
+	<IDEDistributionContext: 0x7fd916298e90; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='<IDEProvisioningDisambiguatableBasicTeam: 0x7fd934bf1760; teamID='K532S7LL5T', teamName='Wunderapps GmbH', teamType='Company', username='miran@currentlabel.co.uk', isFreeProvisioningTeam='0'>'>
+	<IDEDistributionContext: 0x7fd913588250; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='<IDEProvisioningDisambiguatableBasicTeam: 0x7fd934bf1760; teamID='K532S7LL5T', teamName='Wunderapps GmbH', teamType='Company', username='miran@currentlabel.co.uk', isFreeProvisioningTeam='0'>'>
+	<IDEDistributionContext: 0x7fd9169467a0; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='<IDEProvisioningDisambiguatableBasicTeam: 0x7fd934bf1760; teamID='K532S7LL5T', teamName='Wunderapps GmbH', teamType='Company', username='miran@currentlabel.co.uk', isFreeProvisioningTeam='0'>'>
+	<IDEDistributionContext: 0x7fd916bd0dc0; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='<IDEProvisioningDisambiguatableBasicTeam: 0x7fd934bf1760; teamID='K532S7LL5T', teamName='Wunderapps GmbH', teamType='Company', username='miran@currentlabel.co.uk', isFreeProvisioningTeam='0'>'>
+	<IDEDistributionContext: 0x7fd917dc9190; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='<IDEProvisioningDisambiguatableBasicTeam: 0x7fd934bf1760; teamID='K532S7LL5T', teamName='Wunderapps GmbH', teamType='Company', username='miran@currentlabel.co.uk', isFreeProvisioningTeam='0'>'>
+	<IDEDistributionContext: 0x7fd916bf1f60; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='<IDEProvisioningDisambiguatableBasicTeam: 0x7fd934bf1760; teamID='K532S7LL5T', teamName='Wunderapps GmbH', teamType='Company', username='miran@currentlabel.co.uk', isFreeProvisioningTeam='0'>'>
+	<IDEDistributionContext: 0x7fd91601b510; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='(null)'>
+	<IDEDistributionContext: 0x7fd9390dffd0; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='(null)'>
+	<IDEDistributionContext: 0x7fd916a5f240; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='<IDEDistributionMethodDevelopmentSigned: 0x7fd91224c3b0>', team='(null)'>
+	<IDEDistributionContext: 0x7fd917e15a50; archive = '<IDEArchive: 0x7fd913a8c120>', distributionMethod='(null)', team='(null)'>
+</IDEDistributionProcessingPipelineContext: 0x7fd916f83a40>
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionCreateDestRootStep
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionCopyItemStep
+2020-07-18 12:34:39 +0000  Running /usr/bin/ditto '-V' '/Users/miran/Library/Developer/Xcode/Archives/2020-07-18/qardiocore-reader 18-07-2020, 14.34.xcarchive/Products/Applications/qardiocore-reader.app' '/var/folders/tj/15_84yzd2hd8_x2qdrnlmh380000gn/T/XcodeDistPipeline.~~~tmxz5B/Root/Payload/qardiocore-reader.app'
+2020-07-18 12:34:39 +0000  >>> Copying /Users/miran/Library/Developer/Xcode/Archives/2020-07-18/qardiocore-reader 18-07-2020, 14.34.xcarchive/Products/Applications/qardiocore-reader.app 
+2020-07-18 12:34:39 +0000  copying file ./_CodeSignature/CodeResources ... 
+2020-07-18 12:34:39 +0000  3027 bytes for ./_CodeSignature/CodeResources
+2020-07-18 12:34:39 +0000  copying file ./Base.lproj/LaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib ... 
+2020-07-18 12:34:39 +0000  1197 bytes for ./Base.lproj/LaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib
+copying file ./Base.lproj/LaunchScreen.storyboardc/UIViewController-01J-lp-oVM.nib ... 
+2020-07-18 12:34:39 +0000  896 bytes for ./Base.lproj/LaunchScreen.storyboardc/UIViewController-01J-lp-oVM.nib
+copying file ./Base.lproj/LaunchScreen.storyboardc/Info.plist ... 
+2020-07-18 12:34:39 +0000  258 bytes for ./Base.lproj/LaunchScreen.storyboardc/Info.plist
+2020-07-18 12:34:39 +0000  copying file ./embedded.mobileprovision ... 
+2020-07-18 12:34:39 +0000  13739 bytes for ./embedded.mobileprovision
+2020-07-18 12:34:39 +0000  copying file ./Info.plist ... 
+2020-07-18 12:34:39 +0000  1701 bytes for ./Info.plist
+copying file ./PkgInfo ... 
+2020-07-18 12:34:39 +0000  8 bytes for ./PkgInfo
+2020-07-18 12:34:39 +0000  copying file ./qardiocore-reader ... 
+2020-07-18 12:34:39 +0000  631440 bytes for ./qardiocore-reader
+2020-07-18 12:34:39 +0000  /usr/bin/ditto exited with 0
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionEmbedProfileStep
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionInfoPlistStep
+2020-07-18 12:34:39 +0000  Skipping step: IDEDistributionInfoPlistStep because it said so
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionAppThinningPlistStep
+2020-07-18 12:34:39 +0000  Skipping step: IDEDistributionAppThinningPlistStep because it said so
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionCompileBitcodeStep
+2020-07-18 12:34:39 +0000  Skipping step: IDEDistributionCompileBitcodeStep because it said so
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionCodeSlimmingStep
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionCopyBCSymbolMapsStep
+2020-07-18 12:34:39 +0000  Skipping step: IDEDistributionCopyBCSymbolMapsStep because it said so
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionSymbolsStep
+2020-07-18 12:34:39 +0000  Skipping step: IDEDistributionSymbolsStep because it said so
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionAppThinningStep
+2020-07-18 12:34:39 +0000  Skipping step: IDEDistributionAppThinningStep because it said so
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionArchThinningStep
+2020-07-18 12:34:39 +0000  Running /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo '/var/folders/tj/15_84yzd2hd8_x2qdrnlmh380000gn/T/XcodeDistPipeline.~~~tmxz5B/Root/Payload/qardiocore-reader.app/qardiocore-reader' '-verify_arch' 'arm64e'
+2020-07-18 12:34:39 +0000  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/lipo exited with 1
+2020-07-18 12:34:39 +0000  Skipping architecture thinning for item "qardiocore-reader" because arch "arm64e" wasn't found
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionODRStep
+2020-07-18 12:34:39 +0000  Processing step: IDEDistributionStripXattrsStep
+2020-07-18 12:34:39 +0000  Running /usr/bin/xattr '-crs' '/var/folders/tj/15_84yzd2hd8_x2qdrnlmh380000gn/T/XcodeDistPipeline.~~~tmxz5B/Root/Payload/qardiocore-reader.app'
+2020-07-18 12:34:40 +0000  /usr/bin/xattr exited with 0
+2020-07-18 12:34:40 +0000  Processing step: IDEDistributionCodesignStep
+2020-07-18 12:34:40 +0000  Entitlements for <IDEDistributionItem: 0x7fd912cfad60; bundleID='ch.wunderapps.qardiocore-reader', path='<DVTFilePath:0x7fd9165a03b0:'/Users/miran/Library/Developer/Xcode/Archives/2020-07-18/qardiocore-reader 18-07-2020, 14.34.xcarchive/Products/Applications/qardiocore-reader.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0x7fd916f4c9e0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0x7fd916b2ade0; name='Apple Development: Miran Loncaric (XB693JYW55)', hash='76AAE04CEA4D62D26C39DD1BD49C4A9C5FAB569F', serialNumber='25FAF27CDE42641A', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2020-06-24 07:48:41 +0000''>', entitlements='{
+    "application-identifier" = "K532S7LL5T.ch.wunderapps.qardiocore-reader";
+    "com.apple.developer.healthkit" = 1;
+    "com.apple.developer.healthkit.access" =     (
+    );
+    "com.apple.developer.team-identifier" = K532S7LL5T;
+    "get-task-allow" = 1;
+}', teamID='K532S7LL5T', identifier='ch.wunderapps.qardiocore-reader', executablePath='<DVTFilePath:0x7fd917e05fd0:'/Users/miran/Library/Developer/Xcode/Archives/2020-07-18/qardiocore-reader 18-07-2020, 14.34.xcarchive/Products/Applications/qardiocore-reader.app/qardiocore-reader'>', hardenedRuntime='0'>'>: {
+    "application-identifier" = "K532S7LL5T.ch.wunderapps.qardiocore-reader";
+    "com.apple.developer.healthkit" = 1;
+    "com.apple.developer.healthkit.access" =     (
+    );
+    "com.apple.developer.team-identifier" = K532S7LL5T;
+    "get-task-allow" = 1;
+}
+2020-07-18 12:34:40 +0000  Writing entitlements for <IDEDistributionItem: 0x7fd912cfad60; bundleID='ch.wunderapps.qardiocore-reader', path='<DVTFilePath:0x7fd9165a03b0:'/Users/miran/Library/Developer/Xcode/Archives/2020-07-18/qardiocore-reader 18-07-2020, 14.34.xcarchive/Products/Applications/qardiocore-reader.app'>', codeSigningInfo='<_DVTCodeSigningInformation_Path: 0x7fd916f4c9e0; isSigned='1', isAdHocSigned='0', signingCertificate='<DVTSigningCertificate: 0x7fd9172ff6f0; name='Apple Development: Miran Loncaric (XB693JYW55)', hash='76AAE04CEA4D62D26C39DD1BD49C4A9C5FAB569F', serialNumber='25FAF27CDE42641A', certificateKinds='(
+    "1.2.840.113635.100.6.1.12",
+    "1.2.840.113635.100.6.1.2"
+), issueDate='2020-06-24 07:48:41 +0000''>', entitlements='{
+    "application-identifier" = "K532S7LL5T.ch.wunderapps.qardiocore-reader";
+    "com.apple.developer.healthkit" = 1;
+    "com.apple.developer.healthkit.access" =     (
+    );
+    "com.apple.developer.team-identifier" = K532S7LL5T;
+    "get-task-allow" = 1;
+}', teamID='K532S7LL5T', identifier='ch.wunderapps.qardiocore-reader', executablePath='<DVTFilePath:0x7fd917e05fd0:'/Users/miran/Library/Developer/Xcode/Archives/2020-07-18/qardiocore-reader 18-07-2020, 14.34.xcarchive/Products/Applications/qardiocore-reader.app/qardiocore-reader'>', hardenedRuntime='0'>'> to: /var/folders/tj/15_84yzd2hd8_x2qdrnlmh380000gn/T/XcodeDistPipeline.~~~tmxz5B/entitlements~~~kaTyC9
+2020-07-18 12:34:40 +0000  Running /usr/bin/codesign '-vvv' '--force' '--sign' '76AAE04CEA4D62D26C39DD1BD49C4A9C5FAB569F' '--entitlements' '/var/folders/tj/15_84yzd2hd8_x2qdrnlmh380000gn/T/XcodeDistPipeline.~~~tmxz5B/entitlements~~~kaTyC9' '--preserve-metadata=identifier,flags,runtime' '/var/folders/tj/15_84yzd2hd8_x2qdrnlmh380000gn/T/XcodeDistPipeline.~~~tmxz5B/Root/Payload/qardiocore-reader.app'
+2020-07-18 12:34:40 +0000  /var/folders/tj/15_84yzd2hd8_x2qdrnlmh380000gn/T/XcodeDistPipeline.~~~tmxz5B/Root/Payload/qardiocore-reader.app: signed app bundle with Mach-O thin (arm64) [ch.wunderapps.qardiocore-reader]
+2020-07-18 12:34:40 +0000  /usr/bin/codesign exited with 0
+2020-07-18 12:34:40 +0000  Processing step: IDEDistributionZipODRItemStep
+2020-07-18 12:34:40 +0000  Skipping step: IDEDistributionZipODRItemStep because it said so
+2020-07-18 12:34:40 +0000  Processing step: IDEDistributionCreateIPAStep
+2020-07-18 12:34:40 +0000  Running /usr/bin/ditto '-V' '-c' '-k' '--norsrc' '/var/folders/tj/15_84yzd2hd8_x2qdrnlmh380000gn/T/XcodeDistPipeline.~~~tmxz5B/Root' '/var/folders/tj/15_84yzd2hd8_x2qdrnlmh380000gn/T/XcodeDistPipeline.~~~tmxz5B/Packages/qardiocore-reader.ipa'
+2020-07-18 12:34:40 +0000  >>> Copying /var/folders/tj/15_84yzd2hd8_x2qdrnlmh380000gn/T/XcodeDistPipeline.~~~tmxz5B/Root 
+2020-07-18 12:34:40 +0000  copying file ./Payload/qardiocore-reader.app/_CodeSignature/CodeResources ... 
+2020-07-18 12:34:40 +0000  3027 bytes for ./Payload/qardiocore-reader.app/_CodeSignature/CodeResources
+2020-07-18 12:34:40 +0000  copying file ./Payload/qardiocore-reader.app/Base.lproj/LaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib ... 
+2020-07-18 12:34:40 +0000  1197 bytes for ./Payload/qardiocore-reader.app/Base.lproj/LaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib
+copying file ./Payload/qardiocore-reader.app/Base.lproj/LaunchScreen.storyboardc/UIViewController-01J-lp-oVM.nib ... 
+2020-07-18 12:34:40 +0000  896 bytes for ./Payload/qardiocore-reader.app/Base.lproj/LaunchScreen.storyboardc/UIViewController-01J-lp-oVM.nib
+copying file ./Payload/qardiocore-reader.app/Base.lproj/LaunchScreen.storyboardc/Info.plist ... 
+258 bytes for ./Payload/qardiocore-reader.app/Base.lproj/LaunchScreen.storyboardc/Info.plist
+copying file ./Payload/qardiocore-reader.app/embedded.mobileprovision ... 
+2020-07-18 12:34:40 +0000  13739 bytes for ./Payload/qardiocore-reader.app/embedded.mobileprovision
+copying file ./Payload/qardiocore-reader.app/Info.plist ... 
+2020-07-18 12:34:40 +0000  1701 bytes for ./Payload/qardiocore-reader.app/Info.plist
+copying file ./Payload/qardiocore-reader.app/PkgInfo ... 
+8 bytes for ./Payload/qardiocore-reader.app/PkgInfo
+2020-07-18 12:34:40 +0000  copying file ./Payload/qardiocore-reader.app/qardiocore-reader ... 
+2020-07-18 12:34:40 +0000  185616 bytes for ./Payload/qardiocore-reader.app/qardiocore-reader
+2020-07-18 12:34:40 +0000  /usr/bin/ditto exited with 0
+2020-07-18 12:34:40 +0000  Processing step: IDEDistributionAppStoreInformationStep
+2020-07-18 12:34:40 +0000  Skipping step: IDEDistributionAppStoreInformationStep because it said so
+2020-07-18 12:34:40 +0000  Processing step: IDEDistributionGenerateProcessedDistributionItems
+2020-07-18 12:34:40 +0000  Processing step: IDEDistributionCreateManifestStep

@@ -50,4 +50,4 @@ fetchEntries.done.watch(async({ params, result }) => {
   setTimeout(() => fetchEntries(), 60000);
 });
 
-fetchEntries();
+// fetchEntries();

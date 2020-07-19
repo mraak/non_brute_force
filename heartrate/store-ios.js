@@ -62,7 +62,7 @@ export const sync = async(items) => {
 
 export const payloads = async() => {
   const db = await dbPromise;
-  const collection = db.collection("payloads");
+  const collection = db.collection("payload");
 
   return collection.find({}).sort({ date: -1 }).toArray();
 };

@@ -15,11 +15,12 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            Text("synced \(self.data.sampleCount) samples")
+            Text("\(self.data.tickCount). synced \(self.data.sampleCount)/\(self.data.totalSampleCount) samples")
             Button(action: {
                 self.data.running = !self.data.running
                 
                 self.data.sampleCount = 0
+                self.data.totalSampleCount = 0
                 
                 if self.data.running {
                     self.appDelegate.syncer.start()

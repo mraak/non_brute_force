@@ -100,9 +100,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //            group.notify(queue: .main) {
 //                print("done loading")
 //
-//                DispatchQueue.main.async {
+                DispatchQueue.main.async {
                     self.data.ready = true
-//                }
+                }
 //            }
         } else {
             print("Failure.")

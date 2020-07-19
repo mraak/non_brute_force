@@ -69,7 +69,8 @@ class Syncer {
     var timer: Timer?
     var timerRunning: Bool = false
     
-    var entries: [Entry]?
+    var startDate: Date = Date() // Calendar.current.startOfDay(for: Date())
+//    var entries: [Entry]?
     
     init(_ session: URLSession, _ store: HKHealthStore, _ data: Data) {
         self.session = session
@@ -91,7 +92,6 @@ class Syncer {
         self.send(.stop)
     }
     
-    var tickCount = 0
     func setTimerRunning(_ running: Bool) {
         timerRunning = running
         
@@ -101,16 +101,18 @@ class Syncer {
         }
         
         if running {
-            tickCount = 0
+            DispatchQueue.main.async {
+                self.data.tickCount = 0
+            }
             
             timer = Timer.scheduledTimer(withTimeInterval: timerInterval, repeats: true, block: { timer in
-                self.tickCount += 1
-                
-                print("tick count \(self.tickCount)")
+                DispatchQueue.main.async {
+                    self.data.tickCount += 1
+                }
                 
                 let sampleType = HKWorkoutType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!
                 
-                let predicate = HKQuery.predicateForSamples(withStart: Date() - self.timerInterval, end: nil, options: .strictStartDate)
+                let predicate = HKQuery.predicateForSamples(withStart: self.startDate, end: nil)
         
                 let query = HKSampleQuery(
                     sampleType: sampleType,
@@ -127,11 +129,14 @@ class Syncer {
     func process(query: HKSampleQuery, samples: [HKSample]?, error: Error?) -> Void {
         if let samples = samples {
             DispatchQueue.main.async {
-                self.data.sampleCount += samples.count
+                self.data.sampleCount = samples.count
+                self.data.totalSampleCount += samples.count
             }
             
             if samples.count == 0 {
                 print("no samples found for query \(query)")
+                
+                self.send(.entry, nil)
             } else if let samples = samples as? [HKQuantitySample] {
                 var entries = [Entry]()
 
@@ -144,6 +149,10 @@ class Syncer {
 //                    }
 
                     // Extract information from sample.
+                    
+                    if self.startDate < sample.endDate {
+                        self.startDate = sample.endDate.addingTimeInterval(1)
+                    }
 
                     let count = sample.quantity.doubleValue(for: .beatsPerMinute())
 
@@ -156,10 +165,12 @@ class Syncer {
                     entries.append(entry)
                 }
 
-                self.entries = entries
+//                self.entries = entries
+                
+                self.send(.entry, entries)
             }
             
-            self.send(.entry, self.entries)
+//            self.send(.entry, self.entries)
         } else {
             print("query not available \(query) \(error?.localizedDescription)")
         }

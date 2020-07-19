@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>qardiocore-reader.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>arm64</string>
+			</array>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>76AAE04CEA4D62D26C39DD1BD49C4A9C5FAB569F</string>
+				<key>dateExpires</key>
+				<string>24/06/2021</string>
+				<key>type</key>
+				<string>Apple Development</string>
+			</dict>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>K532S7LL5T.ch.wunderapps.qardiocore-reader</string>
+				<key>com.apple.developer.healthkit</key>
+				<true/>
+				<key>com.apple.developer.healthkit.access</key>
+				<array/>
+				<key>com.apple.developer.team-identifier</key>
+				<string>K532S7LL5T</string>
+				<key>get-task-allow</key>
+				<true/>
+			</dict>
+			<key>name</key>
+			<string>qardiocore-reader.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>1f4d8310-9a5d-4f08-9a13-b241a70b988c</string>
+				<key>name</key>
+				<string>iOS Team Provisioning Profile: ch.wunderapps.qardiocore-reader</string>
+			</dict>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>K532S7LL5T</string>
+				<key>name</key>
+				<string>Wunderapps GmbH</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

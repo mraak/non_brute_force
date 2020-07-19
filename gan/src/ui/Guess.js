@@ -25,7 +25,7 @@ const saveIteration = async(iteration, rank) => {
     title: now.toISOString(),
     data: iteration,
     expectedRank: rank,
-    iterationKey: entries$.getState().current,
+    // iterationKey: entries$.getState().current,
     timestamp,
   };
 
