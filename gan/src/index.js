@@ -1,5 +1,5 @@
 import "regenerator-runtime/runtime";
-import "@exampledev/new.css";
+// import "@exampledev/new.css";
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -8,7 +8,7 @@ import "./store/entries";
 import { rawIterations$, setRawIterations } from "./store/iterations";
 import { setLayout } from "./store/layout";
 import { setSize } from "./store/size";
-import App from "./ui/App";
+import App from "./ui/Redesign";
 
 // import fours from "./data/fours";
 // import ones from "./data/ones";

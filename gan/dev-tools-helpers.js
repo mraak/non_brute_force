@@ -49,4 +49,6 @@ const averageBpm = (groups) => Object.keys(groups).sort((a, b) => a - b).map((gr
   };
 });
 
+JSON.stringify(averageBpm(groupByIteration(JSON.parse(document.body.getElementsByTagName("pre")[0].textContent))), null, 2)
+
 averageBpm(groupByIteration(JSON.parse(document.body.getElementsByTagName("pre")[0].textContent)))
