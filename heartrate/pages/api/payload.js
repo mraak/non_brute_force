@@ -1,15 +1,19 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import { payload } from "../../store-ios";
+import { savePayload, lastAggregate, loadPayloadsSince } from "../../store-ios";
+
+import { aggregatePayloads, saveAggregates } from "./aggregate-payloads";
 
 export default async({ body }, res) => {
   console.log(body);
 
   if(body) {
-    await payload({
+    await savePayload({
       ...body,
       _id: `${body.date}`,
     });
+
+    await updateAggregates();
   }
 
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -17,4 +21,16 @@ export default async({ body }, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.statusCode = 200;
   res.end();
+};
+
+const updateAggregates = async() => {
+  const [ aggregate ] = await lastAggregate();
+  console.log("lastAggregate", aggregate);
+  const payloads = await loadPayloadsSince(aggregate.start);
+  // console.log("payloads", payloads);
+
+  const aggregates = aggregatePayloads(payloads);
+  // console.log("aggregates", aggregates);
+
+  await saveAggregates(aggregates);
 };

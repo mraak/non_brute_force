@@ -4,8 +4,7 @@ import "@exampledev/new.css";
 import React from "react";
 import ReactDOM from "react-dom";
 
-import "./store/entries";
-import { rawIterations$, setRawIterations } from "./store/iterations";
+import { setHardcodedIterations } from "./store/iterations";
 import { setLayout } from "./store/layout";
 import { setSize } from "./store/size";
 import App from "./ui/App";
@@ -36,22 +35,13 @@ const props = {
   size: layoutSize,
 };
 
-setRawIterations(props.iterations);
+setHardcodedIterations(props.iterations.map((iteration) => ({
+  ...iteration,
+  timestamp: +new Date(iteration.title.split(" ")[0]),
+  valid: true,
+})));
 setLayout(props.layout);
 setSize(props.size);
-
-fetch("https://heartrate.miran248.now.sh/api/iterations").then(
-  (response) => response.json()
-).then(
-  (response) => {
-    console.log("fetched iterations", response);
-
-    setRawIterations([
-      ...response.iterations,
-      ...rawIterations$.getState(),
-    ]);
-  }
-)
 
 ReactDOM.render(
   <App />,

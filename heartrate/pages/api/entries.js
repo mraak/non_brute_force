@@ -1,9 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import { load } from "../../store-ios";
+import { loadEntriesDesc } from "../../store-ios";
 
 export default async(req, res) => {
-  const data = await load();
+  const data = await loadEntriesDesc();
 
   res.setHeader("Access-Control-Allow-Methods", "GET");
   res.setHeader("Access-Control-Allow-Origin", "*");

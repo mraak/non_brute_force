@@ -114,10 +114,19 @@ export default () => {
   const id = `draw-container`;
 
   useEffect(() => {
+    if(iteration === null)
+      return;
+
     p = new p5(sketch(iteration.combined, size), id);
 
     return p.remove;
-  }, []);
+  }, [ iteration ]);
+
+  if(iteration === null) {
+    return (
+      <div><a href="#pick">pick iteration</a></div>
+    );
+  }
 
   return (
     <div>
