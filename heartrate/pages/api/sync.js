@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import { load, sync } from "../../store-ios";
+import { sync } from "../../store-ios";
 
 export default async({ body }, res) => {
   console.log(body);

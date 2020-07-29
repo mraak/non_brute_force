@@ -5,12 +5,35 @@ import styled from "styled-components";
 
 import { ids$ } from "../store/ids";
 import { iterationIndex$, setIterationIndex } from "../store/iterationIndex";
-import { iterations$ } from "../store/iterations";
+import { fetchIterations, iterations$ } from "../store/iterations";
 import { size$ } from "../store/size";
 import { fromIndex } from "../utils";
 
 const TILE_SIZE = 12;
 // const TILE_SIZE = 24;
+
+const saveIteration = async(iteration, diff) => {
+  const payload = {
+    _id: iteration._id,
+    title: iteration.title,
+    data: iteration.data,
+    expectedRank: iteration.expectedRank,
+    timestamp: iteration.timestamp,
+    ...diff,
+  };
+
+  console.log("saveIteration", payload);
+
+  await fetch("https://heartrate.miran248.now.sh/api/iteration", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  fetchIterations();
+};
 
 const sketch = (iteration, size) => (p) => {
   const ids = ids$.getState();
@@ -74,8 +97,11 @@ const Card = ({ id, index, iteration }) => {
     <button id={id}
             onClick={() => setIterationIndex(index)}
             disabled={true || selectedIndex === index}>
+      <div>
+        <label><input type="checkbox" defaultChecked={iteration.valid} disabled={!("_id" in iteration)} onClick={() => saveIteration(iteration, { valid: !iteration.valid })} /> valid</label>
+      </div>
       <div>{iteration.title}</div>
-      <div>dog {iteration.dog}bpm, maja {iteration.maja}bpm, delta {Math.abs(iteration.maja - iteration.dog)}bpm</div>
+      <div>dog {Math.round(iteration.dog)}bpm, maja {Math.round(iteration.maja)}bpm, delta {Math.round(Math.abs(iteration.maja - iteration.dog))}bpm</div>
       <div>{"_id" in iteration ? `expected ${iteration.expectedRank}, ` : ""}actual {iteration.actualRank}</div>
       <div>trainable {iteration.trainable.toString()} ({iteration.output})</div>
     </button>
@@ -84,6 +110,12 @@ const Card = ({ id, index, iteration }) => {
 
 export default () => {
   const iterations = useStore(iterations$);
+
+  if(iterations === null) {
+    return (
+      <div>loading iterations...</div>
+    );
+  }
 
   return (
     <div>

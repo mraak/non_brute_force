@@ -1,21 +1,3 @@
-// import AWS from "aws-sdk";
-//
-// AWS.config.update({
-//   credentials: new AWS.Credentials("client", "secret"),
-//   region: "eu-west-1",
-// });
-//
-// const ddb = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
-//
-// export const load = () => ddb.scan({
-//   TableName: "nbf-bpm-activity-dev",
-// }).promise();
-//
-// export const save = (data) => ddb.put({
-//   TableName: "nbf-bpm-activity-dev",
-//   Item: data,
-// }).promise();
-
 const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
 
@@ -39,11 +21,17 @@ client.connect((error) => {
   disconnect = () => client.close();
 });
 
-export const load = async() => {
+export const loadEntriesDesc = async() => {
   const db = await dbPromise;
   const collection = db.collection("entries");
 
   return collection.find({}).sort({ timestamp: -1 }).toArray();
+};
+export const loadEntriesAsc = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("entries");
+
+  return collection.find({}).sort({ timestamp: 1 }).toArray();
 };
 
 export const sync = async(items) => {
@@ -60,15 +48,47 @@ export const sync = async(items) => {
   })));
 };
 
-export const payloads = async() => {
+export const loadPayloadsAsc = async() => {
   const db = await dbPromise;
   const collection = db.collection("payload");
 
-  return collection.find({}).sort({ date: -1 }).toArray();
+  return collection.find({}).sort({ date: 1 }).toArray();
 };
-export const payload = async(item) => {
+export const loadPayloadsSince = async(date) => {
   const db = await dbPromise;
   const collection = db.collection("payload");
+
+  return collection.find({ date: { $gte: date } }).sort({ date: 1 }).toArray();
+};
+export const savePayload = async(item) => {
+  const db = await dbPromise;
+  const collection = db.collection("payload");
+
+  return collection.bulkWrite([{
+    updateOne: {
+      filter: { _id: item._id },
+      // update: { $setOnInsert: item },
+      update: { $set: item },
+      upsert: true,
+    },
+  }]);
+};
+
+export const loadAggregatesAsc = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("aggregates");
+
+  return collection.find({}).sort({ start: 1 }).toArray();
+};
+export const lastAggregate = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("aggregates");
+
+  return collection.find({}).sort({ start: -1 }).limit(1).toArray();
+};
+export const saveAggregate = async(item) => {
+  const db = await dbPromise;
+  const collection = db.collection("aggregates");
 
   return collection.bulkWrite([{
     updateOne: {

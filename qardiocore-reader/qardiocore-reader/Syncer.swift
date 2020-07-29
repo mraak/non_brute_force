@@ -78,6 +78,10 @@ class Syncer {
         self.data = data
         
         formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [
+            .withInternetDateTime,
+            .withFractionalSeconds
+        ]
         deviceName = UIDevice.current.name
     }
     

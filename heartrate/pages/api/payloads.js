@@ -1,9 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import { payloads } from "../../store-ios";
+import { loadPayloadsAsc } from "../../store-ios";
 
 export default async(req, res) => {
-  const data = await payloads();
+  const data = await loadPayloadsAsc();
 
   res.setHeader("Access-Control-Allow-Methods", "GET");
   res.setHeader("Access-Control-Allow-Origin", "*");
