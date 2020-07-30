@@ -8,7 +8,7 @@ import * as tf from "@tensorflow/tfjs";
 import * as tfvis from "@tensorflow/tfjs-vis";
 
 import { ids$ } from "../store/ids";
-// import { rawIterations$, setRawIterations } from "../store/iterations";
+import { fetchIterations } from "../store/iterations";
 import { layout$ } from "../store/layout";
 import { model$ } from "../store/model";
 import { size$ } from "../store/size";
@@ -16,32 +16,29 @@ import { setTraining } from "../store/training";
 import { inside, fromIndex, toIndex, generateIteration, iterationToLayout, join } from "../utils";
 
 const saveIteration = async(iteration, rank) => {
-  // const now = new Date;
-  // const timestamp = +now;
+  const now = new Date;
+  const timestamp = +now;
   
-  // const payload = {
-  //   _id: `${timestamp}`,
-  //   title: now.toISOString(),
-  //   data: iteration,
-  //   expectedRank: rank,
-  //   // iterationKey: entries$.getState().current,
-  //   timestamp,
-  // };
+  const payload = {
+    _id: `${timestamp}`,
+    title: now.toISOString(),
+    data: iteration,
+    expectedRank: rank,
+    // iterationKey: entries$.getState().current,
+    timestamp,
+  };
 
-  // console.log("saveIteration", payload);
+  console.log("saveIteration", payload);
 
-  // await fetch("https://heartrate.miran248.now.sh/api/iteration", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify(payload),
-  // });
+  await fetch("https://heartrate.miran248.now.sh/api/iteration", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 
-  // setRawIterations([
-  //   payload,
-  //   ...rawIterations$.getState(),
-  // ]);
+  fetchIterations();
 };
 
 const classNames = [
