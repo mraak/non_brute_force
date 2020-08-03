@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import { loadPayloadsAsc, saveAggregate } from "../../store-ios";
+import { lastSyncedAggregate, loadPayloadsSince, saveAggregate, saveLastSyncedAggregate } from "../../store-ios";
 
 const toIterations = (payloads) => {
   let running = false;
@@ -42,6 +42,29 @@ const toIterations = (payloads) => {
 
   return iterations;
 };
+const toAggregate = (iteration) => iteration.reduce(
+  (memo, payload) => {
+    if(payload.type === "start") {
+      memo._id = payload.date;
+      memo.start = payload.date;
+    } else if(payload.type === "stop") {
+      memo.stop = payload.date;
+    } else {
+      const device = memo.devices[payload.deviceName] = memo.devices[payload.deviceName] || {};
+      // processes every payload's entry
+      payload.data.reduce(
+        (memo, entry) => {
+          const source = memo[entry.device] = memo[entry.device] || { bpms: [] };
+          source.bpms.push(entry.bpm);
+          return memo;
+        },
+        device
+      );
+    }
+    return memo;
+  },
+  { start: null, stop: null, devices: {} }
+);
 
 const transformAggregate = (iteration) => ({
   ...iteration,
@@ -60,6 +83,7 @@ const transformAggregate = (iteration) => ({
             return {
               ...memo,
               [sourceKey]: {
+                bpms: source.bpms,
                 // averages bpms
                 bpm: source.bpms.reduce((memo, bpm) => memo + bpm, 0) / source.bpms.length,
               },
@@ -72,57 +96,40 @@ const transformAggregate = (iteration) => ({
     {}
   ),
 });
-export const aggregatePayloads = (payloads) => {
+const aggregatePayloads = async(payloads) => {
   const iterations = toIterations(payloads);
 
   // processes every iteration
-  return iterations.map(
-    // processes every iteration's payload
-    (iteration) => iteration.reduce(
-      (memo, payload) => {
-        if(payload.type === "start") {
-          memo._id = payload.date;
-          memo.start = payload.date;
-        } else if(payload.type === "stop") {
-          memo.stop = payload.date;
-        } else {
-          const device = memo.devices[payload.deviceName] = memo.devices[payload.deviceName] || {};
-          // processes every payload's entry
-          payload.data.reduce(
-            (memo, entry) => {
-              const source = memo[entry.device] = memo[entry.device] || { bpms: [] };
-              source.bpms.push(entry.bpm);
-              return memo;
-            },
-            device
-          );
-        }
-        return memo;
-      },
-      { start: null, stop: null, devices: {} }
-    )
-  // removes empty iterations
-  ).filter(
-    (aggregate) => Object.keys(aggregate.devices).length > 0
-  // iterates through every iteration
-  ).map(transformAggregate);
-};
+  for(let iteration of iterations) {
+    let aggregate = toAggregate(iteration);
 
-export const saveAggregates = async(aggregates) => {
-  for(let aggregate of Object.values(aggregates)) {
+    // removes empty iterations
+    if(Object.keys(aggregate.devices).length === 0)
+      continue;
+
+    aggregate = transformAggregate(aggregate);
+
     await saveAggregate(aggregate);
+    await saveLastSyncedAggregate(aggregate.start);
   }
 };
 
+export const syncAggregates = async() => {
+  const [ point ] = await lastSyncedAggregate();
+  console.log("lastSyncedAggregate", point);
+  const payloads = await loadPayloadsSince(point
+    ? point.date
+    : "1970-01-01T00:00:00.000Z");
+  console.log("payloads", payloads.length);
+
+  return aggregatePayloads(payloads);
+};
+
 export default async(req, res) => {
-  const payloads = await loadPayloadsAsc();
-
-  const aggregates = aggregatePayloads(payloads);
-
-  await saveAggregates(aggregates);
+  await syncAggregates();
 
   res.setHeader("Access-Control-Allow-Methods", "GET");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.statusCode = 200;
-  res.json({ aggregates });
+  res.end();
 };

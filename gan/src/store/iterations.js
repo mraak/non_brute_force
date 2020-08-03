@@ -149,7 +149,8 @@ combine(layout$, hardcodedIterations$, fetchedIterations$, aggregates$, async(la
       //   body: JSON.stringify(payload),
       // });
 
-      const actualRank = heartRateDeltaRank(Math.abs(maja - dog));
+      const delta = Math.abs(maja - dog);
+      const actualRank = Number.isFinite(delta) ? heartRateDeltaRank(delta) : NaN;
       const trainable = iteration.valid && isNaN(actualRank) === false;
       const output = trainable
         ? Array.from(Array(5), (_, i) => i === actualRank ? 1 : 0)
@@ -159,6 +160,7 @@ combine(layout$, hardcodedIterations$, fetchedIterations$, aggregates$, async(la
         ...iteration,
         actualRank,
         combined: join(layout, iterationLayout),
+        delta,
         dog,
         layout: iterationLayout,
         maja,

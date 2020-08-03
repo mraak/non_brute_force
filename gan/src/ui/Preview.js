@@ -1,6 +1,6 @@
 import { useStore } from "effector-react";
 import p5 from "p5";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 import { linksGraph$ } from "../store/graph";
@@ -12,7 +12,8 @@ const TILE_SIZE = 60;
 
 const sketch = (iteration, size) => (p) => {
   const W = 750;
-  const H = 468.75;
+  // const W = 400;
+  const H = W * 10 / 16;
 
   p.setup = () => {
     p.createCanvas(W, H, p.WEBGL);
@@ -80,9 +81,11 @@ const sketch = (iteration, size) => (p) => {
   };
 };
 
+const Code = styled.code`
+  word-break: break-all;
+`;
 const Card = styled.div`
   & canvas {
-    display: block;
     height: auto !important;
     width: 100% !important;
   }
@@ -92,16 +95,16 @@ export default () => {
   const iteration = useStore(iteration$);
   const size = useStore(size$);
 
-  const id = `preview-container`;
+  const ref = useRef(null);
 
   useEffect(() => {
-    if(iteration === null)
+    if(ref.current === null || iteration === null)
       return;
 
-    const p = new p5(sketch(iteration.combined, size), id);
+    const p = new p5(sketch(iteration.combined, size), ref.current);
 
     return p.remove;
-  }, [ iteration ]);
+  }, [ ref.current, iteration ]);
 
   if(iteration === null) {
     return (
@@ -114,9 +117,9 @@ export default () => {
   return (
     <Card>
       <p>
-        <code>{text}</code>
+        <Code>{text}</Code>
       </p>
-      <div id={id} />
+      <div ref={ref} />
     </Card>
   );
 };

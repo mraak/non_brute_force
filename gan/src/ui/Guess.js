@@ -1,47 +1,51 @@
-import { createEffect } from "effector";
+import { createEvent, createEffect, restore } from "effector";
 import { useStore } from "effector-react";
 import p5 from "p5";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import * as tf from "@tensorflow/tfjs";
 import * as tfvis from "@tensorflow/tfjs-vis";
 
 import { ids$ } from "../store/ids";
-// import { rawIterations$, setRawIterations } from "../store/iterations";
+import { fetchIterations } from "../store/iterations";
 import { layout$ } from "../store/layout";
 import { model$ } from "../store/model";
+import { setPhase } from "../store/phase";
 import { size$ } from "../store/size";
 import { setTraining } from "../store/training";
 import { inside, fromIndex, toIndex, generateIteration, iterationToLayout, join } from "../utils";
 
+const setAttempts = createEvent();
+export const attempts$ = restore(setAttempts, 0);
+
+const setRank = createEvent();
+export const rank$ = restore(setRank, 0);
+
 const saveIteration = async(iteration, rank) => {
-  // const now = new Date;
-  // const timestamp = +now;
+  const now = new Date;
+  const timestamp = +now;
   
-  // const payload = {
-  //   _id: `${timestamp}`,
-  //   title: now.toISOString(),
-  //   data: iteration,
-  //   expectedRank: rank,
-  //   // iterationKey: entries$.getState().current,
-  //   timestamp,
-  // };
+  const payload = {
+    _id: `${timestamp}`,
+    title: now.toISOString(),
+    data: iteration,
+    expectedRank: rank,
+    // iterationKey: entries$.getState().current,
+    timestamp,
+  };
 
-  // console.log("saveIteration", payload);
+  console.log("saveIteration", payload);
 
-  // await fetch("https://heartrate.miran248.now.sh/api/iteration", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify(payload),
-  // });
+  await fetch("https://heartrate.miran248.now.sh/api/iteration", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 
-  // setRawIterations([
-  //   payload,
-  //   ...rawIterations$.getState(),
-  // ]);
+  fetchIterations();
 };
 
 const classNames = [
@@ -114,8 +118,17 @@ guess.fail.watch((error) => {
 })
 guess.finally.watch(() => setTraining(false));
 
-const find = createEffect();
+export const find = createEffect();
 find.use(async({ rank }) => {
+  // const element = document.getElementById("phase-3");
+  setTimeout(() => {
+    setPhase(3);
+    // window.scrollTo({
+    //   behavior: element ? "smooth" : "auto",
+    //   top: element ? element.offsetTop : 0,
+    // });
+  }, 100);
+
   const size = size$.getState();
   const l = layout$.getState();
 
@@ -127,6 +140,8 @@ find.use(async({ rank }) => {
 
   do {
     ++tries;
+
+    setAttempts(tries);
 
     // randomizeClickHandler();
     
@@ -148,6 +163,8 @@ find.use(async({ rank }) => {
 
     const ys = tf.tensor([ ranks[rank] ], [ 1, 5 ]);
     const labels = await ys.argMax(1);
+
+    setRank(argMax1[0]);
 
     console.log(`${tries}. found`, argMax1[0]); // , Array.from(data));
 
@@ -189,7 +206,18 @@ find.pending.watch((pending) => pending && setTraining(true));
 find.fail.watch((error) => {
   console.error("find error", error);
 })
-find.finally.watch(() => setTraining(false));
+find.finally.watch(() => {
+  setTraining(false);
+
+  // const element = document.getElementById("phase-4");
+  setTimeout(() => {
+    setPhase(4);
+    // window.scrollTo({
+    //   behavior: element ? "smooth" : "auto",
+    //   top: element ? element.offsetTop : 0,
+    // });
+  }, 100);
+});
 
 // const test = async() => {
 //   for(let i of trainData) {
@@ -320,63 +348,25 @@ let p, layout;
 export default () => {
   const size = useStore(size$);
 
-  const { errors, formState, handleSubmit, register } = useForm({
-    mode: "onChange",
-  });
+  // const { errors, formState, handleSubmit, register } = useForm({
+  //   mode: "onChange",
+  // });
 
-  const id = `guess-container`;
+  const ref = useRef(null);
 
   useEffect(() => {
+    if(ref.current === null)
+      return;
+
     layout = layout$.getState();
 
-    p = new p5(sketch(size), id);
+    p = new p5(sketch(size), ref.current);
     p.redraw();
 
     return p.remove;
-  }, []);
+  }, [ ref.current ]);
 
   return (
-    <div>
-      {/* <p>
-        <button onClick={randomizeClickHandler}>randomize</button>
-      </p> */}
-      {/* <form onSubmit={handleSubmit(guessClickHandler)}>
-        <fieldset>
-          <legend>options</legend>
-          <label>
-            <h6>class</h6>
-            <select name="rank" ref={register}>
-              <option value={0}>0</option>
-              <option value={1}>1</option>
-              <option value={2}>2</option>
-              <option value={3}>3</option>
-              <option value={4}>4</option>
-            </select>
-            {errors.rank && "class is required"}
-          </label>
-          <hr />
-          <input type="submit" value="guess" disabled={!formState.isValid || formState.isSubmitting} />
-        </fieldset>
-      </form> */}
-      <form onSubmit={handleSubmit(findClickHandler)}>
-        <fieldset>
-          <legend>options</legend>
-          <label>
-            <h6>class</h6>
-            <select name="rank" ref={register}>
-              <option value={0}>0</option>
-              <option value={1}>1</option>
-              <option value={2}>2</option>
-              <option value={3}>3</option>
-              <option value={4}>4</option>
-            </select>
-            {errors.rank && "class is required"}
-          </label>
-          <hr />
-          <input type="submit" value="find" disabled={!formState.isValid || formState.isSubmitting} />
-        </fieldset>
-      </form>
-      <p id={id} />
-    </div>
+    <div ref={ref} />
   );
 };

@@ -29,6 +29,8 @@ import App from "./ui/Redesign";
 import iterations from "./data/iterations";
 import layout, { layoutSize } from "./data/layout";
 
+import "./index.css";
+
 const props = {
   iterations,
   layout,

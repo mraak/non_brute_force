@@ -1,0 +1,23 @@
+* {
+  border: 1px solid #000000;
+  outline: none;
+  /* padding: 4px; */
+}
+
+h1, h2 {
+  color: #FF0000;
+  font-size: 2em;
+}
+
+aside {
+  width: 400px;
+}
+
+canvas {
+  display: block;
+}
+
+#tfjs-visor-container * {
+  border: none;
+  margin: 0;
+}

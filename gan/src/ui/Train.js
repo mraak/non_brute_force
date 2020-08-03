@@ -5,6 +5,7 @@ import * as tf from "@tensorflow/tfjs";
 
 import { iterations$ } from "../store/iterations";
 import { model$ } from "../store/model";
+import { setPhase } from "../store/phase";
 import { setProgress, progress$ } from "../store/progress";
 import { size$ } from "../store/size";
 import { setTraining, training$ } from "../store/training";
@@ -15,7 +16,8 @@ import {
   visualizeModel,
   getFitCallbacks,
 } from "../tf/vis";
-import { join } from "../utils";
+
+import { find } from "./Guess";
 
 const EPOCH_COUNT = 250;
 
@@ -42,6 +44,23 @@ combine(iterations$, size$, (iterations, size) => {
 
 const train = createEffect();
 train.use(async() => {
+  // const element1 = document.getElementById("phase-1");
+  setTimeout(() => {
+    setPhase(1);
+    // window.scrollTo({
+    //   behavior: element1 ? "smooth" : "auto",
+    //   top: element1 ? element1.offsetTop : 0,
+    // });
+  }, 100);
+  // const element2 = document.getElementById("phase-2");
+  setTimeout(() => {
+    setPhase(2);
+    // window.scrollTo({
+    //   behavior: element2 ? "smooth" : "auto",
+    //   top: element2 ? element2.offsetTop : 0,
+    // });
+  }, 10100);
+
   const model = model$.getState();
 
   visualizeModel(model);
@@ -75,7 +94,11 @@ train.pending.watch((pending) => pending && setTraining(true));
 train.fail.watch((error) => {
   console.error("train error", error);
 })
-train.finally.watch(() => setTraining(false));
+train.finally.watch(() => {
+  setTraining(false);
+
+  find({ rank: 0 });
+});
 
 export default () => {
   const progress = useStore(progress$);
@@ -85,7 +108,7 @@ export default () => {
     <div>
       <p>
         <button onClick={train}
-                disabled={training}>{training ? "training ..." : "train"}</button>
+                disabled={training}>{training ? "training ..." : "start new"}</button>
       </p>
       <progress value={progress}>{Math.round(progress * 100)}%</progress>
     </div>

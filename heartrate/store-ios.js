@@ -80,12 +80,6 @@ export const loadAggregatesAsc = async() => {
 
   return collection.find({}).sort({ start: 1 }).toArray();
 };
-export const lastAggregate = async() => {
-  const db = await dbPromise;
-  const collection = db.collection("aggregates");
-
-  return collection.find({}).sort({ start: -1 }).limit(1).toArray();
-};
 export const saveAggregate = async(item) => {
   const db = await dbPromise;
   const collection = db.collection("aggregates");
@@ -95,6 +89,29 @@ export const saveAggregate = async(item) => {
       filter: { _id: item._id },
       // update: { $setOnInsert: item },
       update: { $set: item },
+      upsert: true,
+    },
+  }]);
+};
+
+export const lastSyncedAggregate = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("aggregates-sync");
+
+  return collection.find({ _id: 1 }).toArray();
+};
+export const saveLastSyncedAggregate = async(date) => {
+  const db = await dbPromise;
+  const collection = db.collection("aggregates-sync");
+
+  return collection.bulkWrite([{
+    updateOne: {
+      filter: { _id: 1 },
+      // update: { $setOnInsert: item },
+      update: { $set: {
+        _id: 1,
+        date,
+      } },
       upsert: true,
     },
   }]);
