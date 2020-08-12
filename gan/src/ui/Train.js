@@ -1,4 +1,4 @@
-import { combine, createEffect } from "effector";
+import { combine, createEffect, createEvent, restore } from "effector";
 import { useStore } from "effector-react";
 import React from "react";
 import * as tf from "@tensorflow/tfjs";
@@ -9,15 +9,16 @@ import { setPhase } from "../store/phase";
 import { setProgress, progress$ } from "../store/progress";
 import { size$ } from "../store/size";
 import { setTraining, training$ } from "../store/training";
-import {
-  showExamples,
-  showAccuracy,
-  showConfusion,
-  visualizeModel,
-  getFitCallbacks,
-} from "../tf/vis";
+// import {
+//   showExamples,
+//   showAccuracy,
+//   showConfusion,
+//   visualizeModel,
+//   getFitCallbacks,
+// } from "../tf/vis";
 
-import { find } from "./Guess";
+import { Button } from "./components";
+import { find } from "./Generator";
 
 const EPOCH_COUNT = 250;
 
@@ -42,16 +43,24 @@ combine(iterations$, size$, (iterations, size) => {
   ys = tf.tensor(output, [ data.length, 5 ], "int32");
 });
 
+function getAccumulator(accumulators, callback, metric) {
+  if(accumulators[callback] == null) {
+    accumulators[callback] = {};
+  }
+  if(accumulators[callback][metric] == null) {
+    accumulators[callback][metric] = [];
+  }
+  return accumulators[callback][metric];
+}
+
+const setTrainStats = createEvent();
+export const trainStats$ = restore(setTrainStats, null);
+
 const train = createEffect();
 train.use(async() => {
   // const element1 = document.getElementById("phase-1");
-  setTimeout(() => {
-    setPhase(1);
-    // window.scrollTo({
-    //   behavior: element1 ? "smooth" : "auto",
-    //   top: element1 ? element1.offsetTop : 0,
-    // });
-  }, 100);
+  setPhase(1);
+
   // const element2 = document.getElementById("phase-2");
   setTimeout(() => {
     setPhase(2);
@@ -59,14 +68,20 @@ train.use(async() => {
     //   behavior: element2 ? "smooth" : "auto",
     //   top: element2 ? element2.offsetTop : 0,
     // });
-  }, 10100);
+  }, 10000);
+
+  // await new Promise((resolve, reject) => setTimeout(resolve, 100));
 
   const model = model$.getState();
 
-  visualizeModel(model);
+  // visualizeModel(model);
 
-  const callbacks = getFitCallbacks();
+  // const callbacks = getFitCallbacks(parent);
 
+  const metrics = [ "loss", "val_loss", "acc", "val_acc" ];
+  const accumulators = {};
+  const historyOpts = {};
+  // const drawArea = getDrawArea(container);
   const response = await model.fit(xs, ys, {
     epochs: EPOCH_COUNT,
     shuffle: true,
@@ -74,16 +89,52 @@ train.use(async() => {
     callbacks: {
       // unblocks p5.draw
       // onBatchEnd: tf.nextFrame,
-      onEpochEnd: (...args) => {
-        const [ i, history ] = args;
+      onEpochEnd: async(...args) => {
+        const [ i, log ] = args;
 
         const epoch = i + 1;
 
-        // console.log(`epoch ${epoch}, loss ${history.loss}`);
+        // console.log(`epoch ${epoch}, loss ${log.loss}`);
 
         setProgress(epoch / EPOCH_COUNT);
 
-        return callbacks.onEpochEnd(...args);
+        // return callbacks.onEpochEnd(...args);
+
+        // -- inlined and modified callbacks.onEpochEnd
+
+        const callbackName = "onEpochEnd";
+
+        // Set a nicer x axis name where possible
+        historyOpts.xLabel = "Epoch";
+  
+        // Because of how the _ (iteration) numbers are given in the layers api
+        // we have to store each metric for each callback in different arrays else
+        // we cannot get accurate "global" batch numbers for onBatchEnd.
+  
+        // However at render time we want to be able to combine metrics for a
+        // given callback. So here we make a nested list of metrics, the first
+        // level are arrays for each callback, the second level contains arrays
+        // (of logs) for each metric within that callback.
+  
+        const metricLogs = [];
+        const presentMetrics = [];
+        for(const metric of metrics) {
+          // not all logs have all kinds of metrics.
+          if(log[metric] != null) {
+            presentMetrics.push(metric);
+  
+            const accumulator = getAccumulator(accumulators, callbackName, metric);
+            accumulator.push({ [metric]: log[metric] });
+            metricLogs.push(accumulator);
+          }
+        }
+  
+        // const subContainer = subSurface(drawArea, callbackName, { title: callbackName });
+        // history(subContainer, metricLogs, presentMetrics, historyOpts);
+
+        setTrainStats({ metricLogs, presentMetrics, historyOpts });
+
+        await tf.nextFrame();
       },
     },
   });
@@ -95,7 +146,7 @@ train.fail.watch((error) => {
   console.error("train error", error);
 })
 train.finally.watch(() => {
-  setTraining(false);
+  // setTraining(false);
 
   find({ rank: 0 });
 });
@@ -106,11 +157,11 @@ export default () => {
 
   return (
     <div>
-      <p>
-        <button onClick={train}
-                disabled={training}>{training ? "training ..." : "start new"}</button>
+      <p style={{ textAlign: "center" }}>
+        <Button onClick={train}
+                disabled={training}>{training ? "training ..." : "start new"}</Button>
       </p>
-      <progress value={progress}>{Math.round(progress * 100)}%</progress>
+      {/* <progress value={progress}>{Math.round(progress * 100)}%</progress> */}
     </div>
   );
 };

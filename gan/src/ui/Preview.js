@@ -1,7 +1,6 @@
 import { useStore } from "effector-react";
 import p5 from "p5";
 import React, { useEffect, useRef } from "react";
-import styled from "styled-components";
 
 import { linksGraph$ } from "../store/graph";
 import { iteration$ } from "../store/iteration";
@@ -81,16 +80,6 @@ const sketch = (iteration, size) => (p) => {
   };
 };
 
-const Code = styled.code`
-  word-break: break-all;
-`;
-const Card = styled.div`
-  & canvas {
-    height: auto !important;
-    width: 100% !important;
-  }
-`;
-
 export default () => {
   const iteration = useStore(iteration$);
   const size = useStore(size$);
@@ -112,14 +101,7 @@ export default () => {
     );
   }
 
-  const text = JSON.stringify(iteration.combined);
-
   return (
-    <Card>
-      <p>
-        <Code>{text}</Code>
-      </p>
-      <div ref={ref} />
-    </Card>
+    <div ref={ref} />
   );
 };

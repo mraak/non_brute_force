@@ -54,8 +54,8 @@ const toAggregate = (iteration) => iteration.reduce(
       // processes every payload's entry
       payload.data.reduce(
         (memo, entry) => {
-          const source = memo[entry.device] = memo[entry.device] || { bpms: [] };
-          source.bpms.push(entry.bpm);
+          const source = memo[entry.device] = memo[entry.device] || { entries: [] };
+          source.entries.push({ bpm: entry.bpm, date: entry.date });
           return memo;
         },
         device
@@ -83,9 +83,9 @@ const transformAggregate = (iteration) => ({
             return {
               ...memo,
               [sourceKey]: {
-                bpms: source.bpms,
+                entries: source.entries,
                 // averages bpms
-                bpm: source.bpms.reduce((memo, bpm) => memo + bpm, 0) / source.bpms.length,
+                bpm: source.entries.reduce((memo, entry) => memo + entry.bpm, 0) / source.entries.length,
               },
             };
           },

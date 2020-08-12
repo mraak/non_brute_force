@@ -1,8 +1,12 @@
+import { useStore } from "effector-react";
 import p5 from "p5";
 import React, { useEffect, useMemo, useRef } from "react";
 import styled from "styled-components";
 
 import { formatBpm, formatRank, formatDate } from "../formatters";
+import { training$ } from "../store/training";
+
+import * as colors from "./colors";
 
 /**
  * A Heart object will beat, and generate voltage values according to the time
@@ -214,8 +218,9 @@ class ECG {
    * @param {Object[]} values   Array of {x, y} objects. x plots time, y plots voltage
    * @param {number} maxValuesHistory   Maximum number of values before wiping oldest one
    */
-  constructor(p, graphZero, values, maxValuesHistory) {
+  constructor(p, color, graphZero, values, maxValuesHistory) {
     this.p = p;
+    this.color = color;
     this.graphZero = graphZero;
     this.values = values;
     this.maxValuesHistory = maxValuesHistory;
@@ -245,6 +250,8 @@ class ECG {
     
     p.push();
 
+    const c = this.color;
+
     for(let i = 1; i < this.values.length; i++) {
       // If the previous value has a X coordinate higher than the current one,
       // don't draw it, to avoid lines crossing from end to start of the ECG plot area.
@@ -254,8 +261,8 @@ class ECG {
       let alpha = i / this.values.length;
 
       // Set the color of the drawing
-      p.stroke(121, 239, 150, alpha);
-      p.fill(121, 239, 150, alpha);
+      p.stroke(c, alpha);
+      p.fill(c, alpha);
 
       // Line from previous value to current value
       p.line(
@@ -279,7 +286,7 @@ class ECG {
     const v = this.values[this.values.length - 1];
 
     // Set the color of the drawing
-    p.stroke(225, 225, 225, 1);
+    p.stroke(c);
 
     // Vertical line
     p.line(
@@ -357,7 +364,7 @@ const sketch = (options) => (p) => {
 
   // Initialize the ecg
   // let ecg = new ECG(p, { x: 0, y: 110 }, [{ x: 0, y: 0 }], 600);
-  let ecg = new ECG(p, { x: 0, y: 110 }, [{ x: 0, y: 0 }], W);
+  let ecg = new ECG(p, p.color(options.color), { x: 0, y: 110 }, [{ x: 0, y: 0 }], W);
 
   // Initialize a heart
   let heart = new Heart(p, ecg, options, 12, 8, 12);
@@ -393,9 +400,10 @@ const sketch = (options) => (p) => {
      * The -1 is to allow the border to be seen in the final page.
      */
     p.push();
-    p.fill("#201D1D");
-    p.stroke(121, 239, 150, 1);
-    p.rect(0, 0, W - 1, H - 1);
+    p.fill(colors.background);
+    // p.stroke(121, 239, 150, 1);
+    // p.rect(0, 0, W - 1, H - 1);
+    p.rect(0, 0, W, H);
     p.pop();
 
     // Get the new voltage values for the ECG from the heart
@@ -409,34 +417,26 @@ const sketch = (options) => (p) => {
   };
 };
 
-const Code = styled.code`
-  word-break: break-all;
-`;
-const Card = styled.div`
-  & canvas {
-    height: auto !important;
-    width: 100% !important;
-  }
-`;
+export default ({ bpm, color }) => {
+  const training = useStore(training$);
 
-export default ({ bpm }) => {
   const ref = useRef(null);
+  const bpmValid = useMemo(() => training === false && Number.isFinite(bpm), [ training, bpm ]);
   const options = useMemo(() => ({
-    getBpm: () => Number.isFinite(bpm) ? bpm : 1,
+    color,
+    getBpm: () => bpm,
   }), []);
 
   useEffect(() => {
-    if(ref.current === null)
+    if(ref.current === null || bpmValid === false)
       return;
 
     const p = new p5(sketch(options), ref.current);
 
     return p.remove;
-  }, [ ref.current ]);
+  }, [ ref.current, bpmValid ]);
 
   return (
-    <Card>
-      <div ref={ref} />
-    </Card>
+    <div ref={ref} />
   );
 };

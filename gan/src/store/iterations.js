@@ -2,6 +2,7 @@ import { combine, createEffect, createEvent, restore } from "effector";
 
 import { aggregates$ } from "./aggregates";
 import { layout$ } from "./layout";
+import { setTraining } from "./training";
 
 import { iterationToLayout, join } from "../utils";
 
@@ -45,8 +46,9 @@ const heartRateDeltaRank = (rate) => {
 
 // TODO: Fix me!
 const extractBpms = (iteration, aggregate) => {
-  let maja;
-  let dog;
+  let maja, dog;
+  let majaAvgBpm, dogAvgBpm;
+  let majaBpms = null, dogBpms = null;
 
   if(aggregate !== undefined && "_id" in iteration) {
     const { devices } = aggregate;
@@ -55,49 +57,59 @@ const extractBpms = (iteration, aggregate) => {
     dog = devices["Ada’s iPhone"];
 
     if(maja && dog) {
-      maja = maja[Object.keys(maja)[0]].bpm;
-      dog = dog[Object.keys(dog)[0]].bpm;
+      maja = maja[Object.keys(maja)[0]];
+      dog = dog[Object.keys(dog)[0]];
     } else if(maja) {
       const keys = Object.keys(maja);
 
       if(keys.length >= 2) {
         const s = maja;
-        maja = s[keys[0]].bpm;
-        dog = s[keys[1]].bpm;
+        maja = s[keys[0]];
+        dog = s[keys[1]];
       }
     } else if(dog) {
       const keys = Object.keys(dog);
 
       if(keys.length >= 2) {
         const s = dog;
-        maja = s[keys[0]].bpm;
-        dog = s[keys[1]].bpm;
+        maja = s[keys[0]];
+        dog = s[keys[1]];
       }
     }
+
+    majaAvgBpm = maja.bpm;
+    dogAvgBpm = dog.bpm;
+    majaBpms = maja.entries;
+    dogBpms = dog.entries;
   } else {
-    maja = iteration.maja;
-    dog = heartRateDog(iteration);
+    majaAvgBpm = iteration.maja;
+    dogAvgBpm = heartRateDog(iteration);
   }
 
-  return [ maja, dog ];
+  return [ majaAvgBpm, dogAvgBpm, majaBpms, dogBpms ];
 };
 
 export const setHardcodedIterations = createEvent();
 export const hardcodedIterations$ = restore(setHardcodedIterations, null);
 
 export const fetchIterations = createEffect();
-fetchIterations.use(() => fetch("https://heartrate.miran248.now.sh/api/iterations"));
-
+fetchIterations.use(
+  () => fetch("https://heartrate.miran248.now.sh/api/iterations").then(
+    (response) => response.json()
+  )
+);
+fetchIterations.finally.watch(() => {
+  setTraining(false);
+});
 fetchIterations();
 
 const fetchedIterations$ = restore(fetchIterations.done, null);
 
-combine(layout$, hardcodedIterations$, fetchedIterations$, aggregates$, async(layout, hardcodedIterations, fetchedIterationsResponse, aggregates) => {
+combine(layout$, hardcodedIterations$, fetchedIterations$, aggregates$, (layout, hardcodedIterations, fetchedIterationsResponse, aggregates) => {
   if(layout === null || hardcodedIterations === null || fetchedIterationsResponse === null || aggregates === null)
     return;
 
-  const { result } = fetchedIterationsResponse;
-  const { iterations: fetchedIterations } = await result.json();
+  const { result: { iterations: fetchedIterations } } = fetchedIterationsResponse;
   
   const all = [
     ...hardcodedIterations,
@@ -127,7 +139,7 @@ combine(layout$, hardcodedIterations$, fetchedIterations$, aggregates$, async(la
       }
       // iteration.aggregate = aggregate;
 
-      const [ maja, dog ] = extractBpms(iteration, aggregate);
+      const [ majaAvgBpm, dogAvgBpm, majaBpms, dogBpms ] = extractBpms(iteration, aggregate);
 
       // const payload = {
       //   _id: iteration._id,
@@ -136,8 +148,8 @@ combine(layout$, hardcodedIterations$, fetchedIterations$, aggregates$, async(la
       //   expectedRank: iteration.expectedRank,
       //   timestamp: iteration.timestamp,
       //   iterationKey: iteration.iterationKey,
-      //   // maja,
-      //   // dog,
+      //   // majaAvgBpm,
+      //   // dogAvgBpm,
       //   aggregate: iteration.aggregate,
       // };
 
@@ -149,7 +161,7 @@ combine(layout$, hardcodedIterations$, fetchedIterations$, aggregates$, async(la
       //   body: JSON.stringify(payload),
       // });
 
-      const delta = Math.abs(maja - dog);
+      const delta = Math.abs(majaAvgBpm - dogAvgBpm);
       const actualRank = Number.isFinite(delta) ? heartRateDeltaRank(delta) : NaN;
       const trainable = iteration.valid && isNaN(actualRank) === false;
       const output = trainable
@@ -161,9 +173,11 @@ combine(layout$, hardcodedIterations$, fetchedIterations$, aggregates$, async(la
         actualRank,
         combined: join(layout, iterationLayout),
         delta,
-        dog,
+        dog: dogAvgBpm,
+        dogBpms,
         layout: iterationLayout,
-        maja,
+        maja: majaAvgBpm,
+        majaBpms,
         output,
         trainable,
       };

@@ -39,10 +39,10 @@ export async function showExamples(data) {
   }
 }
 
-export function getFitCallbacks() {
+export function getFitCallbacks(parent) {
   const metrics = ["loss", "val_loss", "acc", "val_acc"];
   // const metrics = ["val_loss", "val_acc"];
-  const container = {
+  const container = parent || {
     name: "Model Training",
     tab: "Training",
     styles: { height: "800px" }

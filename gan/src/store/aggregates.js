@@ -10,7 +10,7 @@ fetchAggregates.done.watch(async({ params, result }) => {
 
   setAggregates(aggregates);
 
-  // setTimeout(() => fetchAggregates(), 60000);
+  setTimeout(() => fetchAggregates(), 30000);
 });
 
 fetchAggregates();

@@ -1,6 +1,8 @@
+import * as d3 from "d3";
+import { format } from "date-fns";
 import { useStore } from "effector-react";
 import p5 from "p5";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { useTable } from "react-table";
 import styled from "styled-components";
 
@@ -10,7 +12,7 @@ import { fetchIterations, iterations$ } from "../../store/iterations";
 import { size$ } from "../../store/size";
 import { fromIndex } from "../../utils";
 
-import { Image } from "../components";
+import { Panel } from "../components";
 
 const saveIteration = async(id, diff) => {
   const payload = {
@@ -109,6 +111,7 @@ const HorizontalPreview = ({ value: layout }) => {
 };
 
 const Styles = styled.div`
+  display: grid;
   padding: 1rem;
 
   table {
@@ -136,6 +139,27 @@ const Styles = styled.div`
     }
   }
 `;
+
+const Grid = styled.div`
+  // border: 1px solid #000000;
+  color: #000000;
+  display: grid;
+  grid-auto-columns: 8ch;
+  grid-auto-flow: column;
+  grid-gap: 1ch;
+  grid-template-rows: repeat(5, 8ch);
+  overflow-x: auto;
+
+  * {
+    border: 1px solid #000000;
+    display: grid;
+    place-items: center;
+  }
+`;
+
+var rankColor = d3.scaleSequential()
+      .interpolator(d3.scaleOrdinal(d3.schemePastel1))
+      .domain([ 0, 4 ]);
 
 const Table = ({ columns, data }) => {
   // Use the state and functions returned from useTable to build your UI
@@ -178,8 +202,13 @@ const Table = ({ columns, data }) => {
   );
 };
 
+const renderRank = (targetRank, { actualRank, timestamp }) => actualRank === targetRank
+  ? (<div style={{ backgroundColor: rankColor(actualRank) }}>{format(timestamp, "MM/dd")}<br />{format(timestamp, "HH:mm")}</div>)
+  : (<div />);
 export default () => {
   const iterations = useStore(iterations$);
+
+  const [ valid, setValid ] = useState(false);
 
   const columns = useMemo(
     () => [
@@ -241,10 +270,45 @@ export default () => {
     []
   );
 
+  const data = iterations && iterations.filter(
+    (iteration) => valid === false || iteration.valid
+  ) || [];
+
+  const trainableData = iterations && iterations.filter(
+    (iteration) => iteration.trainable
+  ) || [];
+  trainableData.sort(
+    (a, b) => a.timestamp - b.timestamp
+  );
+
   return (
     <Styles>
-      <Image src="archive-histogram.png" />
-      <Table columns={columns} data={iterations || []} />
+      {/* <Panel> */}
+        <Grid>
+          <b>4</b>
+          <b>3</b>
+          <b>2</b>
+          <b>1</b>
+          <b>0</b>
+          {trainableData.map(
+            (iteration, i) => (
+              <Fragment key={i}>
+                {renderRank(4, iteration)}
+                {renderRank(3, iteration)}
+                {renderRank(2, iteration)}
+                {renderRank(1, iteration)}
+                {renderRank(0, iteration)}
+              </Fragment>
+            )
+          )}
+        </Grid>
+      {/* </Panel> */}
+      {/* <HeatMap data={trainableData} /> */}
+
+      {/* <Panel> */}
+        <label><input type="checkbox" checked={valid} onChange={() => setValid(!valid)} /> valid only</label>
+        <Table columns={columns} data={data} />
+      {/* </Panel> */}
     </Styles>
   );
 };

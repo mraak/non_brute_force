@@ -1,17 +1,13 @@
-import { Composition } from "atomic-layout";
 import { useStore } from "effector-react";
 import React from "react";
 
 import { formatBpm, formatRank, formatDate } from "../../formatters";
 import { iteration$ } from "../../store/iteration";
 
+import { HR, Label, Table, Value } from "../components";
 import Preview from "../Preview";
 import Train from "../Train";
 
-const phase4ContentAreas = `
-  graph actions
-  details details
-`;
 export default () => {
   const iteration = useStore(iteration$);
   
@@ -22,22 +18,17 @@ export default () => {
   }
 
   return (
-    <Composition areas={phase4ContentAreas} gap={10}>
-      {({ Graph, Actions, Details }) => (
-        <>
-          <Graph>
-            <Preview />
-          </Graph>
-          <Actions>
-            <Train />
-          </Actions>
-          <Details>
-            <h4>iteration ended:</h4>
-            <div>expected rank: {formatRank(iteration.expectedRank)} human/dog</div>
-            <div>actual rank: {formatRank(iteration.actualRank)} human/dog</div>
-          </Details>
-        </>
-      )}
-    </Composition>
+    <>
+      <Preview />
+      <Train />
+      <Table>
+        <HR style={{ gridColumn: "span 3" }} />
+        <Label style={{ alignItems: "center" }}>status</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>in progress</Value>
+        <HR style={{ gridColumn: "span 3" }} />
+        <Label style={{ alignItems: "center" }}>expected class</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{formatRank(iteration.expectedRank)}</Value>
+        <HR style={{ gridColumn: "span 3" }} />
+        <Label style={{ alignItems: "center" }}>actual class</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{formatRank(iteration.actualRank)}</Value>
+      </Table>
+    </>
   );
 };

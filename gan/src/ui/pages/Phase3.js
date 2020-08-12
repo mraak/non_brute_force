@@ -1,39 +1,28 @@
-import { Composition } from "atomic-layout";
 import { useStore } from "effector-react";
 import React from "react";
 import styled from "styled-components";
 
+import { HR, Label, Table, Value } from "../components";
 import { formatBpm, formatRank, formatDate } from "../../formatters";
 import { iteration$ } from "../../store/iteration";
 
 import { Image } from "../components";
-import Guess, { attempts$, rank$ } from "../Guess";
+import Generator, { attempts$, rank$ } from "../Generator";
 
-const phase3ContentAreas = `
-  attempt progress class
-  graph graph graph
-`;
 // input hidden output
 export default () => {
   const attempts = useStore(attempts$);
   const rank = useStore(rank$);
 
   return (
-    <Composition areas={phase3ContentAreas} gap={10}>
-      {({ Attempt, Progress, Class, Graph, Input, Hidden, Output }) => (
-        <>
-          <Attempt as="h3">attempt: {attempts}</Attempt>
-          <Progress as="h3">--</Progress>
-          <Class as="h3">class: {rank}</Class>
-          <Graph>
-            <Image src="phase3-canvas.png" />
-            <Guess />
-          </Graph>
-          {/* <Input as="h4">input</Input>
-          <Hidden as="h4">hidden</Hidden>
-          <Output as="h4">output</Output> */}
-        </>
-      )}
-    </Composition>
+    <>
+      <Generator />
+      <Table>
+        <HR style={{ gridColumn: "span 3" }} />
+        <Label style={{ alignItems: "center" }}>attempt</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{attempts}</Value>
+        <HR style={{ gridColumn: "span 3" }} />
+        <Label style={{ alignItems: "center" }}>class</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{rank}</Value>
+      </Table>
+    </>
   );
 };

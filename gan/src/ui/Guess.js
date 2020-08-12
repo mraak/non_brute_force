@@ -207,11 +207,10 @@ find.fail.watch((error) => {
   console.error("find error", error);
 })
 find.finally.watch(() => {
-  setTraining(false);
-
   // const element = document.getElementById("phase-4");
   setTimeout(() => {
     setPhase(4);
+    // setTraining(false);
     // window.scrollTo({
     //   behavior: element ? "smooth" : "auto",
     //   top: element ? element.offsetTop : 0,

@@ -1,0 +1,9 @@
+export const background = "#0E111F";
+export const border = "#1F222F";
+export const label = "#9F9FA4";
+export const navigation = "#198CB7";
+export const chartAnimal = "#44C1EF";
+export const chartHuman = "#45988E";
+export const valueAnimal = "#E8A38E";
+export const valueHuman = "#ED6E3D";
+export const title = "#FFFFFF";

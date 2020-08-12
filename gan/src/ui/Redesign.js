@@ -1,35 +1,17 @@
 import React from "react";
 import {
-  NavLink,
   Redirect,
   Route,
   BrowserRouter as Router,
   Switch,
 } from "react-router-dom";
-import styled from "styled-components";
 
+import Header from "./Header";
 import Archive from "./pages/Archive";
 import Main from "./pages/Main";
 import Map from "./pages/Map";
 
 const root = "/non-brute-force-ui";
-
-const Nav = styled.nav`
-  & > a + a {
-    margin-left: 1ch;
-  }
-`;
-
-const Header = () => (
-  <header>
-    {/* <h1>nbf</h1> */}
-    <Nav>
-      <NavLink to="/" exact>main</NavLink>
-      <NavLink to="/archive" exact>archive</NavLink>
-      <NavLink to="/map" exact>map</NavLink>
-    </Nav>
-  </header>
-);
 
 export default () => (
   <Router basename={root}>

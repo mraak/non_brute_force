@@ -1,5 +1,8 @@
 * {
-  border: 1px solid #000000;
+  /* border: 1px solid #000000; */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Oxygen-Sans, Ubuntu, Cantarell,
+               "Helvetica Neue", sans-serif;
   outline: none;
   /* padding: 4px; */
 }
@@ -17,7 +20,35 @@ canvas {
   display: block;
 }
 
+canvas {
+  height: auto !important;
+  width: 100% !important;
+}
+
+body {
+  background-color: #0E111F;
+  color: #9F9FA4;
+  padding: 0;
+}
+
+#root {
+  display: grid;
+  grid-gap: 17px;
+}
+
 #tfjs-visor-container * {
-  border: none;
+  /* border: none; */
   margin: 0;
+}
+
+.c3-tooltip {
+  background-color: #FFFFFF;
+}
+
+/* .recharts-responsive-container, .recharts-responsive-container *, .recharts-tooltip-wrapper *, .c3-tooltip * {
+  border: none;
+} */
+
+.c3-line {
+  fill: none;
 }
