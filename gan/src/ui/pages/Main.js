@@ -12,10 +12,6 @@ import Phase2 from "./Phase2";
 import Phase3 from "./Phase3";
 import Phase4 from "./Phase4";
 
-const Section = styled.section`
-  min-height: 100vh;
-`;
-
 const phaseTitle = `
   phase title
 `;
@@ -33,13 +29,18 @@ const PhaseTitle = ({ phase, title }) => (
 const Container = styled.div`
   display: grid;
   grid-auto-flow: row;
-  grid-gap: 15px;
+  grid-auto-rows: 100%;
+  grid-gap: 17px;
   grid-template-columns: repeat(2, 1fr);
-  padding-left: 17px;
-  padding-right: 17px;
+  height: 639px;
 `;
 const Main = styled.main`
-  
+  display: grid;
+  grid-auto-flow: row;
+  grid-auto-rows: 100%;
+  grid-gap: 17px;
+  overflow-y: auto;
+  width: 606px;
 `;
 
 export default () => {
@@ -47,45 +48,35 @@ export default () => {
 
   return (
     <Container>
-      <aside>
-        <Sidebar />
-      </aside>
+      <Sidebar />
       <Main>
       {phase > 3 && (
-        <Section id="phase-4">
-          <Panel>
-            <PhaseTitle phase={4} title="new iteration layout" />
-            <HR />
-            <Phase4 />
-          </Panel>
-        </Section>
+        <Panel id="phase-4">
+          <PhaseTitle phase={4} title="new iteration layout" />
+          <HR />
+          <Phase4 />
+        </Panel>
       )}
       {phase > 2 && (
-        <Section id="phase-3">
-          <Panel>
-            <PhaseTitle phase={3} title="generating new layout" />
-            <HR />
-            <Phase3 />
-          </Panel>
-        </Section>
+        <Panel id="phase-3">
+          <PhaseTitle phase={3} title="generating new layout" />
+          <HR />
+          <Phase3 />
+        </Panel>
       )}
       {phase > 1 && (
-        <Section id="phase-2">
-          <Panel>
-            <PhaseTitle phase={2} title="training model w/ cnn" />
-            <HR />
-            <Phase2 />
-          </Panel>
-        </Section>
+        <Panel id="phase-2">
+          <PhaseTitle phase={2} title="training model w/ cnn" />
+          <HR />
+          <Phase2 />
+        </Panel>
       )}
       {phase > 0 && (
-        <Section id="phase-1">
-          <Panel>
-            <PhaseTitle phase={1} title="previous iteration" />
-            <HR />
-            <Phase1 />
-          </Panel>
-        </Section>
+        <Panel id="phase-1">
+          <PhaseTitle phase={1} title="previous iteration" />
+          <HR />
+          <Phase1 />
+        </Panel>
       )}
       </Main>
     </Container>

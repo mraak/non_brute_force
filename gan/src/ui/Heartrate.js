@@ -146,6 +146,9 @@ class Heart {
    * If necessary, create a new this.nextBeat value
    */
   updateTimeToNextBeat() {
+    if(this.options.bpm > 0 && Number.isFinite(this.nextBeatIn) === false)
+      this.nextBeatIn = 0;
+    
     // This indicates that the next beat will begin in the next iteration
     if(this.nextBeatIn-- <= 0) {
       // const p = this.p;
@@ -154,7 +157,7 @@ class Heart {
       // Use the x coordinates of the mouse position to modify the heart frequency
       // this.nextBeat = p.abs(p.ceil(p.randomGaussian((900 - p.mouseX) / 10, 3)));
       // this.nextBeat = this.nextBeatIn + 3600 / 200;
-      this.nextBeat = this.nextBeatIn + 3600 / this.options.getBpm();
+      this.nextBeat = this.nextBeatIn + 3600 / this.options.bpm;
 
       // It the pixel time between beat and beat is less than 18, force it to be
       // 18. This value makes to a bpm of 200.
@@ -293,7 +296,7 @@ class ECG {
       this.graphZero.x + v.x,
       0,
       this.graphZero.x + v.x,
-      150
+      124
     );
 
     p.pop();
@@ -359,12 +362,12 @@ const sketch = (options) => (p) => {
   // p5.sound variables
   // let osc;
 
-  const W = 300;
-  const H = 150;
+  const W = 286;
+  const H = 124;
 
   // Initialize the ecg
   // let ecg = new ECG(p, { x: 0, y: 110 }, [{ x: 0, y: 0 }], 600);
-  let ecg = new ECG(p, p.color(options.color), { x: 0, y: 110 }, [{ x: 0, y: 0 }], W);
+  let ecg = new ECG(p, p.color(options.color), { x: 0, y: 100 }, [{ x: 0, y: 0 }], W);
 
   // Initialize a heart
   let heart = new Heart(p, ecg, options, 12, 8, 12);
@@ -400,6 +403,7 @@ const sketch = (options) => (p) => {
      * The -1 is to allow the border to be seen in the final page.
      */
     p.push();
+    p.noStroke();
     p.fill(colors.background);
     // p.stroke(121, 239, 150, 1);
     // p.rect(0, 0, W - 1, H - 1);
@@ -421,20 +425,18 @@ export default ({ bpm, color }) => {
   const training = useStore(training$);
 
   const ref = useRef(null);
-  const bpmValid = useMemo(() => training === false && Number.isFinite(bpm), [ training, bpm ]);
-  const options = useMemo(() => ({
-    color,
-    getBpm: () => bpm,
-  }), []);
+  const options = useMemo(() => ({}), []);
+  options.bpm = training === false ? bpm : 0;
+  options.color = color;
 
   useEffect(() => {
-    if(ref.current === null || bpmValid === false)
+    if(ref.current === null)
       return;
 
     const p = new p5(sketch(options), ref.current);
 
     return p.remove;
-  }, [ ref.current, bpmValid ]);
+  }, [ ref.current ]);
 
   return (
     <div ref={ref} />

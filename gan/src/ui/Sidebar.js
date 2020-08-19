@@ -1,91 +1,161 @@
 import { Composition } from "atomic-layout";
 import { format } from "date-fns";
+import { createEvent, restore } from "effector";
 import { useStore } from "effector-react";
+import p5 from "p5";
 import React from "react";
 import styled from "styled-components";
 
 import { formatBpm, formatRank, formatDate } from "../formatters";
-import { iteration$ } from "../store/iteration";
+import { currentIteration$ } from "../store/iterations";
 import { training$ } from "../store/training";
 
 import * as colors from "./colors";
-import { HR, Label, Panel, Table, Title, Value } from "./components";
+import { Apart, BigValue, Center, HR, Label, Panel, Span2, Table, Title, Value } from "./components";
 import Heartrate from "./Heartrate";
+import { startOfWeekWithOptions } from "date-fns/esm/fp";
 
-const Container = styled.div`
+p5.prototype.noiseSeed(123);
+const nextNoise = () => p5.prototype.noise(+new Date / 100000);
+const scale = (value, min, max) => value * (max - min) + min;
+// const nextValue = (value, min, max, alpha = .03) => {
+  // value += ((max - min) * (random() - .5)) * alpha;
+  // value = Math.max(min, Math.min(max, value));
+  // return Math.round(value * 10) / 10;
+// };
+
+const setRespHuman = createEvent();
+const respHuman$ = restore(setRespHuman, 15);
+const setRespAnimal = createEvent();
+const respAnimal$ = restore(setRespAnimal, 20);
+
+const setTempHuman = createEvent();
+const tempHuman$ = restore(setTempHuman, 33);
+const setTempAnimal = createEvent();
+const tempAnimal$ = restore(setTempAnimal, 36.5);
+
+setInterval(() => {
+  const noise = nextNoise();
+  setRespHuman(scale(noise, 12, 18));
+  setRespAnimal(scale(noise, 15, 30));
+
+  setTempHuman(scale(noise, 31, 35.5));
+  setTempAnimal(scale(noise, 34, 37.2));
+}, 1000);
+
+const Container = styled.aside`
   display: grid;
   grid-auto-flow: row;
-  // grid-auto-rows: 69px;
-  grid-gap: 15px;
+  grid-auto-rows: 100%;
+  grid-gap: 17px;
   grid-template-columns: repeat(2, 330px);
-  padding-left: 17px;
-  padding-right: 17px;
-  // width: 771px;
+  width: 677px;
 `;
 
 export default () => {
   const training = useStore(training$);
-  const iteration = useStore(iteration$);
+  const iteration = useStore(currentIteration$);
+
+  const respHuman = useStore(respHuman$);
+  const respAnimal = useStore(respAnimal$);
   
-  if(training) {
-    return (
-      <div>training model</div>
-    );
-  }
-  
+  const tempHuman = useStore(tempHuman$);
+  const tempAnimal = useStore(tempAnimal$);
+
   if(iteration === null) {
     return (
-      <div>loading iteration</div>
+      <Container>
+        <Panel as={Center} style={{ gridColumn: "2 span" }}>loading iteration</Panel>
+      </Container>
     );
   }
 
-  const majaBpm = formatBpm(iteration.maja);
-  const dogBpm = formatBpm(iteration.dog);
+  const { human, animal, ended } = iteration;
 
-  const majaBpms = (iteration.majaBpms || []).map(({ bpm, date }) => ({ maja: bpm, date: +new Date(date) }));
-  const dogBpms = (iteration.dogBpms || []).map(({ bpm, date }) => ({ dog: bpm, date: +new Date(date) }));
+  const humanBpm = human === null
+    ? null
+    : human.bpm;
+  const animalBpm = animal === null
+    ? null
+    : animal.bpm;
 
-  const bpms = [
-    ...majaBpms,
-    ...dogBpms,
-  ].sort(
-    (a, b) => b.date - a.date
-  );
+  const humanEntries = human === null
+    ? []
+    : human.entries.map(({ bpm, date }) => ({ maja: bpm, date: +new Date(date) }));
+  const animalEntries = animal === null
+    ? []
+    : animal.entries.map(({ bpm, date }) => ({ dog: bpm, date: +new Date(date) }));
 
-  const start = format(iteration.timestamp, "HH:mm:ss");
-  const end = bpms.length === 0 ? "NA" : format(bpms[0].date, "HH:mm:ss");
+  const humanStart = human === null || humanEntries.length === 0
+    ? null
+    : humanEntries[0].date;
+  const humanStop = human === null || humanEntries.length === 0
+    ? null
+    : humanEntries[humanEntries.length - 1].date;
+  const animalStart = animal === null || animalEntries.length === 0
+    ? null
+    : animalEntries[0].date;
+  const animalStop = animal === null || animalEntries.length === 0
+    ? null
+    : animalEntries[animal.entries.length - 1].date;
 
   return (
     <Container>
       <Panel>
         <Title>human</Title>
         <HR />
-        <Heartrate bpm={majaBpm} color={colors.valueHuman} />
-        <Table>
-          <Label>heart</Label><Value human>{majaBpm}</Value><Label>bpm</Label>
-          <HR style={{ gridColumn: "span 3" }} />
-          <Label>resp</Label><Value human>86</Value><Label>bpm</Label>
-          <Label>temp</Label><Value human>36.5</Value><Label>&deg;c</Label>
-          <HR style={{ gridColumn: "span 3" }} />
-          <Label style={{ alignItems: "center" }}>start</Label><Value human style={{ fontSize: "25px", gridColumn: "span 2" }}>{start}</Value>
-          <HR style={{ gridColumn: "span 3" }} />
-          <Label style={{ alignItems: "center" }}>end</Label><Value human style={{ fontSize: "25px", gridColumn: "span 2" }}>{end}</Value>
+        <div style={{ paddingBottom: 11, paddingLeft: 22, paddingRight: 22, paddingTop: 11 }}>
+          <img src="Heart_Icon.png" style={{ display: "block", height: 28 }} />
+        </div>
+        <div style={{ paddingLeft: 22, paddingRight: 22 }}>
+          <Heartrate bpm={training || ended ? 0 : humanBpm || 0} color={colors.valueHuman} />
+        </div>
+        <Table style={{ paddingBottom: 36, paddingTop: 25 }}>
+          <Label>heart</Label><BigValue human>{training || ended ? "NA" : formatBpm(humanBpm)}</BigValue><Label>bpm</Label>
         </Table>
+        <HR />
+        <Table style={{ paddingBottom: 30, paddingTop: 24 }}>
+          <Label>resp</Label><BigValue human>{training || ended || humanStart === null ? "NA" : Math.round(respHuman)}</BigValue><Label>bpm</Label>
+        </Table>
+        <Table style={{ paddingBottom: 34 }}>
+          <Label>temp</Label><BigValue human>{training || ended || humanStart === null ? "NA" : tempHuman.toFixed(1)}</BigValue><Label>&deg;c</Label>
+        </Table>
+        <HR />
+        <Apart>
+          <Label>start</Label><Value human>{training || humanStart === null ? "NA" : format(humanStart, "HH:mm:ss")}</Value>
+        </Apart>
+        <HR />
+        <Apart>
+          <Label>end</Label><Value human>{training || ended === false || humanStop === null ? "NA" : format(humanStop, "HH:mm:ss")}</Value>
+        </Apart>
       </Panel>
       <Panel>
         <Title>animal</Title>
         <HR />
-        <Heartrate bpm={dogBpm} color={colors.valueAnimal} />
-        <Table>
-          <Label>heart</Label><Value>{dogBpm}</Value><Label>bpm</Label>
-          <HR style={{ gridColumn: "span 3" }} />
-          <Label>resp</Label><Value>92</Value><Label>bpm</Label>
-          <Label>temp</Label><Value>34.8</Value><Label>&deg;c</Label>
-          <HR style={{ gridColumn: "span 3" }} />
-          <Label style={{ alignItems: "center" }}>start</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{start}</Value>
-          <HR style={{ gridColumn: "span 3" }} />
-          <Label style={{ alignItems: "center" }}>end</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{end}</Value>
+        <div style={{ paddingBottom: 11, paddingLeft: 22, paddingRight: 22, paddingTop: 11 }}>
+          <img src="Heart_Icon.png" style={{ display: "block", height: 28 }} />
+        </div>
+        <div style={{ paddingLeft: 22, paddingRight: 22 }}>
+          <Heartrate bpm={training || ended ? 0 : animalBpm || 0} color={colors.valueAnimal} />
+        </div>
+        <Table style={{ paddingBottom: 36, paddingTop: 25 }}>
+          <Label>heart</Label><BigValue>{training || ended ? "NA" : formatBpm(animalBpm)}</BigValue><Label>bpm</Label>
         </Table>
+        <HR />
+        <Table style={{ paddingBottom: 30, paddingTop: 24 }}>
+          <Label>resp</Label><BigValue>{training || ended || animalStart === null ? "NA" : Math.round(respAnimal)}</BigValue><Label>bpm</Label>
+        </Table>
+        <Table style={{ paddingBottom: 34 }}>
+          <Label>temp</Label><BigValue>{training || ended || animalStart === null ? "NA" : tempAnimal.toFixed(1)}</BigValue><Label>&deg;c</Label>
+        </Table>
+        <HR />
+        <Apart>
+          <Label>start</Label><Value>{training || animalStart === null ? "NA" : format(animalStart, "HH:mm:ss")}</Value>
+        </Apart>
+        <HR />
+        <Apart>
+          <Label>end</Label><Value>{training || ended === false || animalStop === null ? "NA" : format(animalStop, "HH:mm:ss")}</Value>
+        </Apart>
       </Panel>
     </Container>
   );

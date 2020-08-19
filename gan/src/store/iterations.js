@@ -1,10 +1,9 @@
 import { combine, createEffect, createEvent, restore } from "effector";
 
-import { aggregates$ } from "./aggregates";
 import { layout$ } from "./layout";
-import { setTraining } from "./training";
 
 import { iterationToLayout, join } from "../utils";
+import { training$ } from "./training";
 
 const heartRateDog = (iteration) => {
   const rates = [];
@@ -23,10 +22,129 @@ const heartRateDog = (iteration) => {
   const n = rates.length;
 
   if(n === 0)
-    return NaN;
+    return null;
 
-  return rates.reduce((memo, rate) => memo + rate, 0) / n;
+  return { bpm: rates.reduce((memo, rate) => memo + rate, 0) / n, entries: [] };
 };
+
+export const setHardcodedIterations = createEvent();
+export const hardcodedIterations$ = restore(setHardcodedIterations, null);
+
+// current iteration
+const setFetchedCurrentIteration = createEvent();
+export const fetchedCurrentIteration$ = restore(setFetchedCurrentIteration, null);
+
+let currentIterationTimeout = 0;
+export const fetchCurrentIteration = createEffect();
+fetchCurrentIteration.use(() => {
+  clearTimeout(currentIterationTimeout);
+
+  return fetch("https://heartrate.miran248.now.sh/api/current-iteration").then(
+    (response) => response.json()
+  );
+});
+fetchCurrentIteration.done.watch(({ params, result }) => {
+  setFetchedCurrentIteration(result);
+});
+fetchCurrentIteration.finally.watch(() => {
+  if(training$.getState() === false)
+    currentIterationTimeout = setTimeout(() => fetchCurrentIteration(), 30000);
+});
+
+fetchCurrentIteration();
+
+combine(layout$, fetchedCurrentIteration$, (layout, fetchedCurrentIteration) => {
+  if(layout === null || fetchedCurrentIteration === null)
+    return;
+
+  const iterationLayout = iterationToLayout(layout, fetchedCurrentIteration.data);
+
+  const { aggregate } = fetchedCurrentIteration;
+  const { human, animal } = aggregate || { human: null, animal: null };
+
+  const iteration = {
+    ...fetchedCurrentIteration,
+    animal,
+    combined: join(layout, iterationLayout),
+    human,
+    layout: iterationLayout,
+  };
+
+  setCurrentIteration(iteration);
+});
+
+const setCurrentIteration = createEvent();
+export const currentIteration$ = restore(setCurrentIteration, null);
+
+// previous iteration
+export const setFetchedPreviousIteration = createEvent();
+export const fetchedPreviousIteration$ = restore(setFetchedPreviousIteration, null);
+
+let previousIterationTimeout = 0;
+const fetchPreviousIteration = createEffect();
+fetchPreviousIteration.use(() => {
+  clearTimeout(previousIterationTimeout);
+
+  return fetch("https://heartrate.miran248.now.sh/api/previous-iteration").then(
+    (response) => response.json()
+  );
+});
+fetchPreviousIteration.done.watch(({ params, result }) => {
+  setFetchedPreviousIteration(result);
+});
+fetchPreviousIteration.finally.watch(() => {
+  if(training$.getState() === false)
+    previousIterationTimeout = setTimeout(() => fetchPreviousIteration(), 30000);
+});
+
+fetchPreviousIteration();
+
+combine(layout$, fetchedPreviousIteration$, (layout, fetchedPreviousIteration) => {
+  if(layout === null || fetchedPreviousIteration === null)
+    return;
+
+  const iterationLayout = iterationToLayout(layout, fetchedPreviousIteration.data);
+  
+  const { aggregate } = fetchedPreviousIteration;
+  const { human, animal } = aggregate || { human: null, animal: null };
+
+  const iteration = {
+    ...fetchedPreviousIteration,
+    animal,
+    combined: join(layout, iterationLayout),
+    human,
+    layout: iterationLayout,
+  };
+
+  setPreviousIteration(iteration);
+});
+
+const setPreviousIteration = createEvent();
+export const previousIteration$ = restore(setPreviousIteration, null);
+
+// iterations
+const setFetchedIterations = createEvent();
+export const fetchedIterations$ = restore(setFetchedIterations, null);
+
+let iterationTimeout = 0;
+const fetchIterations = createEffect();
+fetchIterations.use(() => {
+  clearTimeout(iterationTimeout);
+
+  return fetch("https://heartrate.miran248.now.sh/api/iterations").then(
+    (response) => response.json()
+  );
+});
+fetchIterations.done.watch(({ params, result }) => {
+  setFetchedIterations(result);
+});
+fetchIterations.finally.watch(() => {
+  if(training$.getState() === false)
+    iterationTimeout = setTimeout(() => fetchIterations(), 30000);
+});
+
+fetchIterations();
+
 // TODO: Move to utils
 const heartRateDeltaRank = (rate) => {
   if(rate < 5)
@@ -43,148 +161,66 @@ const heartRateDeltaRank = (rate) => {
 
   return 4; // [ 40, inf )
 };
-
-// TODO: Fix me!
-const extractBpms = (iteration, aggregate) => {
-  let maja, dog;
-  let majaAvgBpm, dogAvgBpm;
-  let majaBpms = null, dogBpms = null;
-
-  if(aggregate !== undefined && "_id" in iteration) {
-    const { devices } = aggregate;
-
-    maja = devices["Maja’s iPhone"];
-    dog = devices["Ada’s iPhone"];
-
-    if(maja && dog) {
-      maja = maja[Object.keys(maja)[0]];
-      dog = dog[Object.keys(dog)[0]];
-    } else if(maja) {
-      const keys = Object.keys(maja);
-
-      if(keys.length >= 2) {
-        const s = maja;
-        maja = s[keys[0]];
-        dog = s[keys[1]];
-      }
-    } else if(dog) {
-      const keys = Object.keys(dog);
-
-      if(keys.length >= 2) {
-        const s = dog;
-        maja = s[keys[0]];
-        dog = s[keys[1]];
-      }
-    }
-
-    majaAvgBpm = maja.bpm;
-    dogAvgBpm = dog.bpm;
-    majaBpms = maja.entries;
-    dogBpms = dog.entries;
-  } else {
-    majaAvgBpm = iteration.maja;
-    dogAvgBpm = heartRateDog(iteration);
-  }
-
-  return [ majaAvgBpm, dogAvgBpm, majaBpms, dogBpms ];
-};
-
-export const setHardcodedIterations = createEvent();
-export const hardcodedIterations$ = restore(setHardcodedIterations, null);
-
-export const fetchIterations = createEffect();
-fetchIterations.use(
-  () => fetch("https://heartrate.miran248.now.sh/api/iterations").then(
-    (response) => response.json()
-  )
-);
-fetchIterations.finally.watch(() => {
-  setTraining(false);
-});
-fetchIterations();
-
-const fetchedIterations$ = restore(fetchIterations.done, null);
-
-combine(layout$, hardcodedIterations$, fetchedIterations$, aggregates$, (layout, hardcodedIterations, fetchedIterationsResponse, aggregates) => {
-  if(layout === null || hardcodedIterations === null || fetchedIterationsResponse === null || aggregates === null)
+combine(layout$, hardcodedIterations$, fetchedIterations$, (layout, hardcodedIterations, fetchedIterations) => {
+  if(layout === null || hardcodedIterations === null || fetchedIterations === null)
     return;
 
-  const { result: { iterations: fetchedIterations } } = fetchedIterationsResponse;
-  
   const all = [
     ...hardcodedIterations,
-    ...fetchedIterations.map((iteration) => ({
-      ...iteration,
-      valid: "valid" in iteration ? iteration.valid : true,
-    })),
+    ...fetchedIterations,
   ];
 
   all.sort((a, b) => a.timestamp - b.timestamp);
 
-  let currentAggregate;
-    
   const iterations = all.map(
     (iteration) => {
       const iterationLayout = iterationToLayout(layout, iteration.data);
 
-      let aggregate;
-      if(iteration.valid) {
-        const nextAaggregate = aggregates.find(
-          (aggregate) => +new Date(aggregate.start) >= iteration.timestamp
-        );
+      const { aggregate = null } = iteration;
+      let { human, animal } = aggregate || { human: null, animal: null };
 
-        if(currentAggregate !== nextAaggregate) {
-          aggregate = currentAggregate = nextAaggregate;
-        }
+      if("_id" in iteration) {
+        human = { entries: [], ...(human || {}) };
+        animal = { entries: [], ...(animal || {}) };
+
+        return {
+          ...iteration,
+          animal,
+          combined: join(layout, iterationLayout),
+          human,
+          layout: iterationLayout,
+        };
       }
-      // iteration.aggregate = aggregate;
 
-      const [ majaAvgBpm, dogAvgBpm, majaBpms, dogBpms ] = extractBpms(iteration, aggregate);
+      if("maja" in iteration)
+        human = { bpm: iteration.maja, entries: [] };
+  
+      animal = heartRateDog(iteration);
 
-      // const payload = {
-      //   _id: iteration._id,
-      //   title: iteration.title,
-      //   data: iteration.data,
-      //   expectedRank: iteration.expectedRank,
-      //   timestamp: iteration.timestamp,
-      //   iterationKey: iteration.iterationKey,
-      //   // majaAvgBpm,
-      //   // dogAvgBpm,
-      //   aggregate: iteration.aggregate,
-      // };
+      const valid = "valid" in iteration ? iteration.valid : true;
 
-      // await fetch("https://heartrate.miran248.now.sh/api/iteration", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(payload),
-      // });
-
-      const delta = Math.abs(majaAvgBpm - dogAvgBpm);
-      const actualRank = Number.isFinite(delta) ? heartRateDeltaRank(delta) : NaN;
-      const trainable = iteration.valid && isNaN(actualRank) === false;
+      const delta = human !== null && animal !== null ? Math.abs(human.bpm - animal.bpm) : null;
+      const actualRank = Number.isFinite(delta) ? heartRateDeltaRank(delta) : null;
+      const trainable = valid && Number.isFinite(actualRank);
       const output = trainable
         ? Array.from(Array(5), (_, i) => i === actualRank ? 1 : 0)
         : null;
-
-      const result = {
+    
+      return {
         ...iteration,
-        actualRank,
+        animal,
         combined: join(layout, iterationLayout),
-        delta,
-        dog: dogAvgBpm,
-        dogBpms,
+        human,
         layout: iterationLayout,
-        maja: majaAvgBpm,
-        majaBpms,
+
+        actualRank,
+        aggregate,
+        delta,
+        ended: aggregate !== null && !!aggregate.stop,
         output,
         trainable,
+        valid,
       };
-
-      // console.log(iteration, result)
-      
-      return result;
     }
   );
 
@@ -195,3 +231,20 @@ combine(layout$, hardcodedIterations$, fetchedIterations$, aggregates$, (layout,
 
 const setIterations = createEvent();
 export const iterations$ = restore(setIterations, null);
+
+const clear = () => {
+  clearTimeout(currentIterationTimeout);
+  clearTimeout(previousIterationTimeout);
+  clearTimeout(iterationTimeout);
+};
+
+training$.watch((training) => {
+  if(training)
+    clear();
+});
+
+export const refresh = () => {
+  fetchCurrentIteration();
+  fetchPreviousIteration();
+  fetchIterations();
+};

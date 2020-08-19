@@ -1,34 +1,43 @@
 import { useStore } from "effector-react";
 import React from "react";
+import styled from "styled-components";
 
 import { formatBpm, formatRank, formatDate } from "../../formatters";
-import { iteration$ } from "../../store/iteration";
+import { currentIteration$ } from "../../store/iterations";
 
-import { HR, Label, Table, Value } from "../components";
+import { Apart, Center, Chart, HR, Label, Value } from "../components";
+import HorizontalPreview from "../HorizontalPreview";
 import Preview from "../Preview";
 import Train from "../Train";
 
 export default () => {
-  const iteration = useStore(iteration$);
+  const iteration = useStore(currentIteration$);
   
   if(iteration === null) {
     return (
-      <div>loading 3d preview</div>
+      <Center>loading 3d preview</Center>
     );
   }
 
   return (
     <>
-      <Preview />
-      <Train />
-      <Table>
-        <HR style={{ gridColumn: "span 3" }} />
-        <Label style={{ alignItems: "center" }}>status</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>in progress</Value>
-        <HR style={{ gridColumn: "span 3" }} />
-        <Label style={{ alignItems: "center" }}>expected class</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{formatRank(iteration.expectedRank)}</Value>
-        <HR style={{ gridColumn: "span 3" }} />
-        <Label style={{ alignItems: "center" }}>actual class</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{formatRank(iteration.actualRank)}</Value>
-      </Table>
+      <Chart>
+        <Preview />
+        <HorizontalPreview layout={iteration.combined} />
+        <Train />
+      </Chart>
+      <HR />
+      <Apart small>
+        <Label>iteration status</Label><Value>{iteration.ended ? "ended" : "in progress"}</Value>
+      </Apart>
+      <HR />
+      <Apart small>
+        <Label>expected class</Label><Value>{formatRank(iteration.expectedRank)}</Value>
+      </Apart>
+      <HR />
+      <Apart small>
+        <Label>actual class</Label><Value>{formatRank(iteration.actualRank)}</Value>
+      </Apart>
     </>
   );
 };

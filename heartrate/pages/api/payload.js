@@ -3,6 +3,7 @@
 import { savePayload } from "../../store-ios";
 
 import { syncAggregates } from "./aggregate-payloads";
+import { syncIterations } from "./sync-iterations";
 
 export default async({ body }, res) => {
   console.log(body);
@@ -14,6 +15,7 @@ export default async({ body }, res) => {
     });
 
     await syncAggregates();
+    await syncIterations();
   }
 
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");

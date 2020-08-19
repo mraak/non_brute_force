@@ -1,21 +1,3 @@
-// import AWS from "aws-sdk";
-//
-// AWS.config.update({
-//   credentials: new AWS.Credentials("client", "secret"),
-//   region: "eu-west-1",
-// });
-//
-// const ddb = new AWS.DynamoDB.DocumentClient({ apiVersion: "2012-08-10" });
-//
-// export const load = () => ddb.scan({
-//   TableName: "nbf-bpm-activity-dev",
-// }).promise();
-//
-// export const save = (data) => ddb.put({
-//   TableName: "nbf-bpm-activity-dev",
-//   Item: data,
-// }).promise();
-
 const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
 
@@ -39,14 +21,32 @@ client.connect((error) => {
   disconnect = () => client.close();
 });
 
-export const load = async() => {
+export const loadIterations = async() => {
   const db = await dbPromise;
   const collection = db.collection("iterations");
 
-  return collection.find({}).sort({ timestamp: -1 }).toArray();
+  return collection.find({}, { projection: { "aggregate.human.entries": 0, "aggregate.animal.entries": 0 } }).sort({ timestamp: -1 }).toArray();
+};
+export const loadIteration = async(id) => {
+  const db = await dbPromise;
+  const collection = db.collection("iterations");
+
+  return collection.findOne({ _id: id });
+};
+export const loadCurrentIteration = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("iterations");
+
+  return collection.findOne({ valid: true }, { sort: { timestamp: -1 }, skip: 0 });
+};
+export const loadPreviousIteration = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("iterations");
+
+  return collection.findOne({ trainable: true }, { sort: { timestamp: -1 }, skip: 1 });
 };
 
-export const save = async(item) => {
+export const saveIteration = async(item) => {
   const db = await dbPromise;
   const collection = db.collection("iterations");
 
@@ -60,6 +60,35 @@ export const save = async(item) => {
   }]);
 };
 
+export const loadIterationsSince = async(date) => {
+  const db = await dbPromise;
+  const collection = db.collection("iterations");
+
+  return collection.find({ timestamp: { $gte: date } });
+};
+
+export const lastSyncedIteration = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("iterations-sync");
+
+  return collection.findOne({ _id: 1 });
+};
+export const saveLastSyncedIteration = async(date) => {
+  const db = await dbPromise;
+  const collection = db.collection("iterations-sync");
+
+  return collection.bulkWrite([{
+    updateOne: {
+      filter: { _id: 1 },
+      // update: { $setOnInsert: item },
+      update: { $set: {
+        _id: 1,
+        date,
+      } },
+      upsert: true,
+    },
+  }]);
+};
 const cleanUpServer = (eventType) => {
   if(disconnect) {
     disconnect();

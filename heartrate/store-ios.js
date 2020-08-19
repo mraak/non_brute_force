@@ -48,17 +48,11 @@ export const sync = async(items) => {
   })));
 };
 
-export const loadPayloadsAsc = async() => {
-  const db = await dbPromise;
-  const collection = db.collection("payload");
-
-  return collection.find({}).sort({ date: 1 }).toArray();
-};
 export const loadPayloadsSince = async(date) => {
   const db = await dbPromise;
   const collection = db.collection("payload");
 
-  return collection.find({ date: { $gte: date } }).sort({ date: 1 }).toArray();
+  return collection.find({ date: { $gte: date } });
 };
 export const savePayload = async(item) => {
   const db = await dbPromise;
@@ -74,11 +68,11 @@ export const savePayload = async(item) => {
   }]);
 };
 
-export const loadAggregatesAsc = async() => {
+export const loadAggregate = async(query) => {
   const db = await dbPromise;
   const collection = db.collection("aggregates");
 
-  return collection.find({}).sort({ start: 1 }).toArray();
+  return collection.findOne(query);
 };
 export const saveAggregate = async(item) => {
   const db = await dbPromise;
@@ -98,7 +92,7 @@ export const lastSyncedAggregate = async() => {
   const db = await dbPromise;
   const collection = db.collection("aggregates-sync");
 
-  return collection.find({ _id: 1 }).toArray();
+  return collection.findOne({ _id: 1 });
 };
 export const saveLastSyncedAggregate = async(date) => {
   const db = await dbPromise;

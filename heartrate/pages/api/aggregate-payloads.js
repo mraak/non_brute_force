@@ -2,11 +2,17 @@
 
 import { lastSyncedAggregate, loadPayloadsSince, saveAggregate, saveLastSyncedAggregate } from "../../store-ios";
 
-const toIterations = (payloads) => {
+const toIterations = async(payloadsCursor) => {
   let running = false;
 
   // groups all payloads into iterations
-  const { iterations } = payloads.reduce((memo, payload) => {
+  const memo = { iterations: [], current: null };
+  while(true) {
+    const payload = await payloadsCursor.next();
+
+    if(payload === null)
+      break;
+
     if(payload.type === "start") {
       running = true;
 
@@ -16,7 +22,7 @@ const toIterations = (payloads) => {
         memo.current = iteration;
       }
 
-      return memo;
+      continue;
     } else if(payload.type === "stop") {
       running = false;
 
@@ -25,22 +31,23 @@ const toIterations = (payloads) => {
         memo.current = null;
       }
 
-      return memo;
+      if(memo.iterations.length === 1)
+        break;
+
+      continue;
     }
 
     if(running === false)
-      return memo;
+      continue;
     
     // TODO: repeat previous payload if current has null data
     // const [ last ] = memo.current.slice(-1);
 
     if(payload.data !== null)
       memo.current.push(payload);
+  }
 
-    return memo;
-  }, { iterations: [], current: null });
-
-  return iterations;
+  return memo.iterations;
 };
 const toAggregate = (iteration) => iteration.reduce(
   (memo, payload) => {
@@ -66,63 +73,87 @@ const toAggregate = (iteration) => iteration.reduce(
   { start: null, stop: null, devices: {} }
 );
 
-const transformAggregate = (iteration) => ({
-  ...iteration,
-  // iterates through every device
-  devices: Object.keys(iteration.devices).reduce(
-    (memo, deviceKey) => {
-      const device = iteration.devices[deviceKey];
+const transformAggregate = (aggregate) => {
+  const { devices } = aggregate;
 
-      return {
-        ...memo,
-        // iterates through every source
-        [deviceKey]: Object.keys(device).reduce(
-          (memo, sourceKey) => {
-            const source = device[sourceKey];
+  let human, animal;
 
-            return {
-              ...memo,
-              [sourceKey]: {
-                entries: source.entries,
-                // averages bpms
-                bpm: source.entries.reduce((memo, entry) => memo + entry.bpm, 0) / source.entries.length,
-              },
-            };
-          },
-          {}
-        ),
-      };
-    },
-    {}
-  ),
-});
-const aggregatePayloads = async(payloads) => {
-  const iterations = toIterations(payloads);
+  human = devices["Maja’s iPhone"];
+  animal = devices["Ada’s iPhone"];
 
-  // processes every iteration
-  for(let iteration of iterations) {
-    let aggregate = toAggregate(iteration);
+  if(human && animal) {
+    human = human[Object.keys(human)[0]];
+    animal = animal[Object.keys(animal)[0]];
+  } else if(human) {
+    const keys = Object.keys(human);
 
-    // removes empty iterations
-    if(Object.keys(aggregate.devices).length === 0)
-      continue;
+    const s = human;
+    human = s[keys[0]];
 
-    aggregate = transformAggregate(aggregate);
+    if(keys.length >= 2) {
+      human = s[keys[0]];
+      animal = s[keys[1]];
+    }
+  } else if(animal) {
+    const keys = Object.keys(animal);
 
-    await saveAggregate(aggregate);
-    await saveLastSyncedAggregate(aggregate.start);
+    const s = animal;
+    animal = s[keys[0]];
+
+    if(keys.length >= 2) {
+      human = s[keys[0]];
+      animal = s[keys[1]];
+    }
+  }
+
+  return {
+    _id: aggregate._id,
+    start: aggregate.start,
+    stop: aggregate.stop,
+    human: human ? aggregateEntries(aggregate, human.entries) : null,
+    animal: animal ? aggregateEntries(aggregate, animal.entries) : null,
+  };
+};
+const aggregateEntries = (aggregate, entries) => {
+  entries = entries.filter((entry) => entry.date >= aggregate.start);
+  
+  return {
+    entries,
+    bpm: entries.reduce((memo, entry) => memo + entry.bpm, 0) / entries.length,
+  };
+};
+
+const aggregatePayloads = async(payloadsCursor) => {
+  while(true) {
+    const iterations = await toIterations(payloadsCursor);
+
+    if(iterations.length === 0)
+      break;
+
+    // processes every iteration
+    for(let iteration of iterations) {
+      let aggregate = toAggregate(iteration);
+
+      // removes empty iterations
+      if(Object.keys(aggregate.devices).length === 0)
+        continue;
+
+      aggregate = transformAggregate(aggregate);
+
+      await saveAggregate(aggregate);
+      await saveLastSyncedAggregate(aggregate.start);
+    }
   }
 };
 
 export const syncAggregates = async() => {
-  const [ point ] = await lastSyncedAggregate();
+  const point = await lastSyncedAggregate();
   console.log("lastSyncedAggregate", point);
-  const payloads = await loadPayloadsSince(point
+  const payloadsCursor = await loadPayloadsSince(point
     ? point.date
     : "1970-01-01T00:00:00.000Z");
-  console.log("payloads", payloads.length);
 
-  return aggregatePayloads(payloads);
+  return aggregatePayloads(payloadsCursor);
 };
 
 export default async(req, res) => {

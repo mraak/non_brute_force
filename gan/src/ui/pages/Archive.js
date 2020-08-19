@@ -1,18 +1,16 @@
 import * as d3 from "d3";
 import { format } from "date-fns";
 import { useStore } from "effector-react";
-import p5 from "p5";
-import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import React, { Fragment, useMemo, useState } from "react";
 import { useTable } from "react-table";
 import styled from "styled-components";
 
 import { formatBpm, formatRank, formatDate } from "../../formatters";
-import { ids$ } from "../../store/ids";
-import { fetchIterations, iterations$ } from "../../store/iterations";
-import { size$ } from "../../store/size";
-import { fromIndex } from "../../utils";
+import { iterations$, refresh } from "../../store/iterations";
 
-import { Panel } from "../components";
+import { HR, Panel } from "../components";
+import HorizontalPreview from "../HorizontalPreview";
+import { training$ } from "../../store/training";
 
 const saveIteration = async(id, diff) => {
   const payload = {
@@ -30,89 +28,16 @@ const saveIteration = async(id, diff) => {
     body: JSON.stringify(payload),
   });
 
-  fetchIterations();
+  refresh();
 };
 
-const TILE_SIZE = 12;
-const sketch = (iteration, size) => (p) => {
-  const ids = ids$.getState();
-
-  // horizontal
-  const W = ((size.x + 1) * size.z - 1) * TILE_SIZE;
-  const H = size.y * TILE_SIZE;
-
-  // vertical
-  // const W = size.x * TILE_SIZE;
-  // const H = ((size.y + 1) * size.z - 1) * TILE_SIZE;
-
-  p.setup = () => {
-    p.createCanvas(W, H, p.CANVAS);
-    p.noLoop();
-    p.textSize(TILE_SIZE * .6);
-    p.textAlign(p.CENTER, p.CENTER);
-  };
-  p.draw = () => {
-    // aligns to top left
-    // p.translate(-W / 2, -H / 2, 0);
-
-    for(let i in iteration) {
-      const pos = fromIndex(size, i);
-
-      // horizontal
-      const posX = pos.x * TILE_SIZE;
-      const posY = pos.y * TILE_SIZE;
-      const posZ = pos.z * (size.x + 1) * TILE_SIZE;
-
-      const x = posX + posZ;
-      const y = posY;
-
-      // vertical
-      // const posX = p.x * TILE_SIZE;
-      // const posY = p.y * TILE_SIZE;
-      // const posZ = p.z * (size.y + 1) * TILE_SIZE;
-
-      // const x = posX;
-      // const y = posY + posZ;
-
-      let c = 255;
-
-      if(iteration[i] === 2)
-        c = 51;
-      else if(iteration[i] === 1)
-        c = 204;
-
-      p.fill(c);
-      p.rect(x, y, TILE_SIZE, TILE_SIZE);
-
-      p.fill(255 - c);
-      // p.text(i, x + TILE_SIZE * .5, y + TILE_SIZE * .5);
-      if(ids[i] > 0)
-        p.text(ids[i], x + TILE_SIZE * .5, y + TILE_SIZE * .5);
-    }
-  };
-};
-const HorizontalPreview = ({ value: layout }) => {
-  const size = useStore(size$);
-
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if(ref.current === null)
-      return;
-
-    const p = new p5(sketch(layout, size), ref.current);
-
-    return p.remove;
-  }, [ ref.current ]);
-
-  return (
-    <div ref={ref} />
-  );
-};
-
-const Styles = styled.div`
+const Container = styled.div`
   display: grid;
-  padding: 1rem;
+  grid-auto-flow: row;
+  grid-auto-rows: max-content;
+  grid-gap: 17px;
+  height: 639px;
+  overflow-y: auto;
 
   table {
     border-spacing: 0;
@@ -144,10 +69,11 @@ const Grid = styled.div`
   // border: 1px solid #000000;
   color: #000000;
   display: grid;
-  grid-auto-columns: 8ch;
+  font-size: 1ch;
+  grid-auto-columns: 6ch;
   grid-auto-flow: column;
   grid-gap: 1ch;
-  grid-template-rows: repeat(5, 8ch);
+  grid-template-rows: repeat(5, 6ch);
   overflow-x: auto;
 
   * {
@@ -230,15 +156,17 @@ export default () => {
       {
         Header: "layout",
         accessor: "combined",
-        Cell: HorizontalPreview,
+        Cell: ({ value }) => (
+          <HorizontalPreview layout={value} />
+        ),
       },
       {
         Header: "maja bpm",
-        accessor: ({ maja }) => formatBpm(maja),
+        accessor: ({ human }) => formatBpm(human === null ? null : human.bpm),
       },
       {
         Header: "dog bpm",
-        accessor: ({ dog }) => formatBpm(dog),
+        accessor: ({ animal }) => formatBpm(animal === null ? null : animal.bpm),
       },
       {
         Header: "delta bpm",
@@ -250,21 +178,11 @@ export default () => {
       },
       {
         Header: "match",
-        accessor: ({ expectedRank, actualRank }) => expectedRank === actualRank,
-        Cell: ({ value }) => (
-          <input type="checkbox"
-                 checked={value}
-                 disabled />
-        ),
+        accessor: ({ expectedRank, actualRank }) => expectedRank === actualRank ? "YES" : "NO",
       },
       {
         Header: "trainable",
-        accessor: "trainable",
-        Cell: ({ value }) => (
-          <input type="checkbox"
-                 checked={value}
-                 disabled />
-        ),
+        accessor: ({ trainable }) => trainable ? "YES" : "NO",
       },
     ],
     []
@@ -282,33 +200,28 @@ export default () => {
   );
 
   return (
-    <Styles>
-      {/* <Panel> */}
-        <Grid>
-          <b>4</b>
-          <b>3</b>
-          <b>2</b>
-          <b>1</b>
-          <b>0</b>
-          {trainableData.map(
-            (iteration, i) => (
-              <Fragment key={i}>
-                {renderRank(4, iteration)}
-                {renderRank(3, iteration)}
-                {renderRank(2, iteration)}
-                {renderRank(1, iteration)}
-                {renderRank(0, iteration)}
-              </Fragment>
-            )
-          )}
-        </Grid>
-      {/* </Panel> */}
-      {/* <HeatMap data={trainableData} /> */}
-
-      {/* <Panel> */}
-        <label><input type="checkbox" checked={valid} onChange={() => setValid(!valid)} /> valid only</label>
-        <Table columns={columns} data={data} />
-      {/* </Panel> */}
-    </Styles>
+    <Container as={Panel}>
+      <Grid>
+        <b>4</b>
+        <b>3</b>
+        <b>2</b>
+        <b>1</b>
+        <b>0</b>
+        {trainableData.map(
+          (iteration, i) => (
+            <Fragment key={i}>
+              {renderRank(4, iteration)}
+              {renderRank(3, iteration)}
+              {renderRank(2, iteration)}
+              {renderRank(1, iteration)}
+              {renderRank(0, iteration)}
+            </Fragment>
+          )
+        )}
+      </Grid>
+      <HR />
+      <label><input type="checkbox" checked={valid} onChange={() => setValid(!valid)} /> valid only</label>
+      <Table columns={columns} data={data} />
+    </Container>
   );
 };

@@ -1,10 +1,9 @@
 * {
-  /* border: 1px solid #000000; */
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
                Roboto, Oxygen-Sans, Ubuntu, Cantarell,
                "Helvetica Neue", sans-serif;
   outline: none;
-  /* padding: 4px; */
 }
 
 h1, h2 {
@@ -32,23 +31,13 @@ body {
 }
 
 #root {
-  display: grid;
-  grid-gap: 17px;
-}
-
-#tfjs-visor-container * {
-  /* border: none; */
-  margin: 0;
-}
-
-.c3-tooltip {
-  background-color: #FFFFFF;
-}
-
-/* .recharts-responsive-container, .recharts-responsive-container *, .recharts-tooltip-wrapper *, .c3-tooltip * {
-  border: none;
-} */
-
-.c3-line {
-  fill: none;
+  /* taken from https://stackoverflow.com/questions/20590239/maintain-aspect-ratio-of-div-but-fill-screen-width-and-height-in-css/36295495#20593342 */
+  width: 100vw; 
+  height: 56.22vw; /* 750/1334=5622  */
+  max-height: 100vh;
+  max-width: 177.87vh; /* 1334/750=17787 */
+  margin: auto;
+  position: absolute;
+  top: 0; bottom: 0; /* vertical center */
+  left: 0; right: 0; /* horizontal center */
 }

@@ -11,9 +11,10 @@ import {
   YAxis
 } from "recharts";
 
-import { HR, Label, Table, Value } from "../components";
+import * as colors from "../colors";
+import { Apart, Center, Chart, HR, Label, Value } from "../components";
 import { formatBpm, formatRank, formatDate } from "../../formatters";
-import { previousIteration$ } from "../../store/iteration";
+import { previousIteration$ } from "../../store/iterations";
 
 import { format } from "date-fns";
 
@@ -22,22 +23,22 @@ export default () => {
   
   if(iteration === null) {
     return (
-      <div>loading previous iteration</div>
+      <Center>loading previous iteration</Center>
     );
   }
 
-  const majaBpms = (iteration.majaBpms || []).map(({ bpm, date }) => ({ maja: bpm, date: +new Date(date) }));
-  const dogBpms = (iteration.dogBpms || []).map(({ bpm, date }) => ({ dog: bpm, date: +new Date(date) }));
+  const human = iteration.human === null ? [] : iteration.human.entries.map(({ bpm, date }) => ({ maja: bpm, date: +new Date(date) }));
+  const animal = iteration.animal === null ? [] : iteration.animal.entries.map(({ bpm, date }) => ({ dog: bpm, date: +new Date(date) }));
 
-  const bpms = [
-    ...majaBpms,
-    ...dogBpms,
+  const entries = [
+    ...human,
+    ...animal,
   ].sort(
     (a, b) => a.date - b.date
   );
 
   let previousMaja = null, previousDog = null;
-  const data = bpms.map((item) => {
+  const data = entries.map((item) => {
     const maja = item.maja || previousMaja;
     const dog = item.dog || previousDog;
 
@@ -54,31 +55,37 @@ export default () => {
 
   return (
     <>
-      <Table>
-        <Label style={{ alignItems: "center" }}>class</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{formatRank(iteration.actualRank)}</Value>
-        <HR style={{ gridColumn: "span 3" }} />
-      </Table>
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={data} margin={{ top: 40, right: 40, bottom: 5, left: 0 }}>
-          <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-          <Line yAxisId="left" type="monotone" dataKey="maja" stroke="#FF6600" connectNulls isAnimationActive={false} />
-          <Line yAxisId="left" type="monotone" dataKey="dog" stroke="#0066FF" connectNulls isAnimationActive={false} />
-          <Line yAxisId="right" type="monotone" dataKey="delta" stroke="#333333" connectNulls isAnimationActive={false} />
-          <XAxis dataKey="date" tickFormatter={(date) => format(date, "HH:mm:ss")} isAnimationActive={false} />
-          <YAxis yAxisId="left" type="number" unit="bpm" isAnimationActive={false} />
-          <YAxis yAxisId="right" type="number" unit="bpm" orientation="right" isAnimationActive={false} />
-          <Legend isAnimationActive={false} />
-          <Tooltip labelFormatter={(date) => format(date, "HH:mm:ss")} formatter={(value) => `${value}bpm`} isAnimationActive={false} />
-        </LineChart>
-      </ResponsiveContainer>
-      <Table>
-        <HR style={{ gridColumn: "span 3" }} />
-        <Label style={{ alignItems: "center" }}>avg human bpm</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{formatBpm(iteration.maja)}</Value>
-        <HR style={{ gridColumn: "span 3" }} />
-        <Label style={{ alignItems: "center" }}>avg animal bpm</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{formatBpm(iteration.dog)}</Value>
-        <HR style={{ gridColumn: "span 3" }} />
-        <Label style={{ alignItems: "center" }}>avg delta bpm</Label><Value style={{ fontSize: "25px", gridColumn: "span 2" }}>{formatBpm(iteration.delta)}</Value>
-      </Table>
+      <Apart small>
+        <Label>class</Label><Value>{formatRank(iteration.actualRank)}</Value>
+      </Apart>
+      <HR />
+      <Chart style={{ height: "443px" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} margin={{ top: 40, right: 0 /* 40 */, bottom: 5, left: 10 }}>
+            <CartesianGrid stroke={colors.border} strokeDasharray="5 5" />
+            <Line yAxisId="left" type="monotone" dataKey="maja" dot={false} stroke={colors.valueHuman} connectNulls isAnimationActive={false} />
+            <Line yAxisId="left" type="monotone" dataKey="dog" dot={false} stroke={colors.valueAnimal} connectNulls isAnimationActive={false} />
+            <Line yAxisId="left" type="monotone" dataKey="delta" dot={false} stroke={colors.label} connectNulls isAnimationActive={false} />
+            {/* <XAxis dataKey="date" tickFormatter={(date) => format(date, "HH:mm:ss")} isAnimationActive={false} /> */}
+            <YAxis yAxisId="left" type="number" unit="bpm" isAnimationActive={false} stroke={colors.label} />
+            {/* <YAxis yAxisId="right" type="number" unit="bpm" orientation="right" isAnimationActive={false} /> */}
+            {/* <Legend isAnimationActive={false} /> */}
+            <Tooltip labelFormatter={(date) => format(date, "HH:mm:ss")} formatter={(value) => `${value}bpm`} isAnimationActive={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </Chart>
+      <HR />
+      <Apart small>
+        <Label>avg human bpm</Label><Value human>{formatBpm(iteration.human === null ? null : iteration.human.bpm)}</Value>
+      </Apart>
+      <HR />
+      <Apart small>
+        <Label>avg animal bpm</Label><Value>{formatBpm(iteration.animal === null ? null : iteration.animal.bpm)}</Value>
+      </Apart>
+      <HR />
+      <Apart small>
+        <Label>avg delta bpm</Label><Value style={{ color: colors.label }}>{formatBpm(iteration.delta)}</Value>
+      </Apart>
     </>
   );
 };

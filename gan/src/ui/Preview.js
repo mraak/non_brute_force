@@ -3,7 +3,7 @@ import p5 from "p5";
 import React, { useEffect, useRef } from "react";
 
 import { linksGraph$ } from "../store/graph";
-import { iteration$ } from "../store/iteration";
+import { currentIteration$ } from "../store/iterations";
 import { size$ } from "../store/size";
 import { fromIndex } from "../utils";
 
@@ -81,7 +81,7 @@ const sketch = (iteration, size) => (p) => {
 };
 
 export default () => {
-  const iteration = useStore(iteration$);
+  const iteration = useStore(currentIteration$);
   const size = useStore(size$);
 
   const ref = useRef(null);

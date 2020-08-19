@@ -9,13 +9,6 @@ import { setPhase } from "../store/phase";
 import { setProgress, progress$ } from "../store/progress";
 import { size$ } from "../store/size";
 import { setTraining, training$ } from "../store/training";
-// import {
-//   showExamples,
-//   showAccuracy,
-//   showConfusion,
-//   visualizeModel,
-//   getFitCallbacks,
-// } from "../tf/vis";
 
 import { Button } from "./components";
 import { find } from "./Generator";
@@ -28,11 +21,11 @@ combine(iterations$, size$, (iterations, size) => {
   if(iterations === null || size === null)
     return;
 
-  if(xs)
-    xs.dispose();
+  // if(xs)
+  //   xs.dispose();
 
-  if(ys)
-    ys.dispose();
+  // if(ys)
+  //   ys.dispose();
 
   const validIterations = iterations.filter((iteration) => iteration.trainable);
 
@@ -58,17 +51,8 @@ export const trainStats$ = restore(setTrainStats, null);
 
 const train = createEffect();
 train.use(async() => {
-  // const element1 = document.getElementById("phase-1");
-  setPhase(1);
-
-  // const element2 = document.getElementById("phase-2");
-  setTimeout(() => {
-    setPhase(2);
-    // window.scrollTo({
-    //   behavior: element2 ? "smooth" : "auto",
-    //   top: element2 ? element2.offsetTop : 0,
-    // });
-  }, 10000);
+  setTimeout(() => setPhase(1), 0);
+  setTimeout(() => setPhase(2), 10000);
 
   // await new Promise((resolve, reject) => setTimeout(resolve, 100));
 
@@ -80,7 +64,7 @@ train.use(async() => {
 
   const metrics = [ "loss", "val_loss", "acc", "val_acc" ];
   const accumulators = {};
-  const historyOpts = {};
+  const historyOpts = { xLabel: "Epoch" };
   // const drawArea = getDrawArea(container);
   const response = await model.fit(xs, ys, {
     epochs: EPOCH_COUNT,
@@ -103,9 +87,6 @@ train.use(async() => {
         // -- inlined and modified callbacks.onEpochEnd
 
         const callbackName = "onEpochEnd";
-
-        // Set a nicer x axis name where possible
-        historyOpts.xLabel = "Epoch";
   
         // Because of how the _ (iteration) numbers are given in the layers api
         // we have to store each metric for each callback in different arrays else
@@ -141,27 +122,27 @@ train.use(async() => {
 
   return response;
 });
-train.pending.watch((pending) => pending && setTraining(true));
+train.pending.watch((pending) => {
+  pending && setTraining(true);
+});
 train.fail.watch((error) => {
   console.error("train error", error);
 })
-train.finally.watch(() => {
+train.done.watch(() => {
   // setTraining(false);
 
   find({ rank: 0 });
 });
 
 export default () => {
-  const progress = useStore(progress$);
+  // const progress = useStore(progress$);
   const training = useStore(training$);
 
   return (
-    <div>
-      <p style={{ textAlign: "center" }}>
-        <Button onClick={train}
-                disabled={training}>{training ? "training ..." : "start new"}</Button>
-      </p>
+    <>
+      <Button onClick={train}
+              disabled={training}>{training ? "training ..." : "start new"}</Button>
       {/* <progress value={progress}>{Math.round(progress * 100)}%</progress> */}
-    </div>
+    </>
   );
 };
