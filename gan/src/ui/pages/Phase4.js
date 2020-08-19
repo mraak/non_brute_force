@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { formatBpm, formatRank, formatDate } from "../../formatters";
 import { currentIteration$ } from "../../store/iterations";
 
-import { Apart, Center, Chart, HR, Label, Value } from "../components";
+import { Apart, Center, Chart, HR, Label, Spacer, Value } from "../components";
 import HorizontalPreview from "../HorizontalPreview";
 import Preview from "../Preview";
 import Train from "../Train";
@@ -23,21 +23,26 @@ export default () => {
     <>
       <Chart>
         <Preview />
-        <HorizontalPreview layout={iteration.combined} />
         <Train />
       </Chart>
+      <Spacer />
+      <HR />
+      <Apart small style={{ flexDirection: "column", height: "initial" }}>
+        {/* <Label>map</Label> */}
+        <HorizontalPreview layout={iteration.combined} />
+      </Apart>
       <HR />
       <Apart small>
         <Label>iteration status</Label><Value>{iteration.ended ? "ended" : "in progress"}</Value>
       </Apart>
-      <HR />
+      {/* <HR />
       <Apart small>
         <Label>expected class</Label><Value>{formatRank(iteration.expectedRank)}</Value>
       </Apart>
       <HR />
       <Apart small>
         <Label>actual class</Label><Value>{formatRank(iteration.actualRank)}</Value>
-      </Apart>
+      </Apart> */}
     </>
   );
 };

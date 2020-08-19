@@ -60,11 +60,18 @@ export const saveIteration = async(item) => {
   }]);
 };
 
+export const removeInvalidIterations = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("iterations");
+
+  return collection.deleteMany({ valid: false });
+};
+
 export const loadIterationsSince = async(date) => {
   const db = await dbPromise;
   const collection = db.collection("iterations");
 
-  return collection.find({ timestamp: { $gte: date } });
+  return collection.find({ timestamp: { $gte: date } }, { timeout: false });
 };
 
 export const lastSyncedIteration = async() => {
@@ -74,6 +81,8 @@ export const lastSyncedIteration = async() => {
   return collection.findOne({ _id: 1 });
 };
 export const saveLastSyncedIteration = async(date) => {
+  console.log("saveLastSyncedIteration", date);
+  
   const db = await dbPromise;
   const collection = db.collection("iterations-sync");
 

@@ -6,15 +6,6 @@
   outline: none;
 }
 
-h1, h2 {
-  color: #FF0000;
-  font-size: 2em;
-}
-
-aside {
-  width: 400px;
-}
-
 canvas {
   display: block;
 }
@@ -25,8 +16,8 @@ canvas {
 }
 
 body {
-  background-color: #0E111F;
-  color: #9F9FA4;
+  background-color: #00010D;
+  color: #EFE0D0;
   padding: 0;
 }
 

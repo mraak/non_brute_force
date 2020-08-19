@@ -160,31 +160,42 @@ find.done.watch(() => {
 
 const TILE_SIZE = 12;
 
+const outputOffsetX = 30 * TILE_SIZE;
+const outputOffsetY = 0;
+
+const HIDDEN_WIDTH = 10 * TILE_SIZE;
+const HIDDEN_HEIGHT = 8 * TILE_SIZE;
+
+const OUTPUT_WIDTH = 7 * TILE_SIZE;
+const OUTPUT_HEIGHT = 5 * TILE_SIZE;
+
+const INPUT_TEXT = [ TILE_SIZE * .5, TILE_SIZE * .5 ];
+const IN_LINES = [
+  [ 0, -(OUTPUT_HEIGHT + TILE_SIZE) * 2, TILE_SIZE * 6.5, 0 ],
+  [ 0, -(OUTPUT_HEIGHT + TILE_SIZE),     TILE_SIZE * 6.5, 0 ],
+  [ 0, 0,                                TILE_SIZE * 6.5, 0 ],
+  [ 0, +(OUTPUT_HEIGHT + TILE_SIZE),     TILE_SIZE * 6.5, 0 ],
+  [ 0, +(OUTPUT_HEIGHT + TILE_SIZE) * 2, TILE_SIZE * 6.5, 0 ],
+];
+const OUT_LINES = [
+  [ HIDDEN_WIDTH * .5, 0, outputOffsetX, -(OUTPUT_HEIGHT + TILE_SIZE) * 2 ],
+  [ HIDDEN_WIDTH * .5, 0, outputOffsetX, -(OUTPUT_HEIGHT + TILE_SIZE) ],
+  [ HIDDEN_WIDTH * .5, 0, outputOffsetX, 0 ],
+  [ HIDDEN_WIDTH * .5, 0, outputOffsetX, +(OUTPUT_HEIGHT + TILE_SIZE) ],
+  [ HIDDEN_WIDTH * .5, 0, outputOffsetX, +(OUTPUT_HEIGHT + TILE_SIZE) * 2 ],
+];
+
 const sketch = (size) => (p) => {
   const ids = ids$.getState();
 
   const W = (30 + 7) * TILE_SIZE;
   const H = ((size.y + 1) * size.z - 1) * TILE_SIZE;
 
-  const outputOffsetX = 30 * TILE_SIZE;
-  const outputOffsetY = 0;
-
-  const HIDDEN_WIDTH = 10 * TILE_SIZE;
-  const HIDDEN_HEIGHT = 8 * TILE_SIZE;
-
-  const OUTPUT_WIDTH = 7 * TILE_SIZE;
-  const OUTPUT_HEIGHT = 5 * TILE_SIZE;
-
-  const noneColor = p.color(colors.background);
-  const rectColor = p.color(colors.navigation);
-  const fillColor = p.color(colors.valueHuman);
-  const textColor = p.color(colors.border);
-
   p.setup = () => {
     p.createCanvas(W, H, p.CANVAS);
     p.noLoop();
     p.textAlign(p.CENTER, p.CENTER);
-    p.stroke(textColor);
+    p.stroke(colors.array[1]);
   };
   p.draw = () => {
     const layoutCount = layout.length;
@@ -204,50 +215,55 @@ const sketch = (size) => (p) => {
       posY = y * TILE_SIZE;
       const posZ = z * (size.y + 1) * TILE_SIZE;
 
-      let c = noneColor;
+      let c = colors.array[0];
 
       if(layout[i] === 2)
-        c = i < progressIndex ? fillColor : noneColor;
+        c = i < progressIndex ? colors.array[8] : colors.array[1];
       else if(layout[i] === 1)
-        c = textColor;
+        c = colors.array[1];
 
       if(i === progressIndex)
-        p.fill(rectColor);
+        p.fill(colors.array[6]);
       else
         p.fill(c);
       
       p.rect(posX, posY + posZ, TILE_SIZE, TILE_SIZE);
 
-      p.fill(noneColor);
-      // p.text(i, posX + TILE_SIZE * .5, posY + posZ + TILE_SIZE * .5);
+      p.fill(colors.array[0]);
       if(ids[i] > 0) {
-        p.text(ids[i], posX + TILE_SIZE * .5, posY + posZ + TILE_SIZE * .5);
+        p.text(ids[i], posX + INPUT_TEXT[0], posY + posZ + INPUT_TEXT[1]);
       }
     }
 
     // in lines
     posX = TILE_SIZE * 7;
     posY = H * .5;
-    p.line(posX, posY - (OUTPUT_HEIGHT + TILE_SIZE) * 2, posX + TILE_SIZE * 6.5, posY);
-    p.line(posX, posY - (OUTPUT_HEIGHT + TILE_SIZE), posX + TILE_SIZE * 6.5, posY);
-    p.line(posX, posY, posX + TILE_SIZE * 6.5, posY);
-    p.line(posX, posY + (OUTPUT_HEIGHT + TILE_SIZE), posX + TILE_SIZE * 6.5, posY);
-    p.line(posX, posY + (OUTPUT_HEIGHT + TILE_SIZE) * 2, posX + TILE_SIZE * 6.5, posY);
+    for(let i = 0; i < 5; ++i) {
+      if(i === Math.floor(progress * 5))
+        p.stroke(colors.array[8]);
+      else
+        p.stroke(colors.array[1]);
+      p.line(posX + IN_LINES[i][0], posY + IN_LINES[i][1], posX + IN_LINES[i][2], posY + IN_LINES[i][3]);
+      p.stroke(colors.array[1]);
+    }
 
     // hidden
     posX = W * .5;
     posY = H * .5;
-    p.fill(rectColor);
+    p.fill(colors.array[4]);
     p.rect(posX - HIDDEN_WIDTH * .5, posY - HIDDEN_HEIGHT * .5, HIDDEN_WIDTH, HIDDEN_HEIGHT);
 
     // out lines
-    p.line(posX + HIDDEN_WIDTH * .5, posY, outputOffsetX, posY - (OUTPUT_HEIGHT + TILE_SIZE) * 2);
-    p.line(posX + HIDDEN_WIDTH * .5, posY, outputOffsetX, posY - (OUTPUT_HEIGHT + TILE_SIZE));
-    p.line(posX + HIDDEN_WIDTH * .5, posY, outputOffsetX, posY);
-    p.line(posX + HIDDEN_WIDTH * .5, posY, outputOffsetX, posY + (OUTPUT_HEIGHT + TILE_SIZE));
-    p.line(posX + HIDDEN_WIDTH * .5, posY, outputOffsetX, posY + (OUTPUT_HEIGHT + TILE_SIZE) * 2);
+    for(let i = 0; i < 5; ++i) {
+      if(i === currentRank)
+        p.stroke(colors.array[8]);
+      else
+        p.stroke(colors.array[1]);
+      p.line(posX + OUT_LINES[i][0], posY + OUT_LINES[i][1], OUT_LINES[i][2], posY + OUT_LINES[i][3]);
+      p.stroke(colors.array[1]);
+    }
 
-    p.fill(noneColor);
+    p.fill(colors.array[8]);
     p.textSize(TILE_SIZE * 2);
     p.text("CNN", posX, posY);
 
@@ -259,16 +275,16 @@ const sketch = (size) => (p) => {
       posY = outputOffsetY + i * (OUTPUT_HEIGHT + TILE_SIZE);
 
       if(i === currentRank)
-        p.fill(fillColor);
+        p.fill(colors.array[8]);
       else
-        p.fill(noneColor);
+        p.fill(colors.array[0]);
 
       p.rect(posX, posY, OUTPUT_WIDTH, OUTPUT_HEIGHT);
 
       if(i === currentRank)
-        p.fill(noneColor);
+        p.fill(colors.array[0]);
       else
-        p.fill(rectColor);
+        p.fill(colors.array[3]);
 
       p.line(posX, posY + TILE_SIZE * 2, posX + OUTPUT_WIDTH, posY + TILE_SIZE * 2);
 
@@ -303,12 +319,12 @@ export default () => {
     if(ref.current === null || iteration === null)
       return;
 
-    layout = iteration.combined;
-    
-    setAttempts(iteration.attempts || 0);
+    if(training$.getState() === false) {
+      layout = iteration.combined;
 
-    if(training$.getState() === false)
+      setAttempts(iteration.attempts || 0);
       setRank(currentRank = iteration.expectedRank);
+    }
 
     p = new p5(sketch(size), ref.current);
 

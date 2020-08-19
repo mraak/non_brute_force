@@ -52,7 +52,7 @@ export const loadPayloadsSince = async(date) => {
   const db = await dbPromise;
   const collection = db.collection("payload");
 
-  return collection.find({ date: { $gte: date } });
+  return collection.find({ date: { $gte: date } }, { timeout: false });
 };
 export const savePayload = async(item) => {
   const db = await dbPromise;
@@ -95,6 +95,8 @@ export const lastSyncedAggregate = async() => {
   return collection.findOne({ _id: 1 });
 };
 export const saveLastSyncedAggregate = async(date) => {
+  console.log("saveLastSyncedAggregate", date);
+  
   const db = await dbPromise;
   const collection = db.collection("aggregates-sync");
 

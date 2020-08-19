@@ -1,4 +1,3 @@
-import { Composition } from "atomic-layout";
 import { useStore } from "effector-react";
 import React from "react";
 import styled from "styled-components";
@@ -11,20 +10,6 @@ import Phase1 from "./Phase1";
 import Phase2 from "./Phase2";
 import Phase3 from "./Phase3";
 import Phase4 from "./Phase4";
-
-const phaseTitle = `
-  phase title
-`;
-const PhaseTitle = ({ phase, title }) => (
-  <Composition areas={phaseTitle} gap={10}>
-    {(c) => (
-      <>
-        <c.Phase as={Title}>phase {phase}:</c.Phase>
-        <c.Title as={Title}>{title}</c.Title>
-      </>
-    )}
-  </Composition>
-);
 
 const Container = styled.div`
   display: grid;
@@ -52,28 +37,28 @@ export default () => {
       <Main>
       {phase > 3 && (
         <Panel id="phase-4">
-          <PhaseTitle phase={4} title="new iteration layout" />
+          <Title>phase 4_current climbing layout</Title>
           <HR />
           <Phase4 />
         </Panel>
       )}
       {phase > 2 && (
         <Panel id="phase-3">
-          <PhaseTitle phase={3} title="generating new layout" />
+          <Title>phase 3_neural network rendering map</Title>
           <HR />
           <Phase3 />
         </Panel>
       )}
       {phase > 1 && (
         <Panel id="phase-2">
-          <PhaseTitle phase={2} title="training model w/ cnn" />
+          <Title>phase 2_training model w. neural network</Title>
           <HR />
           <Phase2 />
         </Panel>
       )}
       {phase > 0 && (
         <Panel id="phase-1">
-          <PhaseTitle phase={1} title="previous iteration" />
+          <Title>phase 1_previous data correlation</Title>
           <HR />
           <Phase1 />
         </Panel>

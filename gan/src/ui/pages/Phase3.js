@@ -17,13 +17,18 @@ export default () => {
         <Generator />
       </Chart>
       <HR />
-      <Apart small>
+      <Apart>
+        <Label>installation map</Label>
+        <Label>hidden layer</Label>
+        <Label>matching classes</Label>
+      </Apart>
+      {/* <Apart small>
         <Label>attempts</Label><Value>{attempts}</Value>
       </Apart>
       <HR />
       <Apart small>
         <Label>class</Label><Value>{formatRank(rank)}</Value>
-      </Apart>
+      </Apart> */}
     </>
   );
 };

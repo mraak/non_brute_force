@@ -404,7 +404,7 @@ const sketch = (options) => (p) => {
      */
     p.push();
     p.noStroke();
-    p.fill(colors.background);
+    p.fill(colors.array[0]);
     // p.stroke(121, 239, 150, 1);
     // p.rect(0, 0, W - 1, H - 1);
     p.rect(0, 0, W, H);
@@ -421,13 +421,13 @@ const sketch = (options) => (p) => {
   };
 };
 
-export default ({ bpm, color }) => {
+export default ({ bpm }) => {
   const training = useStore(training$);
 
   const ref = useRef(null);
   const options = useMemo(() => ({}), []);
   options.bpm = training === false ? bpm : 0;
-  options.color = color;
+  options.color = colors.array[6];
 
   useEffect(() => {
     if(ref.current === null)

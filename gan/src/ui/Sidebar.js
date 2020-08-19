@@ -1,19 +1,16 @@
-import { Composition } from "atomic-layout";
 import { format } from "date-fns";
 import { createEvent, restore } from "effector";
 import { useStore } from "effector-react";
 import p5 from "p5";
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 
 import { formatBpm, formatRank, formatDate } from "../formatters";
 import { currentIteration$ } from "../store/iterations";
 import { training$ } from "../store/training";
 
-import * as colors from "./colors";
 import { Apart, BigValue, Center, HR, Label, Panel, Span2, Table, Title, Value } from "./components";
 import Heartrate from "./Heartrate";
-import { startOfWeekWithOptions } from "date-fns/esm/fp";
 
 p5.prototype.noiseSeed(123);
 const nextNoise = () => p5.prototype.noise(+new Date / 100000);
@@ -34,14 +31,14 @@ const tempHuman$ = restore(setTempHuman, 33);
 const setTempAnimal = createEvent();
 const tempAnimal$ = restore(setTempAnimal, 36.5);
 
-setInterval(() => {
+const refreshStats = () => {
   const noise = nextNoise();
   setRespHuman(scale(noise, 12, 18));
   setRespAnimal(scale(noise, 15, 30));
 
   setTempHuman(scale(noise, 31, 35.5));
   setTempAnimal(scale(noise, 34, 37.2));
-}, 1000);
+};
 
 const Container = styled.aside`
   display: grid;
@@ -61,6 +58,8 @@ export default () => {
   
   const tempHuman = useStore(tempHuman$);
   const tempAnimal = useStore(tempAnimal$);
+
+  useMemo(() => { setTimeout(refreshStats, 0) }, [ iteration ]);
 
   if(iteration === null) {
     return (
@@ -108,7 +107,7 @@ export default () => {
           <img src="Heart_Icon.png" style={{ display: "block", height: 28 }} />
         </div>
         <div style={{ paddingLeft: 22, paddingRight: 22 }}>
-          <Heartrate bpm={training || ended ? 0 : humanBpm || 0} color={colors.valueHuman} />
+          <Heartrate bpm={training || ended ? 0 : humanBpm || 0} />
         </div>
         <Table style={{ paddingBottom: 36, paddingTop: 25 }}>
           <Label>heart</Label><BigValue human>{training || ended ? "NA" : formatBpm(humanBpm)}</BigValue><Label>bpm</Label>
@@ -136,7 +135,7 @@ export default () => {
           <img src="Heart_Icon.png" style={{ display: "block", height: 28 }} />
         </div>
         <div style={{ paddingLeft: 22, paddingRight: 22 }}>
-          <Heartrate bpm={training || ended ? 0 : animalBpm || 0} color={colors.valueAnimal} />
+          <Heartrate bpm={training || ended ? 0 : animalBpm || 0} />
         </div>
         <Table style={{ paddingBottom: 36, paddingTop: 25 }}>
           <Label>heart</Label><BigValue>{training || ended ? "NA" : formatBpm(animalBpm)}</BigValue><Label>bpm</Label>

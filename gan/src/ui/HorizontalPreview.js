@@ -20,16 +20,12 @@ const sketch = (iteration, size) => (p) => {
   // const W = size.x * TILE_SIZE;
   // const H = ((size.y + 1) * size.z - 1) * TILE_SIZE;
 
-  const noneColor = p.color(colors.background);
-  const fillColor = p.color(colors.valueHuman);
-  const textColor = p.color(colors.border);
-
   p.setup = () => {
     p.createCanvas(W, H, p.CANVAS);
     p.noLoop();
     p.textSize(TILE_SIZE * .6);
     p.textAlign(p.CENTER, p.CENTER);
-    p.stroke(textColor);
+    p.stroke(colors.array[1]);
   };
   p.draw = () => {
     // aligns to top left
@@ -54,17 +50,17 @@ const sketch = (iteration, size) => (p) => {
       // const x = posX;
       // const y = posY + posZ;
 
-      let c = noneColor;
+      let c = colors.array[0];
 
       if(iteration[i] === 2)
-        c = fillColor;
+        c = colors.array[8];
       else if(iteration[i] === 1)
-        c = textColor;
+        c = colors.array[7];
 
       p.fill(c);
       p.rect(x, y, TILE_SIZE, TILE_SIZE);
 
-      p.fill(noneColor);
+      p.fill(colors.array[0]);
       // p.text(i, x + TILE_SIZE * .5, y + TILE_SIZE * .5);
       if(ids[i] > 0) {
         p.text(ids[i], x + TILE_SIZE * .5, y + TILE_SIZE * .5);

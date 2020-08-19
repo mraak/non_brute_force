@@ -19,8 +19,8 @@ export const Navigation = styled.header`
   grid-template-columns: repeat(3, 419px);
 `;
 export const NavItem = styled(NavLink)`
-  border-bottom: 5px solid ${colors.border};
-  color: ${colors.border};
+  border-bottom: 5px solid ${colors.array[1]};
+  color: ${colors.array[2]};
   display: grid;
   font-size: 25px;
   place-items: center;
@@ -28,15 +28,15 @@ export const NavItem = styled(NavLink)`
   text-transform: uppercase;
 
   &.active {
-    border-bottom: 5px solid ${colors.navigation};
-    color: ${colors.navigation};
+    border-bottom: 5px solid ${colors.array[3]};
+    color: ${colors.array[3]};
   }
 `;
 
 export const Title = styled.h3`
-  color: ${colors.label};
+  color: ${colors.array[5]};
   display: grid !important;
-  font-size: 25px;
+  font-size: 20px;
   height: 46px;
   margin: 0;
   place-items: center;
@@ -45,14 +45,14 @@ export const Title = styled.h3`
 `;
 
 export const Label = styled.div`
-  color: ${colors.label};
+  color: ${colors.array[5]};
   display: flex !important;
   font-size: 20px;
   line-height: 19px;
   text-transform: uppercase;
 `;
 export const Value = styled.div`
-  color: ${({ human }) => human ? colors.valueHuman : colors.valueAnimal};
+  color: ${colors.array[6]};
   display: flex !important;
   font-size: 25px;
   line-height: 19px;
@@ -61,7 +61,7 @@ export const Value = styled.div`
 `;
 export const BigValue = styled.div`
   align-items: flex-end;
-  color: ${({ human }) => human ? colors.valueHuman : colors.valueAnimal};
+  color: ${colors.array[6]};
   display: flex !important;
   font-size: 50px;
   height: 52px;
@@ -70,14 +70,20 @@ export const BigValue = styled.div`
   text-transform: uppercase;
 `;
 
+export const Spacer = styled.div`
+  flex: 1;
+`;
+
 export const Center = styled.div`
   display: grid;
   place-items: center;
 `;
 
 export const Panel = styled.div`
-  border: 2px solid ${colors.border};
+  border: 2px solid ${colors.array[1]};
   border-radius: 4px;
+  display: flex;
+  flex-direction: column;
 `;
 export const Table = styled.div`
   align-items: end;
@@ -91,6 +97,7 @@ export const Table = styled.div`
 `;
 export const Apart = styled.div`
   align-items: center;
+  background-color: ${colors.array[4]};
   display: flex;
   height: ${({ small }) => small ? "34px" : "52px" };
   justify-content: space-between;
@@ -100,9 +107,10 @@ export const Apart = styled.div`
 export const Chart = styled.div`
   align-items: center;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 17px;
-  height: 479px;
+  // height: 479px;
   padding-left: 22px;
   padding-right: 22px;
 `;
@@ -115,10 +123,10 @@ export const Span3 = styled.div`
 `;
 
 export const Button = styled.button`
-  background-color: ${colors.border};
-  border: 2px solid ${colors.navigation};
+  background-color: ${colors.array[9]};
+  border: 2px solid ${colors.array[10]};
   border-radius: 5px;
-  color: ${colors.label};
+  color: ${colors.array[5]};
   font-size: 25px;
   height: 53px;
   padding: 0;
@@ -127,5 +135,5 @@ export const Button = styled.button`
 `;
 
 export const HR = styled.div`
-  border-top: 2px solid ${colors.border};
+  border-top: 2px solid ${colors.array[1]};
 `;

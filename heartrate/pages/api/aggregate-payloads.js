@@ -8,7 +8,12 @@ const toIterations = async(payloadsCursor) => {
   // groups all payloads into iterations
   const memo = { iterations: [], current: null };
   while(true) {
+    if(payloadsCursor.isClosed())
+      break;
+    
     const payload = await payloadsCursor.next();
+
+    console.log("payload", payload);
 
     if(payload === null)
       break;

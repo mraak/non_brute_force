@@ -5,7 +5,6 @@ import * as tfvis from "@tensorflow/tfjs-vis";
 
 import { Chart } from "../components";
 
-import * as colors from "../colors";
 import { trainStats$ } from "../Train";
 
 const Container = styled.div`
@@ -26,7 +25,7 @@ export default () => {
 
     const { metricLogs, presentMetrics, historyOpts } = stats;
 
-    tfvis.show.history(ref.current, metricLogs, presentMetrics, historyOpts); // { ...historyOpts, seriesColors: [ "#FF0000", "#00FF00", "#0000FF" ] });
+    tfvis.show.history(ref.current, metricLogs, presentMetrics, historyOpts);
   }, [ ref.current, stats ]);
 
   return (

@@ -15,6 +15,9 @@ export const syncIteration = async(iteration) => {
 const processIterations = async(iterationsCursor) => {
   // processes every iteration
   while(true) {
+    if(iterationsCursor.isClosed())
+      break;
+    
     let iteration = await iterationsCursor.next();
 
     if(iteration === null)
