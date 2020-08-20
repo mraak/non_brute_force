@@ -76,21 +76,21 @@ export default () => {
       </Chart>
       <HR />
       <Apart small>
-        <Label style={{ width: 160 }}>avg human</Label>
+        <Label style={{ width: 130 }}>avg human</Label>
         <img src="Heart_Icon.png" style={{ width: 21 }} />
         <Spacer />
         <Value style={{ width: 50, color: colors.valueHuman }}>{formatBpm(iteration.human === null ? null : iteration.human.bpm)}</Value>
       </Apart>
       <HR />
       <Apart small>
-        <Label style={{ width: 160 }}>avg animal</Label>
+        <Label style={{ width: 130 }}>avg animal</Label>
         <img src="Heart_Icon.png" style={{ width: 21 }} />
         <Spacer />
         <Value style={{ width: 50, color: colors.valueAnimal }}>{formatBpm(iteration.animal === null ? null : iteration.animal.bpm)}</Value>
       </Apart>
       <HR />
       <Apart small>
-        <Label style={{ width: 160 }}>avg delta</Label>
+        <Label style={{ width: 130 }}>avg delta</Label>
         <img src="Heart_Icon.png" style={{ width: 21 }} />
         <Spacer />
         <Value style={{ width: 50, color: colors.array[5] }}>{formatBpm(iteration.delta)}</Value>

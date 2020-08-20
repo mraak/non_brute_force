@@ -23,6 +23,7 @@ export const NavItem = styled(NavLink)`
   color: ${colors.array[2]};
   display: grid;
   font-size: 25px;
+  opacity: .5;
   place-items: center;
   text-decoration: none;
   text-transform: uppercase;
@@ -30,6 +31,7 @@ export const NavItem = styled(NavLink)`
   &.active {
     border-bottom: 5px solid ${colors.array[3]};
     color: ${colors.array[3]};
+    opacity: 1;
   }
 `;
 

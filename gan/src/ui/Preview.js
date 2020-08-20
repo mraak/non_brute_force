@@ -12,7 +12,7 @@ const TILE_SIZE = 60;
 const sketch = (iteration, size) => (p) => {
   const W = 750;
   // const W = 400;
-  const H = W * 10 / 16;
+  const H = W * 9 / 16;
 
   p.setup = () => {
     p.createCanvas(W, H, p.WEBGL);

@@ -44,7 +44,7 @@ export default () => {
       )}
       {phase > 2 && (
         <Panel id="phase-3">
-          <Title>phase 3_neural network rendering map</Title>
+          <Title>phase 3_neural network rendering new map</Title>
           <HR />
           <Phase3 />
         </Panel>
@@ -58,7 +58,7 @@ export default () => {
       )}
       {phase > 0 && (
         <Panel id="phase-1">
-          <Title>phase 1_previous data correlation</Title>
+          <Title>phase 1_previous climbing data</Title>
           <HR />
           <Phase1 />
         </Panel>

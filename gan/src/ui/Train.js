@@ -64,7 +64,7 @@ train.use(async() => {
 
   const metrics = [ "loss", "val_loss", "acc", "val_acc" ];
   const accumulators = {};
-  const historyOpts = { xLabel: "Epoch" };
+  const historyOpts = { xLabel: "", yLabel: "" };
   // const drawArea = getDrawArea(container);
   const response = await model.fit(xs, ys, {
     epochs: EPOCH_COUNT,

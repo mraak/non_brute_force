@@ -6,6 +6,6 @@ export default () => (
   <Navigation>
     <NavItem to="/" exact>main</NavItem>
     <NavItem to="/archive" exact>archive</NavItem>
-    <NavItem to="/map" exact>map</NavItem>
+    <NavItem to="/dictionary" exact>dictionary</NavItem>
   </Navigation>
 );

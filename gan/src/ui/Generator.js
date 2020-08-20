@@ -158,24 +158,24 @@ find.done.watch(() => {
   }, 0);
 });
 
-const TILE_SIZE = 12;
+const TILE_SIZE = 14;
 
-const outputOffsetX = 30 * TILE_SIZE;
+const outputOffsetX = 26 * TILE_SIZE;
 const outputOffsetY = 0;
 
-const HIDDEN_WIDTH = 10 * TILE_SIZE;
-const HIDDEN_HEIGHT = 8 * TILE_SIZE;
+const HIDDEN_WIDTH = 7 * TILE_SIZE;
+const HIDDEN_HEIGHT = 5 * TILE_SIZE;
 
 const OUTPUT_WIDTH = 7 * TILE_SIZE;
 const OUTPUT_HEIGHT = 5 * TILE_SIZE;
 
 const INPUT_TEXT = [ TILE_SIZE * .5, TILE_SIZE * .5 ];
 const IN_LINES = [
-  [ 0, -(OUTPUT_HEIGHT + TILE_SIZE) * 2, TILE_SIZE * 6.5, 0 ],
-  [ 0, -(OUTPUT_HEIGHT + TILE_SIZE),     TILE_SIZE * 6.5, 0 ],
-  [ 0, 0,                                TILE_SIZE * 6.5, 0 ],
-  [ 0, +(OUTPUT_HEIGHT + TILE_SIZE),     TILE_SIZE * 6.5, 0 ],
-  [ 0, +(OUTPUT_HEIGHT + TILE_SIZE) * 2, TILE_SIZE * 6.5, 0 ],
+  [ 0, -(OUTPUT_HEIGHT + TILE_SIZE) * 2, TILE_SIZE * 6, 0 ],
+  [ 0, -(OUTPUT_HEIGHT + TILE_SIZE),     TILE_SIZE * 6, 0 ],
+  [ 0, 0,                                TILE_SIZE * 6, 0 ],
+  [ 0, +(OUTPUT_HEIGHT + TILE_SIZE),     TILE_SIZE * 6, 0 ],
+  [ 0, +(OUTPUT_HEIGHT + TILE_SIZE) * 2, TILE_SIZE * 6, 0 ],
 ];
 const OUT_LINES = [
   [ HIDDEN_WIDTH * .5, 0, outputOffsetX, -(OUTPUT_HEIGHT + TILE_SIZE) * 2 ],
@@ -188,7 +188,7 @@ const OUT_LINES = [
 const sketch = (size) => (p) => {
   const ids = ids$.getState();
 
-  const W = (30 + 7) * TILE_SIZE;
+  const W = (26 + 7) * TILE_SIZE;
   const H = ((size.y + 1) * size.z - 1) * TILE_SIZE;
 
   p.setup = () => {
@@ -263,7 +263,7 @@ const sketch = (size) => (p) => {
       p.stroke(colors.array[1]);
     }
 
-    p.fill(colors.array[8]);
+    p.fill(colors.array[1]);
     p.textSize(TILE_SIZE * 2);
     p.text("CNN", posX, posY);
 

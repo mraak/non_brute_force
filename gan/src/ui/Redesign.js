@@ -52,7 +52,7 @@ export default () => {
           <Route path="/archive" exact>
             <Archive />
           </Route>
-          <Route path="/map" exact>
+          <Route path="/dictionary" exact>
             <Map />
           </Route>
           <Route path="*">

@@ -27,13 +27,13 @@ export default () => {
       </Chart>
       <Spacer />
       <HR />
-      <Apart small style={{ flexDirection: "column", height: "initial" }}>
-        {/* <Label>map</Label> */}
+      <Apart small style={{ alignItems: "start", flexDirection: "column", gap: 10, height: "initial", paddingBottom: 17, paddingTop: 18 }}>
+        <Label>map</Label>
         <HorizontalPreview layout={iteration.combined} />
       </Apart>
       <HR />
       <Apart small>
-        <Label>iteration status</Label><Value>{iteration.ended ? "ended" : "in progress"}</Value>
+        <Label>status</Label><Value style={{ fontSize: 20 }}>{iteration.ended ? "ended" : "in progress"}</Value>
       </Apart>
       {/* <HR />
       <Apart small>

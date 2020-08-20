@@ -1,6 +1,7 @@
 import { useStore } from "effector-react";
 import React from "react";
 
+import * as colors from "../colors";
 import { Apart, Chart, HR, Label, Value } from "../components";
 import { formatBpm, formatRank, formatDate } from "../../formatters";
 
@@ -13,14 +14,16 @@ export default () => {
 
   return (
     <>
-      <Chart style={{ padding: 22 }}>
+      <Chart style={{ padding: 52 }}>
         <Generator />
       </Chart>
       <HR />
       <Apart>
-        <Label>installation map</Label>
-        <Label>hidden layer</Label>
-        <Label>matching classes</Label>
+        <Label style={{ fontSize: 15 }}>installation map</Label>
+        <Label style={{ fontSize: 15, color: colors.array[1] }}>|</Label>
+        <Label style={{ fontSize: 15 }}>hidden layers</Label>
+        <Label style={{ fontSize: 15, color: colors.array[1] }}>|</Label>
+        <Label style={{ fontSize: 15 }}>matching classes</Label>
       </Apart>
       {/* <Apart small>
         <Label>attempts</Label><Value>{attempts}</Value>
