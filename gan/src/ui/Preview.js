@@ -93,7 +93,7 @@ export default () => {
     const p = new p5(sketch(iteration.combined, size), ref.current);
 
     return p.remove;
-  }, [ ref.current, iteration ]);
+  }, [ ref.current, iteration && JSON.stringify(iteration.combined) ]);
 
   if(iteration === null) {
     return (

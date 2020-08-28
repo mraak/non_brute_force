@@ -4,9 +4,11 @@ import "regenerator-runtime/runtime";
 import React from "react";
 import ReactDOM from "react-dom";
 
+import "./store/generator";
 import { setHardcodedIterations } from "./store/iterations";
 import { setLayout } from "./store/layout";
 import { setSize } from "./store/size";
+import "./store/train";
 import App from "./ui/Redesign";
 
 // import fours from "./data/fours";

@@ -1,10 +1,5 @@
-import { useStore } from "effector-react";
 import p5 from "p5";
 import React, { useEffect, useMemo, useRef } from "react";
-import styled from "styled-components";
-
-import { formatBpm, formatRank, formatDate } from "../formatters";
-import { training$ } from "../store/training";
 
 import * as colors from "./colors";
 
@@ -422,11 +417,9 @@ const sketch = (options) => (p) => {
 };
 
 export default ({ bpm }) => {
-  const training = useStore(training$);
-
   const ref = useRef(null);
   const options = useMemo(() => ({}), []);
-  options.bpm = training === false ? bpm : 0;
+  options.bpm = bpm;
   options.color = colors.array[6];
 
   useEffect(() => {

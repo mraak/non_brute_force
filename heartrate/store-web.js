@@ -98,6 +98,80 @@ export const saveLastSyncedIteration = async(date) => {
     },
   }]);
 };
+
+export const loadCurrentPhase = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("current-phase");
+
+  return collection.findOne({ _id: 1 });
+};
+export const saveCurrentPhase = async(phase) => {
+  console.log("saveCurrentPhase", phase);
+  
+  const db = await dbPromise;
+  const collection = db.collection("current-phase");
+
+  return collection.bulkWrite([{
+    updateOne: {
+      filter: { _id: 1 },
+      // update: { $setOnInsert: item },
+      update: { $set: {
+        _id: 1,
+        phase,
+      } },
+      upsert: true,
+    },
+  }]);
+};
+export const loadPhase1State = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("phase-1-state");
+
+  return collection.findOne({ _id: 1 });
+};
+export const savePhase1State = async(state) => {
+  console.log("savePhase1State", state);
+  
+  const db = await dbPromise;
+  const collection = db.collection("phase-1-state");
+
+  return collection.bulkWrite([{
+    updateOne: {
+      filter: { _id: 1 },
+      // update: { $setOnInsert: item },
+      update: { $set: {
+        _id: 1,
+        state,
+      } },
+      upsert: true,
+    },
+  }]);
+};
+export const loadPhase2State = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("phase-2-state");
+
+  return collection.findOne({ _id: 1 });
+};
+export const savePhase2State = async(state) => {
+  console.log("savePhase2State", state);
+  
+  const db = await dbPromise;
+  const collection = db.collection("phase-2-state");
+
+  return collection.bulkWrite([{
+    updateOne: {
+      filter: { _id: 1 },
+      // update: { $setOnInsert: item },
+      update: { $set: {
+        _id: 1,
+        state,
+      } },
+      upsert: true,
+    },
+  }]);
+};
+
 const cleanUpServer = (eventType) => {
   if(disconnect) {
     disconnect();

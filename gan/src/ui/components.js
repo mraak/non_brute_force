@@ -15,23 +15,21 @@ export const Navigation = styled.header`
   display: grid;
   grid-auto-flow: row;
   grid-auto-rows: 67px;
-  grid-gap: 21.5px;
-  grid-template-columns: repeat(3, 419px);
+  // grid-gap: 21.5px;
+  grid-template-columns: repeat(3, 1fr);
 `;
 export const NavItem = styled(NavLink)`
-  border-bottom: 5px solid ${colors.array[1]};
-  color: ${colors.array[2]};
+  border-bottom: 1px solid ${colors.array[3]};
+  color: ${colors.array[3]};
   display: grid;
   font-size: 25px;
-  opacity: .5;
   place-items: center;
   text-decoration: none;
   text-transform: uppercase;
 
   &.active {
-    border-bottom: 5px solid ${colors.array[3]};
-    color: ${colors.array[3]};
-    opacity: 1;
+    border-bottom: 5px solid ${colors.array[6]};
+    color: ${colors.array[6]};
   }
 `;
 
@@ -86,6 +84,9 @@ export const Panel = styled.div`
   border-radius: 4px;
   display: flex;
   flex-direction: column;
+
+  // display: grid;
+  // grid-auto-flow: row;
 `;
 export const Table = styled.div`
   align-items: end;

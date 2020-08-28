@@ -1,9 +1,11 @@
-import { combine, createEffect, createEvent, restore } from "effector";
-
-import { layout$ } from "./layout";
+import { combine, createEffect, createStore, createEvent, guard, restore, sample } from "effector";
 
 import { iterationToLayout, join } from "../utils";
-import { training$ } from "./training";
+
+import { admin$ } from "./admin";
+import { layout$ } from "./layout";
+import { setPhase } from "./phases";
+import { remotePhase$, } from "./phases";
 
 const heartRateDog = (iteration) => {
   const rates = [];
@@ -28,34 +30,28 @@ const heartRateDog = (iteration) => {
 };
 
 export const setHardcodedIterations = createEvent();
-export const hardcodedIterations$ = restore(setHardcodedIterations, null);
+const hardcodedIterations$ = restore(setHardcodedIterations, null);
 
 // current iteration
-const setFetchedCurrentIteration = createEvent();
-export const fetchedCurrentIteration$ = restore(setFetchedCurrentIteration, null);
-
 let currentIterationTimeout = 0;
-export const fetchCurrentIteration = createEffect();
-fetchCurrentIteration.use(() => {
+const fetchCurrentIteration = createEvent();
+const fetchCurrentIterationFx = createEffect();
+fetchCurrentIterationFx.use(() => {
   clearTimeout(currentIterationTimeout);
 
   return fetch("https://heartrate.miran248.now.sh/api/current-iteration").then(
     (response) => response.json()
   );
 });
-fetchCurrentIteration.done.watch(({ params, result }) => {
-  setFetchedCurrentIteration(result);
+fetchCurrentIterationFx.finally.watch(() => {
+  currentIterationTimeout = setTimeout(() => fetchCurrentIteration(), 5000);
 });
-fetchCurrentIteration.finally.watch(() => {
-  if(training$.getState() === false)
-    currentIterationTimeout = setTimeout(() => fetchCurrentIteration(), 30000);
-});
+const fetchedCurrentIteration$ = createStore(null)
+.on(fetchCurrentIterationFx.done, (_, { result }) => result);
 
-fetchCurrentIteration();
-
-combine(layout$, fetchedCurrentIteration$, (layout, fetchedCurrentIteration) => {
+export const currentIteration$ = combine(layout$, fetchedCurrentIteration$, (layout, fetchedCurrentIteration) => {
   if(layout === null || fetchedCurrentIteration === null)
-    return;
+    return null;
 
   const iterationLayout = iterationToLayout(layout, fetchedCurrentIteration.data);
 
@@ -70,80 +66,45 @@ combine(layout$, fetchedCurrentIteration$, (layout, fetchedCurrentIteration) => 
     layout: iterationLayout,
   };
 
-  setCurrentIteration(iteration);
+  if(admin$.getState() && remotePhase$.getState() > 2)
+    setPhase(human !== null || animal !== null ? 4 : 3);
+
+  return iteration;
 });
-
-const setCurrentIteration = createEvent();
-export const currentIteration$ = restore(setCurrentIteration, null);
-
-// previous iteration
-export const setFetchedPreviousIteration = createEvent();
-export const fetchedPreviousIteration$ = restore(setFetchedPreviousIteration, null);
-
-let previousIterationTimeout = 0;
-const fetchPreviousIteration = createEffect();
-fetchPreviousIteration.use(() => {
-  clearTimeout(previousIterationTimeout);
-
-  return fetch("https://heartrate.miran248.now.sh/api/previous-iteration").then(
-    (response) => response.json()
-  );
-});
-fetchPreviousIteration.done.watch(({ params, result }) => {
-  setFetchedPreviousIteration(result);
-});
-fetchPreviousIteration.finally.watch(() => {
-  if(training$.getState() === false)
-    previousIterationTimeout = setTimeout(() => fetchPreviousIteration(), 30000);
-});
-
-fetchPreviousIteration();
-
-combine(layout$, fetchedPreviousIteration$, (layout, fetchedPreviousIteration) => {
-  if(layout === null || fetchedPreviousIteration === null)
-    return;
-
-  const iterationLayout = iterationToLayout(layout, fetchedPreviousIteration.data);
-  
-  const { aggregate } = fetchedPreviousIteration;
-  const { human, animal } = aggregate || { human: null, animal: null };
-
-  const iteration = {
-    ...fetchedPreviousIteration,
-    animal,
-    combined: join(layout, iterationLayout),
-    human,
-    layout: iterationLayout,
-  };
-
-  setPreviousIteration(iteration);
-});
-
-const setPreviousIteration = createEvent();
-export const previousIteration$ = restore(setPreviousIteration, null);
 
 // iterations
-const setFetchedIterations = createEvent();
-export const fetchedIterations$ = restore(setFetchedIterations, null);
+export const saveIteration = createEffect();
+saveIteration.use((payload) => {
+  console.log("saveIteration", payload);
+
+  return fetch("https://heartrate.miran248.now.sh/api/iteration", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+});
+saveIteration.done.watch(() => {
+  fetchCurrentIteration();
+  fetchIterations();
+});
 
 let iterationTimeout = 0;
-const fetchIterations = createEffect();
-fetchIterations.use(() => {
+const fetchIterations = createEvent();
+const fetchIterationsFx = createEffect();
+fetchIterationsFx.use(() => {
   clearTimeout(iterationTimeout);
 
   return fetch("https://heartrate.miran248.now.sh/api/iterations").then(
     (response) => response.json()
   );
 });
-fetchIterations.done.watch(({ params, result }) => {
-  setFetchedIterations(result);
+fetchIterationsFx.finally.watch(() => {
+  iterationTimeout = setTimeout(() => fetchIterations(), 30000);
 });
-fetchIterations.finally.watch(() => {
-  if(training$.getState() === false)
-    iterationTimeout = setTimeout(() => fetchIterations(), 30000);
-});
-
-fetchIterations();
+const fetchedIterations$ = createStore(null)
+.on(fetchIterationsFx.done, (_, { result }) => result);
 
 // TODO: Move to utils
 const heartRateDeltaRank = (rate) => {
@@ -161,9 +122,9 @@ const heartRateDeltaRank = (rate) => {
 
   return 4; // [ 40, inf )
 };
-combine(layout$, hardcodedIterations$, fetchedIterations$, (layout, hardcodedIterations, fetchedIterations) => {
+export const iterations$ = combine(layout$, hardcodedIterations$, fetchedIterations$, (layout, hardcodedIterations, fetchedIterations) => {
   if(layout === null || hardcodedIterations === null || fetchedIterations === null)
-    return;
+    return null;
 
   const all = [
     ...hardcodedIterations,
@@ -226,25 +187,34 @@ combine(layout$, hardcodedIterations$, fetchedIterations$, (layout, hardcodedIte
 
   iterations.sort((a, b) => b.timestamp - a.timestamp);
 
-  setIterations(iterations);
+  return iterations;
 });
 
-const setIterations = createEvent();
-export const iterations$ = restore(setIterations, null);
+export const ready$ = iterations$.map((iterations) => iterations !== null);
 
-const clear = () => {
-  clearTimeout(currentIterationTimeout);
-  clearTimeout(previousIterationTimeout);
-  clearTimeout(iterationTimeout);
-};
-
-training$.watch((training) => {
-  if(training)
-    clear();
+// kickoff
+guard({
+  source: sample(remotePhase$, fetchCurrentIteration),
+  filter: combine(
+    remotePhase$, fetchCurrentIterationFx.pending,
+    (phase, pending) => phase > 2 && pending === false
+  ),
+  target: fetchCurrentIterationFx,
 });
 
-export const refresh = () => {
+guard({
+  source: sample(remotePhase$, fetchIterations),
+  filter: combine(
+    ready$, remotePhase$, fetchIterationsFx.pending,
+    (ready, phase, pending) => (ready === false || phase > 2) && pending === false
+  ),
+  target: fetchIterationsFx,
+});
+
+remotePhase$.watch(() => {
   fetchCurrentIteration();
-  fetchPreviousIteration();
+});
+
+combine(ready$, remotePhase$, () => {
   fetchIterations();
-};
+});

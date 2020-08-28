@@ -21,8 +21,8 @@ export function toIndex(size, x, y, z) {
   return z * size.x * size.y + y * size.x + x;
 }
 
-export const generateIteration = (p) => {
-  const clusterIds = clusterIds$.getState();
+export const generateIteration = () => {
+  // const clusterIds = clusterIds$.getState();
   const idClusters = idClusters$.getState();
   const linksGraph = linksGraph$.getState();
   const ids = ids$.getState();

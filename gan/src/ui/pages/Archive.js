@@ -1,43 +1,25 @@
 import * as d3 from "d3";
 import { format } from "date-fns";
 import { useStore } from "effector-react";
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useMemo } from "react";
 import { useTable } from "react-table";
 import styled from "styled-components";
 
 import { formatBpm, formatRank, formatDate } from "../../formatters";
-import { iterations$, refresh } from "../../store/iterations";
+import { admin$ } from "../../store/admin";
+import { iterations$, saveIteration } from "../../store/iterations";
 
-import { HR, Panel } from "../components";
+import * as colors from "../colors";
+import { Apart, Center, HR, Label, Panel, Title } from "../components";
 import HorizontalPreview from "../HorizontalPreview";
-import { training$ } from "../../store/training";
-
-const saveIteration = async(id, diff) => {
-  const payload = {
-    _id: id,
-    ...diff,
-  };
-
-  console.log("saveIteration", payload);
-
-  await fetch("https://heartrate.miran248.now.sh/api/iteration", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-
-  refresh();
-};
 
 const Container = styled.div`
   display: grid;
+  grid-auto-columns: inherit;
   grid-auto-flow: row;
-  grid-auto-rows: max-content;
+  grid-auto-rows: 322px 300px;
   grid-gap: 17px;
   height: 639px;
-  overflow-y: auto;
 
   table {
     border-spacing: 0;
@@ -132,23 +114,24 @@ const renderRank = (targetRank, { actualRank, timestamp }) => actualRank === tar
   ? (<div style={{ backgroundColor: rankColor(actualRank) }}>{format(timestamp, "MM/dd")}<br />{format(timestamp, "HH:mm")}</div>)
   : (<div />);
 export default () => {
+  const admin = useStore(admin$);
   const iterations = useStore(iterations$);
 
-  const [ valid, setValid ] = useState(false);
+  const valid = admin === false;
 
   const columns = useMemo(
     () => [
-      {
+      ...(admin ? [{
         Header: "valid",
         accessor: "valid",
         Cell: ({ row: { original }, value }) => (
           <input type="checkbox"
                  checked={value}
                  disabled={!("_id" in original)}
-                 onChange={() => saveIteration(original._id, { valid: !value })}
+                 onChange={() => saveIteration({ _id: original._id, valid: !value })}
                  />
         ),
-      },
+      }] : []),
       {
         Header: "date",
         accessor: ({ timestamp }) => formatDate(timestamp),
@@ -185,7 +168,7 @@ export default () => {
         accessor: ({ trainable }) => trainable ? "YES" : "NO",
       },
     ],
-    []
+    [ admin ]
   );
 
   const data = iterations && iterations.filter(
@@ -196,32 +179,45 @@ export default () => {
     (iteration) => iteration.trainable
   ) || [];
   trainableData.sort(
-    (a, b) => a.timestamp - b.timestamp
+    (a, b) => b.timestamp - a.timestamp
   );
 
   return (
-    <Container as={Panel}>
-      <Grid>
-        <b>4</b>
-        <b>3</b>
-        <b>2</b>
-        <b>1</b>
-        <b>0</b>
-        {trainableData.map(
-          (iteration, i) => (
-            <Fragment key={i}>
-              {renderRank(4, iteration)}
-              {renderRank(3, iteration)}
-              {renderRank(2, iteration)}
-              {renderRank(1, iteration)}
-              {renderRank(0, iteration)}
-            </Fragment>
-          )
-        )}
-      </Grid>
-      <HR />
-      <label><input type="checkbox" checked={valid} onChange={() => setValid(!valid)} /> valid only</label>
-      <Table columns={columns} data={data} />
+    <Container>
+      <Panel>
+        <Title>neural network learning curve through time (all iterations)</Title>
+        <HR />
+        <Grid>
+          <Center style={{ backgroundColor: colors.array[4] }}><Label>4</Label></Center>
+          <Center style={{ backgroundColor: colors.array[4] }}><Label>3</Label></Center>
+          <Center style={{ backgroundColor: colors.array[4] }}><Label>2</Label></Center>
+          <Center style={{ backgroundColor: colors.array[4] }}><Label>1</Label></Center>
+          <Center style={{ backgroundColor: colors.array[4] }}><Label>0</Label></Center>
+          {trainableData.map(
+            (iteration, i) => (
+              <Fragment key={i}>
+                {renderRank(4, iteration)}
+                {renderRank(3, iteration)}
+                {renderRank(2, iteration)}
+                {renderRank(1, iteration)}
+                {renderRank(0, iteration)}
+              </Fragment>
+            )
+          )}
+        </Grid>
+        <HR />
+        <Apart style={{ justifyContent: "center" }}>
+          <Label style={{ fontSize: 15, textTransform: "initial" }}>class / time</Label>
+        </Apart>
+      </Panel>
+      
+      <Panel>
+        <Title>historic iterations</Title>
+        <HR />
+        <div style={{ overflowY: "auto" }}>
+          <Table columns={columns} data={data} />
+        </div>
+      </Panel>
     </Container>
   );
 };

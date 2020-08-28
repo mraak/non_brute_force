@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import {
   Redirect,
   Route,
-  BrowserRouter as Router,
+  HashRouter as Router,
   Switch,
 } from "react-router-dom";
 import styled from "styled-components";
@@ -30,6 +30,8 @@ window.addEventListener("resize", resize);
 const Container = styled.div`
   display: grid;
   grid-gap: 22px;
+  grid-auto-columns: 100%;
+  grid-auto-flow: rows;
   height: 750px;
   padding-bottom: 22px;
   padding-left: 17px;
@@ -43,7 +45,7 @@ export default () => {
 
   return (
     <Container id="content">
-      <Router basename="/non-brute-force-ui">
+      <Router>
         <Header />
         <Switch>
           <Route path="/" exact>
