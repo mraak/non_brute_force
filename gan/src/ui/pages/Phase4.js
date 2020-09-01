@@ -5,16 +5,14 @@ import {
   CartesianGrid,
   Line,
   LineChart,
-  Legend,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis
 } from "recharts";
 
 import * as colors from "../colors";
-import { Apart, Center, Chart, HR, Label, Spacer, Value } from "../components";
-import { formatBpm, formatRank, formatDate } from "../../formatters";
+import { Apart, Center, HR, Label, Spacer, Value } from "../components";
+import { formatBpm } from "../../formatters";
 import { currentIteration$ } from "../../store/iterations";
 
 export default () => {
@@ -54,25 +52,15 @@ export default () => {
 
   return (
     <>
-      {/* <Apart small>
-        <Label>class</Label><Value>{formatRank(iteration.actualRank)}</Value>
-      </Apart>
-      <HR /> */}
-      <Chart style={{ height: "443px" }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 40, right: 0 /* 40 */, bottom: 5, left: 10 }}>
-            <CartesianGrid stroke={colors.array[1]} strokeDasharray="5 5" />
-            <Line yAxisId="left" type="monotone" dataKey="maja" dot={false} stroke={colors.valueHuman} connectNulls isAnimationActive={false} />
-            <Line yAxisId="left" type="monotone" dataKey="dog" dot={false} stroke={colors.valueAnimal} connectNulls isAnimationActive={false} />
-            <Line yAxisId="left" type="monotone" dataKey="delta" dot={false} stroke={colors.array[5]} connectNulls isAnimationActive={false} />
-            <XAxis dataKey="date" tickFormatter={(date) => format(date, "HH:mm:ss")} isAnimationActive={false} />
-            <YAxis yAxisId="left" type="number" unit="bpm" isAnimationActive={false} stroke={colors.array[5]} />
-            {/* <YAxis yAxisId="right" type="number" unit="bpm" orientation="right" isAnimationActive={false} /> */}
-            {/* <Legend isAnimationActive={false} /> */}
-            <Tooltip labelFormatter={(date) => format(date, "HH:mm:ss")} formatter={(value) => `${value}bpm`} contentStyle={{ backgroundColor: colors.array[4], border: `1px solid ${colors.array[1]}`, color: colors.array[5] }} isAnimationActive={false} />
-          </LineChart>
-        </ResponsiveContainer>
-      </Chart>
+      <LineChart data={data} width={602} height={479} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+        <CartesianGrid stroke={colors.array[1]} strokeDasharray="5 5" />
+        <Line type="monotone" dataKey="maja" dot={false} stroke={colors.valueHuman} connectNulls isAnimationActive={false} />
+        <Line type="monotone" dataKey="dog" dot={false} stroke={colors.valueAnimal} connectNulls isAnimationActive={false} />
+        <Line type="monotone" dataKey="delta" dot={false} stroke={colors.array[5]} connectNulls isAnimationActive={false} />
+        <XAxis dataKey="date" tickFormatter={(date) => format(date, "HH:mm:ss")} isAnimationActive={false} hide={true} />
+        <YAxis type="number" unit="bpm" stroke={colors.array[5]} isAnimationActive={false} />
+        <Tooltip labelFormatter={(date) => format(date, "HH:mm:ss")} formatter={(value) => `${value}bpm`} contentStyle={{ backgroundColor: colors.array[4], border: `1px solid ${colors.array[1]}`, color: colors.array[5] }} isAnimationActive={false} />
+      </LineChart>
       <HR />
       <Apart small>
         <Label style={{ width: 130 }}>avg human</Label>

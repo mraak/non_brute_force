@@ -23,6 +23,8 @@ export const NavItem = styled(NavLink)`
   color: ${colors.array[3]};
   display: grid;
   font-size: 25px;
+  font-weight: bold;
+  letter-spacing: 4px;
   place-items: center;
   text-decoration: none;
   text-transform: uppercase;
@@ -38,6 +40,7 @@ export const Title = styled.h3`
   display: grid !important;
   font-size: 20px;
   height: 46px;
+  letter-spacing: 2px;
   margin: 0;
   place-items: center;
   text-decoration: none;
@@ -48,6 +51,7 @@ export const Label = styled.div`
   color: ${colors.array[5]};
   display: flex !important;
   font-size: 20px;
+  letter-spacing: 1px;
   line-height: 19px;
   text-transform: uppercase;
 `;
@@ -55,6 +59,7 @@ export const Value = styled.div`
   color: ${colors.array[6]};
   display: flex !important;
   font-size: 25px;
+  letter-spacing: 1px;
   line-height: 19px;
   justify-content: flex-end;
   text-transform: uppercase;
@@ -65,6 +70,7 @@ export const BigValue = styled.div`
   display: flex !important;
   font-size: 50px;
   height: 52px;
+  letter-spacing: 1px;
   line-height: 37px;
   justify-content: flex-end;
   text-transform: uppercase;
@@ -132,6 +138,7 @@ export const Button = styled.button`
   color: ${colors.array[5]};
   font-size: 25px;
   height: 53px;
+  letter-spacing: 1px;
   padding: 0;
   text-transform: uppercase;
   width: 190px;
@@ -139,4 +146,44 @@ export const Button = styled.button`
 
 export const HR = styled.div`
   border-top: 2px solid ${colors.array[1]};
+`;
+export const VR = styled.div`
+  border-left: 2px solid ${colors.array[1]};
+`;
+
+export const Horizontal = styled.div`
+  background-color: ${colors.array[4]};
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+`;
+export const Vertical = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  & > .recharts-wrapper, & > .graph {
+    background-color: ${colors.array[0]};
+    border-bottom: 1px solid ${colors.array[1]};
+    border-left: 1px solid ${colors.array[1]};
+  }
+`;
+export const LabelX = styled.div`
+  align-items: center;
+  color: ${colors.array[5]};
+  display: flex;
+  font-size: 15px;
+  height: 25px;
+  justify-content: center;
+  letter-spacing: 1px;
+`;
+export const LabelY = styled.div`
+  align-items: center;
+  color: ${colors.array[5]};
+  display: flex;
+  font-size: 15px;
+  justify-content: center;
+  letter-spacing: 1px;
+  transform: rotate(180deg);
+  width: 25px;
+  writing-mode: vertical-lr;
 `;

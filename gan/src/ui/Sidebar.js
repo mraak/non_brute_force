@@ -5,11 +5,11 @@ import p5 from "p5";
 import React, { useMemo } from "react";
 import styled from "styled-components";
 
-import { formatBpm, formatRank, formatDate } from "../formatters";
+import { formatBpm } from "../formatters";
 import { currentIteration$ } from "../store/iterations";
 import { remotePhase$ } from "../store/phases";
 
-import { Apart, BigValue, Center, HR, Label, Panel, Span2, Table, Title, Value } from "./components";
+import { Apart, BigValue, HR, Label, Panel, Table, Title, Value } from "./components";
 import Heartrate from "./Heartrate";
 
 p5.prototype.noiseSeed(123);
@@ -61,15 +61,7 @@ export default () => {
 
   useMemo(() => { setTimeout(refreshStats, 0) }, [ iteration ]);
 
-  if(iteration === null) {
-    return (
-      <Container>
-        <Panel as={Center} style={{ gridColumn: "2 span" }}>loading iteration</Panel>
-      </Container>
-    );
-  }
-
-  const { human, animal, ended } = iteration;
+  const { human, animal, ended } = iteration || { human: null, animal: null, ended: false };
 
   const humanEntries = human === null
     ? []
@@ -131,7 +123,7 @@ export default () => {
         </Apart>
         <HR />
         <Apart>
-          <Label>end</Label><Value human>{hideHuman ? "NA" : format(humanStop, "HH:mm:ss")}</Value>
+          <Label>end</Label><Value human>{ended === false || hideHuman ? "NA" : format(humanStop, "HH:mm:ss")}</Value>
         </Apart>
       </Panel>
       <Panel>
@@ -159,7 +151,7 @@ export default () => {
         </Apart>
         <HR />
         <Apart>
-          <Label>end</Label><Value>{hideAnimal ? "NA" : format(animalStop, "HH:mm:ss")}</Value>
+          <Label>end</Label><Value>{ended === false || hideAnimal ? "NA" : format(animalStop, "HH:mm:ss")}</Value>
         </Apart>
       </Panel>
     </Container>

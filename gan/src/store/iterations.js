@@ -44,7 +44,7 @@ fetchCurrentIterationFx.use(() => {
   );
 });
 fetchCurrentIterationFx.finally.watch(() => {
-  currentIterationTimeout = setTimeout(() => fetchCurrentIteration(), 5000);
+  currentIterationTimeout = setTimeout(() => fetchCurrentIteration(), 1000);
 });
 const fetchedCurrentIteration$ = createStore(null)
 .on(fetchCurrentIterationFx.done, (_, { result }) => result);
@@ -196,8 +196,8 @@ export const ready$ = iterations$.map((iterations) => iterations !== null);
 guard({
   source: sample(remotePhase$, fetchCurrentIteration),
   filter: combine(
-    remotePhase$, fetchCurrentIterationFx.pending,
-    (phase, pending) => phase > 2 && pending === false
+    ready$, remotePhase$, fetchCurrentIterationFx.pending,
+    (ready, phase, pending) => (ready === false || phase > 2) && pending === false
   ),
   target: fetchCurrentIterationFx,
 });

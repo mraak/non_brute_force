@@ -152,6 +152,8 @@ class Heart {
       // Use the x coordinates of the mouse position to modify the heart frequency
       // this.nextBeat = p.abs(p.ceil(p.randomGaussian((900 - p.mouseX) / 10, 3)));
       // this.nextBeat = this.nextBeatIn + 3600 / 200;
+      // this.nextBeat = this.options.bpm * this.p.deltaTime / 1000;
+      // this.nextBeat = this.nextBeatIn + 3600 / this.options.bpm;
       this.nextBeat = this.nextBeatIn + 3600 / this.options.bpm;
 
       // It the pixel time between beat and beat is less than 18, force it to be
@@ -357,8 +359,8 @@ const sketch = (options) => (p) => {
   // p5.sound variables
   // let osc;
 
-  const W = 286;
-  const H = 124;
+  const W = 282;
+  const H = 122;
 
   // Initialize the ecg
   // let ecg = new ECG(p, { x: 0, y: 110 }, [{ x: 0, y: 0 }], 600);
@@ -369,7 +371,7 @@ const sketch = (options) => (p) => {
 
   p.setup = () => {
     p.createCanvas(W, H, p.WEBGL);
-    // p.frameRate(12);
+    p.frameRate(12);
 
     // Set the color mode to allow calling RGBA without converting to string
     p.colorMode(p.RGB, 255, 255, 255, 1);
@@ -405,8 +407,11 @@ const sketch = (options) => (p) => {
     p.rect(0, 0, W, H);
     p.pop();
 
-    // Get the new voltage values for the ECG from the heart
-    heart.beat(heart.nextBeat - heart.nextBeatIn);
+    // TODO: Simplify!
+    const times = p.deltaTime / (1000 / 60);
+    for(let i = 0; i < times; ++i)
+      // Get the new voltage values for the ECG from the heart
+      heart.beat(heart.nextBeat - heart.nextBeatIn);
 
     // Draw the line of voltage values over time in the ECG screen
     ecg.plotValues();
@@ -428,8 +433,8 @@ export default ({ bpm }) => {
 
     const p = new p5(sketch(options), ref.current);
 
-    return p.remove;
-  }, [ ref.current ]);
+    return () => p.remove();
+  }, []);
 
   return (
     <div ref={ref} />

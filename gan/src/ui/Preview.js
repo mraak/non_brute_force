@@ -7,26 +7,47 @@ import { currentIteration$ } from "../store/iterations";
 import { size$ } from "../store/size";
 import { fromIndex } from "../utils";
 
+import * as colors from "./colors";
+
 const TILE_SIZE = 60;
 
 const sketch = (iteration, size) => (p) => {
-  const W = 750;
-  // const W = 400;
-  const H = W * 9 / 16;
+  const W = 558;
+  const H = 413;
+
+  let cp = null;
 
   p.setup = () => {
+    // p.setAttributes("depth", false);
+    // p.setAttributes("premultipliedAlpha", true);
+    // p.setAttributes("perPixelLighting", false);
     p.createCanvas(W, H, p.WEBGL);
     p.frameRate(12);
+    p.stroke(colors.array[1]);
+    // p.blendMode(p.SCREEN);
+    // p.rectMode(p.CENTER);
+
+    cp = p.createVector(0, -200, (H * .5) / p.tan(p.PI * 30 / 180));
   };
   p.draw = () => {
     p.clear();
+    // p.debugMode();
 
     // p.normalMaterial();
-    p.ambientLight(255, 255, 255);
 
-    //p.rotateX(-p.mouseY * .01);
-    p.rotateX(-.6);
-    p.rotateY(p.mouseX * .01);
+    // cp.x = p.mouseX;
+    // cp.y = H/2 + p.mouseY;
+
+    p.camera(
+      cp.x, cp.y, cp.z, // x, y, z,
+      cp.x, 40, 0, // cx, cy, cz
+      0, 1, 0
+    );
+
+    // p.camera(W/2 + p.mouseX, H/2 + p.mouseY, (H/2) / p.tan(p.PI/6), W/2 + p.mouseX, H/2 + p.mouseY, 0, 0, 1, 0);
+
+    // p.rotateX(p.PI * .25);
+    p.rotateY(p.mouseX / W * p.PI * 2);
 
     p.translate(
       -.5 * TILE_SIZE * size.x,
@@ -47,16 +68,33 @@ const sketch = (iteration, size) => (p) => {
         TILE_SIZE * (z + .5),
         TILE_SIZE * (y + .5)
       );
-      p.rotateX(p.PI * -.5);
+      p.rotateX(p.PI * .5);
+
+      let c = null;
+
+      // if(iteration[i] === 2)
+      //   c = colors.array[8];
+      //   // c = `${colors.array[8]}99`;
+      // else if(iteration[i] === 1)
+      //   c = colors.array[7];
+        // c = `${colors.array[7]}66`;
 
       if(iteration[i] === 2)
-        p.fill(51, 51, 51);
+        c = p.color(51, 51, 51);
       else if(iteration[i] === 1)
-        p.fill(153, 153, 153);
+        c = p.color(153, 153, 153);
 
-      p.plane(TILE_SIZE);
+      if(c !== null) {
+        p.fill(c);
+        p.plane(TILE_SIZE);
+      }
 
       // p.box(TILE_SIZE - 1, TILE_SIZE - 1, TILE_SIZE - 1);
+
+      // p._renderer.immediateMode.geometry.computeFaces();
+      // p._renderer.immediateMode.geometry.computeNormals();
+      // p._renderer.immediateMode.geometry.reset();
+      // p._renderer.immediateMode.geometry.normalize();
 
       p.pop();
     }
@@ -66,9 +104,13 @@ const sketch = (iteration, size) => (p) => {
       const sp = fromIndex(size, +s);
       const tp = fromIndex(size, +t);
 
+      if(iteration[s] < 2 || iteration[t] < 2)
+        continue;
+
       p.push();
 
       p.strokeWeight(2);
+      // p.stroke(colors.array[6]);
       p.stroke(0, 102, 255);
       p.line(
         TILE_SIZE * (sp.x + .5), TILE_SIZE * (sp.z + .5), TILE_SIZE * (sp.y + .5),
@@ -92,8 +134,8 @@ export default () => {
 
     const p = new p5(sketch(iteration.combined, size), ref.current);
 
-    return p.remove;
-  }, [ ref.current, iteration && JSON.stringify(iteration.combined) ]);
+    return () => p.remove();
+  }, [ iteration && JSON.stringify(iteration.combined) ]);
 
   if(iteration === null) {
     return (

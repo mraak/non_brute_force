@@ -62,6 +62,9 @@ const sketch = (state) => (p) => {
     p.stroke(colors.array[1]);
   };
   p.draw = () => {
+    if(!layout)
+      return;
+
     const layoutCount = layout.length;
     const progressIndex = Math.floor(progress * layoutCount);
 
@@ -161,7 +164,7 @@ const sketch = (state) => (p) => {
 
     // progress = (progress + .01) % 1;
     if(progress < 1) {
-      progress += .005;
+      progress += p.deltaTime / 3000;
     } else {
       p.noLoop();
     }
@@ -179,8 +182,8 @@ export default () => {
 
     const p = new p5(sketch(phase2State), ref.current);
 
-    return p.remove;
-  }, [ ref.current, phase2State ]);
+    return () => p.remove();
+  }, [ phase2State === null ? 0 : phase2State.attempts ]);
 
   return (
     <>

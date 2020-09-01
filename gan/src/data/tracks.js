@@ -39,14 +39,14 @@ export const horizontalTracks = [
   ],
   // 4. floor
   [
-    // [ 2, 43, 47 ],
-    [ 2, 43, 46 ], // 47 temp empty
+    [ 2, 43, 47 ],
+    // [ 2, 43, 46 ], // 47 temp empty
 
-    // [ 4, 48, 53 ],
-    [ 3, 48, 52 ], // 53 temp empty
+    [ 3, 48, 53 ],
+    // [ 3, 48, 52 ], // 53 temp empty
 
-    // [ 2, 54, 58 ],
-    [ 2, 54, 57 ], // 58 temp empty
+    [ 2, 54, 58 ],
+    // [ 2, 54, 57 ], // 58 temp empty
 
     [ 1, 59, 59 ], // fixed
   ],

@@ -1,8 +1,6 @@
-import * as d3 from "d3";
 import { format } from "date-fns";
 import { useStore } from "effector-react";
-import React, { Fragment, useMemo } from "react";
-import { useTable } from "react-table";
+import React from "react";
 import styled from "styled-components";
 
 import { formatBpm, formatRank, formatDate } from "../../formatters";
@@ -10,7 +8,7 @@ import { admin$ } from "../../store/admin";
 import { iterations$, saveIteration } from "../../store/iterations";
 
 import * as colors from "../colors";
-import { Apart, Center, HR, Label, Panel, Title } from "../components";
+import { Center, Horizontal, HR, Label, LabelX, LabelY, Panel, Vertical, VR, Title } from "../components";
 import HorizontalPreview from "../HorizontalPreview";
 
 const Container = styled.div`
@@ -48,128 +46,122 @@ const Container = styled.div`
 `;
 
 const Grid = styled.div`
-  // border: 1px solid #000000;
-  color: #000000;
+  color: ${colors.array[5]};
   display: grid;
+  flex: 1;
   font-size: 1ch;
-  grid-auto-columns: 6ch;
+  grid-auto-columns: 49px;
   grid-auto-flow: column;
-  grid-gap: 1ch;
-  grid-template-rows: repeat(5, 6ch);
+  grid-template-rows: repeat(5, 49px);
   overflow-x: auto;
 
-  * {
-    border: 1px solid #000000;
+  & > * {
+    border-right: 1px dashed ${colors.array[1]};
     display: grid;
     place-items: center;
   }
 `;
 
-var rankColor = d3.scaleSequential()
-      .interpolator(d3.scaleOrdinal(d3.schemePastel1))
-      .domain([ 0, 4 ]);
+const IterationsContainer = styled.div`
+  overflow-y: auto;
 
-const Table = ({ columns, data }) => {
-  // Use the state and functions returned from useTable to build your UI
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({
-    columns,
-    data,
-  });
+  & > * + * {
+    border-top: 1px solid ${colors.array[1]};
+  }
+`;
 
-  // Render the UI for your table
+const renderColumn = (memo, { actualRank, timestamp }, i) => {
+  const skip = 4 - actualRank;
+  const span = actualRank + 1;
+
+  return [
+    ...memo,
+    ...(skip === 0 ? [] : [(
+      <div key={`${i}-skip`} style={{
+        gridRow: `span ${skip}`,
+      }} />
+    )]),
+    (
+      <div key={`${i}-span`} style={{
+        alignItems: "flex-start",
+        backgroundColor: colors.array[10],
+        gridRow: `span ${span}`,
+        paddingTop: 10,
+      }}>{format(timestamp, "MM/dd")}<br />{format(timestamp, "HH:mm")}</div>
+    ),
+  ];
+};
+
+const renderIteration = (admin) => (iteration, i) => {
+  const { actualRank, animal, combined, delta, expectedRank, human, timestamp, title, trainable, valid } = iteration;
+
+  const key = `${timestamp}-${title}`;
+
   return (
-    <table {...getTableProps()}>
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row, i) => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <div key={key} style={{ backgroundColor: i & 1 === 1 ? colors.array[4] : colors.array[0], display: "flex" }}> {/*, height: 269 }}> */}
+      <Center style={{ gridGap: 10, padding: 26, textAlign: "center", width: 202 }}>
+        {admin && (
+          <>
+            <input type="checkbox"
+              id={key}
+              checked={valid}
+              disabled={!("_id" in iteration)}
+              onChange={() => saveIteration({ _id: iteration._id, valid: !valid })}
+              />
+            <label htmlFor={key}></label>
+          </>
+        )}
+        <Label style={{ lineHeight: "32px" }}>{formatDate(timestamp)}</Label>
+      </Center>
+      <VR />
+      <div style={{
+        display: "flex",
+        flex: 1,
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: 26,
+      }}>
+        <HorizontalPreview layout={combined} />
+        <div style={{
+          display: "flex",
+          justifyContent: "space-around",
+          paddingTop: 14,
+        }}>
+          <Center style={{ gridGap: 10 }}>
+            <Label>maja bpm</Label>
+            <Label as={"b"} style={{ color: colors.array[8] }}>{formatBpm(human === null ? null : human.bpm)}</Label>
+          </Center>
+          <Center style={{ gridGap: 10 }}>
+            <Label>dog bpm</Label>
+            <Label as={"b"} style={{ color: colors.array[8] }}>{formatBpm(animal === null ? null : animal.bpm)}</Label>
+          </Center>
+          <Center style={{ gridGap: 10 }}>
+            <Label>delta bpm</Label>
+            <Label as={"b"} style={{ color: colors.array[8] }}>{formatBpm(delta)}</Label>
+          </Center>
+          <Center style={{ gridGap: 10 }}>
+            <Label>class</Label>
+            <Label as={"b"} style={{ color: colors.array[8] }}>{formatRank(actualRank)}</Label>
+          </Center>
+          <Center style={{ gridGap: 10 }}>
+            <Label>match</Label>
+            <Label as={"b"} style={{ color: colors.array[8] }}>{expectedRank === actualRank ? "YES" : "NO"}</Label>
+          </Center>
+          <Center style={{ gridGap: 10 }}>
+            <Label>trainable</Label>
+            <Label as={"b"} style={{ color: colors.array[8] }}>{trainable ? "YES" : "NO"}</Label>
+          </Center>
+        </div>
+      </div>
+    </div>
   );
 };
 
-const renderRank = (targetRank, { actualRank, timestamp }) => actualRank === targetRank
-  ? (<div style={{ backgroundColor: rankColor(actualRank) }}>{format(timestamp, "MM/dd")}<br />{format(timestamp, "HH:mm")}</div>)
-  : (<div />);
 export default () => {
   const admin = useStore(admin$);
   const iterations = useStore(iterations$);
 
   const valid = admin === false;
-
-  const columns = useMemo(
-    () => [
-      ...(admin ? [{
-        Header: "valid",
-        accessor: "valid",
-        Cell: ({ row: { original }, value }) => (
-          <input type="checkbox"
-                 checked={value}
-                 disabled={!("_id" in original)}
-                 onChange={() => saveIteration({ _id: original._id, valid: !value })}
-                 />
-        ),
-      }] : []),
-      {
-        Header: "date",
-        accessor: ({ timestamp }) => formatDate(timestamp),
-      },
-      {
-        Header: "layout",
-        accessor: "combined",
-        Cell: ({ value }) => (
-          <HorizontalPreview layout={value} />
-        ),
-      },
-      {
-        Header: "maja bpm",
-        accessor: ({ human }) => formatBpm(human === null ? null : human.bpm),
-      },
-      {
-        Header: "dog bpm",
-        accessor: ({ animal }) => formatBpm(animal === null ? null : animal.bpm),
-      },
-      {
-        Header: "delta bpm",
-        accessor: ({ delta }) => formatBpm(delta),
-      },
-      {
-        Header: "class",
-        accessor: ({ actualRank }) => formatRank(actualRank),
-      },
-      {
-        Header: "match",
-        accessor: ({ expectedRank, actualRank }) => expectedRank === actualRank ? "YES" : "NO",
-      },
-      {
-        Header: "trainable",
-        accessor: ({ trainable }) => trainable ? "YES" : "NO",
-      },
-    ],
-    [ admin ]
-  );
 
   const data = iterations && iterations.filter(
     (iteration) => valid === false || iteration.valid
@@ -187,36 +179,26 @@ export default () => {
       <Panel>
         <Title>neural network learning curve through time (all iterations)</Title>
         <HR />
-        <Grid>
-          <Center style={{ backgroundColor: colors.array[4] }}><Label>4</Label></Center>
-          <Center style={{ backgroundColor: colors.array[4] }}><Label>3</Label></Center>
-          <Center style={{ backgroundColor: colors.array[4] }}><Label>2</Label></Center>
-          <Center style={{ backgroundColor: colors.array[4] }}><Label>1</Label></Center>
-          <Center style={{ backgroundColor: colors.array[4] }}><Label>0</Label></Center>
-          {trainableData.map(
-            (iteration, i) => (
-              <Fragment key={i}>
-                {renderRank(4, iteration)}
-                {renderRank(3, iteration)}
-                {renderRank(2, iteration)}
-                {renderRank(1, iteration)}
-                {renderRank(0, iteration)}
-              </Fragment>
-            )
-          )}
-        </Grid>
-        <HR />
-        <Apart style={{ justifyContent: "center" }}>
-          <Label style={{ fontSize: 15, textTransform: "initial" }}>class / time</Label>
-        </Apart>
+        <Horizontal>
+          <LabelY style={{ textTransform: "uppercase" }}>class</LabelY>
+          <Vertical style={{ flex: 1, overflowX: "hidden" }}>
+            <Grid className="graph">
+              <Center style={{ backgroundColor: colors.array[4] }}><Label>4</Label></Center>
+              <Center style={{ backgroundColor: colors.array[4] }}><Label>3</Label></Center>
+              <Center style={{ backgroundColor: colors.array[4] }}><Label>2</Label></Center>
+              <Center style={{ backgroundColor: colors.array[4] }}><Label>1</Label></Center>
+              <Center style={{ backgroundColor: colors.array[4] }}><Label>0</Label></Center>
+              {trainableData.reduce(renderColumn, [])}
+            </Grid>
+            <LabelX style={{ textTransform: "uppercase" }}>time</LabelX>
+          </Vertical>
+        </Horizontal>
       </Panel>
       
       <Panel>
-        <Title>historic iterations</Title>
-        <HR />
-        <div style={{ overflowY: "auto" }}>
-          <Table columns={columns} data={data} />
-        </div>
+        <IterationsContainer>
+        {data.map(renderIteration(admin))}
+        </IterationsContainer>
       </Panel>
     </Container>
   );

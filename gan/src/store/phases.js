@@ -31,7 +31,7 @@ export const remotePhase$ = createStore(0)
 .on(fetchRemotePhase.done, (_, { result }) => result ? result.phase : 0);
 
 if(admin$.getState() === false)
-  setInterval(() => fetchRemotePhase(), 5000);
+  setInterval(() => fetchRemotePhase(), 1000);
 
 fetchRemotePhase();
 
@@ -61,7 +61,7 @@ fetchPhase1StateFx.use(() => {
   );
 });
 fetchPhase1StateFx.finally.watch(() => {
-  phase1StateTimeout = setTimeout(() => fetchPhase1State(), 5000);
+  phase1StateTimeout = setTimeout(() => fetchPhase1State(), 1000);
 });
 export const phase1State$ = createStore(null)
 .on(savePhase1StateFx.done, (_, { result }) => result)
@@ -93,7 +93,7 @@ fetchPhase2StateFx.use(() => {
   );
 });
 fetchPhase2StateFx.finally.watch(() => {
-  phase2StateTimeout = setTimeout(() => fetchPhase2State(), 5000);
+  phase2StateTimeout = setTimeout(() => fetchPhase2State(), 1000);
 });
 export const phase2State$ = createStore(null)
 .on(savePhase2StateFx.done, (_, { result }) => result)

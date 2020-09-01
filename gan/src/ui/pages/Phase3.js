@@ -23,10 +23,10 @@ export default () => {
 
   return (
     <>
-      <Chart>
+      <Chart style={{ position: "relative" }}>
         <Preview />
         {admin && (
-          <Button onClick={() => setPhase(1)}>start new</Button>
+          <Button style={{ position: "absolute", bottom: 17 }} onClick={() => setPhase(1)}>start new</Button>
         )}
       </Chart>
       <Spacer />

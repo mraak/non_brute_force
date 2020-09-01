@@ -21,6 +21,31 @@ body {
   padding: 0;
 }
 
+button {
+  border: none;
+  outline: none;
+}
+
+input[type=checkbox] {
+  display: none;
+}
+input[type=checkbox] + label {
+  background: url("assets/checkbox-inactive.png") no-repeat;
+  background-size: 100%;
+  display: inline-block;
+  height: 128px;
+  padding: 0;
+  width: 128px;
+}
+input[type=checkbox]:checked + label {
+  background: url("assets/checkbox-active.png") no-repeat;
+  background-size: 100%;
+  display: inline-block;
+  height: 128px;
+  padding: 0;
+  width: 128px;
+}
+
 #root {
   /* taken from https://stackoverflow.com/questions/20590239/maintain-aspect-ratio-of-div-but-fill-screen-width-and-height-in-css/36295495#20593342 */
   width: 100vw; 

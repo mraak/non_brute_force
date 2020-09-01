@@ -22,6 +22,7 @@ const sketch = (iteration, size) => (p) => {
 
   p.setup = () => {
     p.createCanvas(W, H, p.CANVAS);
+    p.frameRate(12);
     p.noLoop();
     p.textSize(TILE_SIZE * .6);
     p.textAlign(p.CENTER, p.CENTER);
@@ -79,8 +80,8 @@ export default ({ layout = null }) => {
 
     const p = new p5(sketch(layout, size), ref.current);
 
-    return p.remove;
-  }, [ ref.current, layout ]);
+    return () => p.remove();
+  }, [ layout ]);
 
   return (
     <div ref={ref} />
