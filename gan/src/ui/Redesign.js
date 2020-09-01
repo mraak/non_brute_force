@@ -6,7 +6,7 @@ import {
   Switch,
 } from "react-router-dom";
 import styled from "styled-components";
-import { Fullscreen as FullscreenIcon, ExitFullscreen as ExitFullscreenIcon } from "@styled-icons/boxicons-regular";
+import { Fullscreen as FullscreenIcon, FullscreenExit as ExitFullscreenIcon } from "@styled-icons/bootstrap";
 
 import useFullscreen from "../hooks/useFullscreen";
 
@@ -54,7 +54,7 @@ const FloatingButton = styled.button`
   border: 1px solid ${colors.array[10]};
   border-radius: 5px;
   color: ${colors.array[5]};
-  padding: 4px;
+  padding: 12px;
   text-transform: uppercase;
 `;
 
@@ -71,12 +71,12 @@ const FullscreenButton = () => {
 
   if(isFullscreen) {
     return (
-      <FloatingButton onClick={() => exit()}><ExitFullscreenIcon size={50} /></FloatingButton>
+      <FloatingButton onClick={() => exit()}><ExitFullscreenIcon size={30} /></FloatingButton>
     );
   }
 
   return (
-    <FloatingButton onClick={() => enter()}><FullscreenIcon size={50} /></FloatingButton>
+    <FloatingButton onClick={() => enter()}><FullscreenIcon size={30} /></FloatingButton>
   );
 };
 
