@@ -195,7 +195,7 @@ class Syncer {
         
         print("send begin \(payload)")
 
-        let url = URL(string: "https://heartrate.miran248.now.sh/api/payload")!
+        let url = URL(string: "https://heartrate.miran248.vercel.app/api/payload")!
 //        let url = URL(string: "http://localhost:3000/api/payload")!
 
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 60000)

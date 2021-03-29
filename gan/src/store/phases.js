@@ -13,7 +13,7 @@ phase$.watch((phase) => {
 
   console.log("saveCurrentPhase", phase);
 
-  fetch("https://heartrate.miran248.now.sh/api/save-current-phase", {
+  fetch("https://heartrate.miran248.vercel.app/api/save-current-phase", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -23,7 +23,7 @@ phase$.watch((phase) => {
 });
 
 const fetchRemotePhase = createEffect();
-fetchRemotePhase.use(() => fetch("https://heartrate.miran248.now.sh/api/current-phase").then(
+fetchRemotePhase.use(() => fetch("https://heartrate.miran248.vercel.app/api/current-phase").then(
   (response) => response.json()
 ));
 export const remotePhase$ = createStore(0)
@@ -38,7 +38,7 @@ fetchRemotePhase();
 // phase 1
 const savePhase1StateFx = createEffect();
 savePhase1StateFx.use(async(state) => {
-  await fetch("https://heartrate.miran248.now.sh/api/save-phase-1-state", {
+  await fetch("https://heartrate.miran248.vercel.app/api/save-phase-1-state", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -56,7 +56,7 @@ const fetchPhase1StateFx = createEffect();
 fetchPhase1StateFx.use(() => {
   clearTimeout(phase1StateTimeout);
 
-  return fetch("https://heartrate.miran248.now.sh/api/phase-1-state").then(
+  return fetch("https://heartrate.miran248.vercel.app/api/phase-1-state").then(
     (response) => response.json()
   );
 });
@@ -70,7 +70,7 @@ export const phase1State$ = createStore(null)
 // phase 2
 const savePhase2StateFx = createEffect();
 savePhase2StateFx.use(async(state) => {
-  await fetch("https://heartrate.miran248.now.sh/api/save-phase-2-state", {
+  await fetch("https://heartrate.miran248.vercel.app/api/save-phase-2-state", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -88,7 +88,7 @@ const fetchPhase2StateFx = createEffect();
 fetchPhase2StateFx.use(() => {
   clearTimeout(phase2StateTimeout);
 
-  return fetch("https://heartrate.miran248.now.sh/api/phase-2-state").then(
+  return fetch("https://heartrate.miran248.vercel.app/api/phase-2-state").then(
     (response) => response.json()
   );
 });

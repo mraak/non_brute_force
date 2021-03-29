@@ -39,7 +39,7 @@ const fetchCurrentIterationFx = createEffect();
 fetchCurrentIterationFx.use(() => {
   clearTimeout(currentIterationTimeout);
 
-  return fetch("https://heartrate.miran248.now.sh/api/current-iteration").then(
+  return fetch("https://heartrate.miran248.vercel.app/api/current-iteration").then(
     (response) => response.json()
   );
 });
@@ -77,7 +77,7 @@ export const saveIteration = createEffect();
 saveIteration.use((payload) => {
   console.log("saveIteration", payload);
 
-  return fetch("https://heartrate.miran248.now.sh/api/iteration", {
+  return fetch("https://heartrate.miran248.vercel.app/api/iteration", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -96,7 +96,7 @@ const fetchIterationsFx = createEffect();
 fetchIterationsFx.use(() => {
   clearTimeout(iterationTimeout);
 
-  return fetch("https://heartrate.miran248.now.sh/api/iterations").then(
+  return fetch("https://heartrate.miran248.vercel.app/api/iterations").then(
     (response) => response.json()
   );
 });

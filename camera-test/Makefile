@@ -8,4 +8,4 @@ build:
 	yarn build
 
 upload: build
-	rsync -avzPc --delete dist/ root@174.138.68.174:/var/www/html/non-brute-force-cv
+	rsync -avzPc --delete dist/ root@167.172.233.150:/var/www/html/non-brute-force-cv

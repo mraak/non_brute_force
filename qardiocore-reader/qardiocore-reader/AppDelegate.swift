@@ -220,7 +220,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //
 //            print("sync begin")
 //
-//            let url = URL(string: "https://heartrate.miran248.now.sh/api/sync")!
+//            let url = URL(string: "https://heartrate.miran248.vercel.app/api/sync")!
 //    //        let url = URL(string: "http://localhost:3000/api/sync")!
 //            var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 60000)
 //            request.setValue("application/json", forHTTPHeaderField: "Content-Type")

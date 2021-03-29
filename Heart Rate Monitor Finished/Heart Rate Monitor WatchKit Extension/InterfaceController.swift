@@ -132,7 +132,7 @@ class InterfaceController: WKInterfaceController {
             return
         }
 
-        let url = URL(string: "https://heartrate.miran248.now.sh/api/beat")!
+        let url = URL(string: "https://heartrate.miran248.vercel.app/api/beat")!
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
