@@ -52,7 +52,7 @@ export const loadPayloadsSince = async(date) => {
   const db = await dbPromise;
   const collection = db.collection("payload");
 
-  return collection.find({ date: { $gte: date } }, { timeout: false });
+  return collection.find({ date: { $gte: date } }, { timeout: true });
 };
 export const savePayload = async(item) => {
   const db = await dbPromise;

@@ -71,7 +71,7 @@ export const loadIterationsSince = async(date) => {
   const db = await dbPromise;
   const collection = db.collection("iterations");
 
-  return collection.find({ timestamp: { $gte: date } }, { timeout: false });
+  return collection.find({ timestamp: { $gte: date } }, { timeout: true });
 };
 
 export const lastSyncedIteration = async() => {

@@ -62,7 +62,8 @@ const toAggregate = (iteration) => iteration.reduce(
     } else if(payload.type === "stop") {
       memo.stop = payload.date;
     } else {
-      const device = memo.devices[payload.deviceName] = memo.devices[payload.deviceName] || {};
+      const deviceName = payload.deviceName === "Maja’s iPhone" ? "Maja’s iPhone" : "Ada’s iPhone";
+      const device = memo.devices[deviceName] = memo.devices[deviceName] || {};
       // processes every payload's entry
       payload.data.reduce(
         (memo, entry) => {
