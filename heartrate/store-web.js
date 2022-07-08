@@ -27,6 +27,12 @@ export const loadIterations = async() => {
 
   return collection.find({}, { projection: { "aggregate.human.entries": 0, "aggregate.animal.entries": 0 } }).sort({ timestamp: -1 }).toArray();
 };
+export const loadIterationsWithEntries = async() => {
+  const db = await dbPromise;
+  const collection = db.collection("iterations");
+
+  return collection.find({}).sort({ timestamp: -1 }).toArray();
+};
 export const loadIteration = async(id) => {
   const db = await dbPromise;
   const collection = db.collection("iterations");
@@ -82,7 +88,7 @@ export const lastSyncedIteration = async() => {
 };
 export const saveLastSyncedIteration = async(date) => {
   console.log("saveLastSyncedIteration", date);
-  
+
   const db = await dbPromise;
   const collection = db.collection("iterations-sync");
 
@@ -107,7 +113,7 @@ export const loadCurrentPhase = async() => {
 };
 export const saveCurrentPhase = async(phase) => {
   console.log("saveCurrentPhase", phase);
-  
+
   const db = await dbPromise;
   const collection = db.collection("current-phase");
 
@@ -131,7 +137,7 @@ export const loadPhase1State = async() => {
 };
 export const savePhase1State = async(state) => {
   console.log("savePhase1State", state);
-  
+
   const db = await dbPromise;
   const collection = db.collection("phase-1-state");
 
@@ -155,7 +161,7 @@ export const loadPhase2State = async() => {
 };
 export const savePhase2State = async(state) => {
   console.log("savePhase2State", state);
-  
+
   const db = await dbPromise;
   const collection = db.collection("phase-2-state");
 
