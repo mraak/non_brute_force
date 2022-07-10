@@ -21,7 +21,7 @@ export default async (req, res) => {
     .map((item) => ({
       date: item.title.split("T")[0],
       "avg BPM animal": item.aggregate.animal.bpm.toFixed(2),
-      "avg BPM human": item.aggregate.animal.bpm.toFixed(2),
+      "avg BPM human": item.aggregate.human.bpm.toFixed(2),
       "delta BPM": item.delta.toFixed(2),
       class: item.actualRank,
       "moving 4": item.ma.toFixed(2),
