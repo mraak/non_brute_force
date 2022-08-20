@@ -55,7 +55,7 @@ export default () => {
 
   const respHuman = useStore(respHuman$);
   const respAnimal = useStore(respAnimal$);
-  
+
   const tempHuman = useStore(tempHuman$);
   const tempAnimal = useStore(tempAnimal$);
 
@@ -78,10 +78,10 @@ export default () => {
 
   const humanBpm = hideHuman
     ? null
-    : human.bpm;
+    : humanEntries[humanEntriesCount - 1].maja; // human.bpm;
   const animalBpm = hideAnimal
     ? null
-    : animal.bpm;
+    : animalEntries[animalEntriesCount - 1].dog; // animal.bpm;
 
   const humanStart = hideHuman
     ? null

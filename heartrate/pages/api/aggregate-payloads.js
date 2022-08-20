@@ -10,7 +10,7 @@ const toIterations = async(payloadsCursor) => {
   while(true) {
     if(payloadsCursor.isClosed())
       break;
-    
+
     const payload = await payloadsCursor.next();
 
     console.log("payload", payload);
@@ -44,7 +44,7 @@ const toIterations = async(payloadsCursor) => {
 
     if(running === false)
       continue;
-    
+
     // TODO: repeat previous payload if current has null data
     // const [ last ] = memo.current.slice(-1);
 
@@ -83,8 +83,8 @@ const transformAggregate = (aggregate) => {
 
   let human, animal;
 
-  human = devices["Maja’s iPhone"];
-  animal = devices["Ada’s iPhone"];
+  human = devices["human"] || devices["Maja’s iPhone"];
+  animal = devices["dog"] || devices["Ada’s iPhone"];
 
   if(human && animal) {
     human = human[Object.keys(human)[0]];
@@ -121,7 +121,7 @@ const transformAggregate = (aggregate) => {
 };
 const aggregateEntries = (aggregate, entries) => {
   entries = entries.filter((entry) => entry.date >= aggregate.start);
-  
+
   return {
     entries,
     bpm: entries.reduce((memo, entry) => memo + entry.bpm, 0) / entries.length,
