@@ -18,7 +18,10 @@ canvas {
 body {
   background-color: #00010D;
   color: #EFE0D0;
+  height: 100vh;
+  margin: 0;
   padding: 0;
+  position: relative;
 }
 
 button {
@@ -48,7 +51,7 @@ input[type=checkbox]:checked + label {
 
 #root {
   /* taken from https://stackoverflow.com/questions/20590239/maintain-aspect-ratio-of-div-but-fill-screen-width-and-height-in-css/36295495#20593342 */
-  width: 100vw; 
+  width: 100vw;
   height: 56.22vw; /* 750/1334=5622  */
   max-height: 100vh;
   max-width: 177.87vh; /* 1334/750=17787 */
