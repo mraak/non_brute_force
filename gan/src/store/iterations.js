@@ -155,7 +155,7 @@ export const iterations$ = combine(layout$, hardcodedIterations$, fetchedIterati
 
       if("maja" in iteration)
         human = { bpm: iteration.maja, entries: [] };
-  
+
       animal = heartRateDog(iteration);
 
       const valid = "valid" in iteration ? iteration.valid : true;
@@ -166,7 +166,7 @@ export const iterations$ = combine(layout$, hardcodedIterations$, fetchedIterati
       const output = trainable
         ? Array.from(Array(5), (_, i) => i === actualRank ? 1 : 0)
         : null;
-    
+
       return {
         ...iteration,
         animal,
